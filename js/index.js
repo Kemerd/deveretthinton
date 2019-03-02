@@ -182,6 +182,8 @@ var Project = function Project(props) {
 	windows: 'fab fa-windows',
 	mic: 'fas fa-microphone-alt',
 	html: 'fab fa-html5',
+	python: 'fab fa-python',
+	math: 'fas fa-calculator',
 	money: 'fas fa-dollar-sign',
 	server: 'fas fa-server',
 	game: 'fas fa-gamepad'};
@@ -293,7 +295,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Novabox HL2RP.",
               img: 'images/IssueTracker.jpg',
-              tech: "game people map server code html php js css",
+              tech: "game people map server code html php js",
               link: "https://steamcommunity.com/groups/novabox",
 			lname: "Dev Vlogs",
               repo: "http://goo.gl/bs9adh" },
@@ -318,7 +320,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Elliptical Curves over Finite Fields.",
               img: 'images/Cortala.jpg',
-              tech: "game",
+              tech: "people code python math",
               link: "https://mathduc.com/hilbert-class-polynomials/",
 			  lname: "CoCalc",
               repo: "https://cocalc.com/projects/64cc74b3-5f61-4e1e-a783-d7402dfa820d" },
@@ -332,7 +334,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "First Robotics.",
               img: 'images/ExerciseTracker.jpg',
-              tech: "game",
+              tech: "people hammer code",
               link: "https://hvjrobotics.weebly.com/",
 			  lname: "FIRST",
               repo: "https://www.firstinspires.org/robotics/frc" },
@@ -357,7 +359,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Ragger.",
               img: 'images/TreemapDiagram.jpg',
-              tech: "game",
+              tech: "game hammer code",
               link: "https://youtu.be/7-w-FhIe7L8",
 			  lname: "Dev Vlogs",
               repo: "https://youtu.be/7-w-FhIe7L8" },
@@ -370,7 +372,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Freelancing Developer.",
               img: 'images/ChoroplethMap.jpg',
-              tech: "game",
+              tech: "money people code php game server",
               link: "https://steamcommunity.com/id/dremekek/",
 			  lname: "Github",
               repo: "https://github.com/Kemerd" },
@@ -381,7 +383,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Undergraduate Student.",
               img: 'images/QuotingMachine.jpg',
-              tech: "game",
+              tech: "math code money",
               link: "https://www.usc.edu/",
 			  lname: "Physics",
               repo: "https://dornsife.usc.edu/physics/" },
@@ -392,7 +394,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Condemned.",
               img: 'images/Condemned.jpg',
-              tech: "game",
+              tech: "game hammer code server video",
               link: "https://goo.gl/cwZGcC",
 			  lname: "Facepunch",
               repo: "https://goo.gl/Bi1i4u" },
@@ -403,7 +405,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Overvoice.",
               img: 'images/Overvoice.jpg',
-              tech: "mic",
+              tech: "people mic video",
               link: "https://discord.gg/9437JsW",
 			  lname: "Discord",
               repo: "https://discord.gg/9437JsW" },
@@ -414,7 +416,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Eclipse 2D MMORPG Engine.",
               img: 'images/TomateTimer.jpg',
-              tech: "code map",
+              tech: "code map hammer",
               link: "https://www.eclipseorigins.com/",
 			  lname: "Profile",
               repo: "https://www.eclipseorigins.com/user/kemerd" },
@@ -425,7 +427,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Unity.",
               img: 'images/TicTacToe.jpg',
-              tech: "code game map",
+              tech: "game hammer code map",
               link: "https://unity3d.com/",
 			  lname: "Unity",
               repo: "https://unity3d.com/" },
@@ -439,7 +441,7 @@ var Projects = function Projects(props) {
           React.createElement(Project, {
               title: "Unreal Engine.",
               img: 'images/Twitch.jpg',
-              tech: "code game map",
+              tech: "game hammer code map",
 			  lname: "Forums",
               link: "https://www.unrealengine.com/",
 				repo: "https://forums.unrealengine.com/"			  },
