@@ -404,7 +404,7 @@ var Projects = function Projects(props) {
 
           React.createElement(Project, {
               title: "Overvoice.",
-              img: 'images/Overvoice.jpg',
+              img: 'images/overvoice.jpg',
               tech: "people mic video",
               link: "https://discord.gg/9437JsW",
 			  lname: "Discord",
