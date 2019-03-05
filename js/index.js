@@ -513,7 +513,7 @@ var Contact = function Contact(props) {
 
 
             React.createElement("p", { className: "separator" }),
-            React.createElement("p", { className: "subtitle" }, "Please, call or text (912)755-7989 or send an email to ",
+            React.createElement("p", { className: "subtitle" }, "Please send an email to ",
               '',
               React.createElement("span", { className: "mail" }, "dehinton",
 
