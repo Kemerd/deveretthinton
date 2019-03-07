@@ -575,6 +575,16 @@ var SocialLinks = function SocialLinks(props) {
 
         ' ',
         React.createElement("i", { className: "fab fa-twitter" })),
+		
+      React.createElement("a", {
+          id: "profile-link",
+          href: "https://www.linkedin.com/in/d-everett-hinton-214116181/",
+          target: "_blank",
+          rel: "noopener noreferrer",
+          title: "Link to author's LinkedIn Profile" },
+
+        ' ',
+        React.createElement("i", { className: "fab fa-linkedin-in" })),
 
       React.createElement("a", {
           id: "profile-link",
