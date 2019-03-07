@@ -389,7 +389,7 @@ var Projects = function Projects(props) {
               repo: "https://dornsife.usc.edu/physics/" },
 
             React.createElement("small", null, "Pursuing an undergraduate degree in Physics & Computer Science."),
-            React.createElement("p", null, "One of my proudest achievements as a low-income first generation independent, is getting into the University of Southern California as a Physics & CS student. Something I've always said is that Physics is the closest I'm ever get to being a wizard; and it really does feel like magic! Engineering and physics is like game development, but in real life; and if I've been doing game development for nine years, there's bound to be some way I can integrate my skills into a more real and profound effect!")),
+            React.createElement("p", null, "One of my proudest achievements as a low-income first generation independent, is getting into the University of Southern California as a Physics & CS student. Something I've always said is that Physics is the closest I'm ever get to being a wizard; and it really does feel like magic! Engineering and physics is like game development, but in real life; and if I've been doing game development for nine years, there's bound to be some way I can integrate my skills into a more real and profound effect! Along with this, I've also been studying Japanese for a year, with plans to study abroad.")),
 			
           React.createElement(Project, {
               title: "Condemned.",
