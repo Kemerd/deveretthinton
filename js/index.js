@@ -127,26 +127,26 @@ var About = function About(props) {
             React.createElement("p", { className: "separator" })),
 
           React.createElement("div", { className: "desc" },
-            React.createElement("h4", { className: "subtitle" }, "It's for the goal."),
-            React.createElement("p", null, "I often find myself in leadership positions. Sometimes it's due to my achille's heel-- I don't like standing around and argueing. I like getting things done, and if something isn't being done right, I'll go off on my own, and do it myself. There's no time to waste. Sometimes, the only person I'm leading.. is me-- alone. Getting it done. One step at a time."),
+            React.createElement("h4", { className: "subtitle" }, "Good leaders ask the right questions."),
+            React.createElement("p", null, "I often find myself in leadership positions. Sometimes, due to me starting my own projects, dissatisfied with the options offered to me by others— and sometimes, helping others to pursue a noble goal."),
+			React.createElement("p", null, "This makes me ask myself. What makes a good leader? What does a leader bring to the team? And then I realize. Good leaders ask the right questions."),
+			
+
+			React.createElement("p", null, "One could compare them to a miner piercing a gemstone— revealing a dazzling result within. And, I think, that’s how you do it. The team, the thoughts, and the ideas are scattered. Humans aren’t good at multitasking— so asking a question funnels those ideas down."),
 
 
-
-
-            React.createElement("p", null, "That's not to say that others' knowledge and skills aren't the most important resources a leader can have. The best leaders know their limits; and that the most valuable ability is the collective. I may not know the puzzle-- and only have one piece, but my team has another piece, and another, and another; and pretty soon you have the whole damn thing done.")),
+            React.createElement("p", null, "You repeat the process. And suddenly— ding! You have your answer.")),
 
 
 
 
           React.createElement("div", { className: "desc" },
-            React.createElement("h4", { className: "subtitle" }, "The Skills."),
-            React.createElement("p", null, "Hand me any tool and short amount of time, and I guarantee you I can pick it up. I'm comfortable not only with any programming language the project can throw at me, but I'll be there every step of the way. Need a user interface designed in photoshop? Done. Need a video trailer completed in After Effects? Done. Need to tediously go through Excel? MySQL? AutoCAD? I'll get it done."),
+            React.createElement("h4", { className: "subtitle" }, "Learning to learn quickly."),
+            React.createElement("p", null, "Hand me any tool, check back in on me in a short amount of time, and I will be pumping out a working product. That is my guarantee. "),
 
+React.createElement("p", null, "Funnily enough, I like to think of software engineering as a translation job. An english psuedo-code (or Japanese, if that is your flavor), broken up into its’ smallest parts, and then tediously churned into lines of code. Swapping out the grinder you use is the easiest part."),
 
-
-
-
-            React.createElement("p", null, "I'd like to consider myself a jack of all trades. Not to say that I know everything, but the exact opposite. I know when I'm wrong-- and trust me, I'm wrong a LOT. But what that enlightenment allows me to do is seek out the correct knowledge. Competance, I think, is based in your ability to master new information quickly."))))));
+            React.createElement("p", null, "However, it’s not just code I have an affinity for. It’s anything you might need. Need a user interface designed in photoshop? Done. Need a video trailer completed in After Effects? Done. Need to tediously go through Excel? MySQL? AutoCAD? I'll get it done. We live in the information age, and I will make full use of it to educate myself."))))));
 
 
 
