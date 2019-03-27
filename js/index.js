@@ -236,9 +236,9 @@ var Projects = function Projects(props) {
           React.createElement("h3", { className: "title" }, "\"You've met with a terrible fate, haven't you?\""),
           React.createElement("p", { className: "separator" }),
           React.createElement("p", { className: "subtitle" }, "Here's a touchover of ",
-            React.createElement("u", null, "some"), " of the projects and activites I've dabbled with. Grab my ",
+            React.createElement("u", null, "some"), " of the projects and activites I've dabbled with. Grab",
             ' ',
-            React.createElement("a", { href: "documents/D%20Everett%20Hinton%20CV_SLIM%203-27-19.pdf", target: "_blank", rel: "noopener noreferrer" }, "complete resume here"), " to see a more complete list of the things I've done!")),
+            React.createElement("a", { href: "documents/resumes.html", target: "_blank", rel: "noopener noreferrer" }, "one of my complete resumes here"), " to see a more complete list of the things I've done!")),
 
 
 
