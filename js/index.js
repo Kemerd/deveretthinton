@@ -23,6 +23,11 @@ var Menu = function Menu(props) {
 
           React.createElement("li", null,
             React.createElement("a", { href: "#projects", onClick: props.toggleMenu }, "PORTFOLIO")),
+			
+			
+			
+          React.createElement("li", null,
+            React.createElement("a", { href: "documents/resumes.html", onClick: props.toggleMenu }, "RESUMES")),
 
 
 
