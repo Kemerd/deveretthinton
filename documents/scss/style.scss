@@ -1,1 +1,183 @@
+@import "compass/css3";
 
+// 設定各社群主顏色變數
+$fb: #3B5998;
+$g-plus: #DD4B39;
+$twitter: #55ACEE;
+$instagram: #3F729B;
+$youtube: #CD201F;
+$github: #4183C4;
+
+$opposite: #ECEFF1;
+
+// 共同設定
+body {
+  background-color: $opposite;
+  font-family: Microsoft JhengHei, MingLiU, sans-serif;
+  color: #263238;
+}
+.wrap {
+  padding: 32px;
+  text-align: left;
+}
+h2 {
+  margin-top: 80px;
+}
+$box-shadow-z1: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+$box-shadow-z2: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+$box-shadow-z3: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+// 顏色帶進class
+@mixin bg-color($bg, $txt) {
+  background-color: $bg;
+  color: $txt;
+}
+@mixin txt-color($bg, $txt) {
+  background-color: $bg;
+  color: $txt;
+}
+.fb {
+  &.bg {
+     @include bg-color($fb,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $fb);
+    a {
+      @extend .fb.txt;
+    }
+  }
+}
+
+.g-plus {
+  &.bg {
+     @include bg-color($g-plus,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $g-plus);
+    a {
+      @extend .g-plus.txt;
+    }
+  }
+}
+
+.twitter {
+  &.bg {
+     @include bg-color($twitter,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $twitter);
+    a {
+      @extend .twitter.txt;
+    }
+  }
+}
+
+.instagram {
+  &.bg {
+     @include bg-color($instagram,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $instagram);
+    a {
+      @extend .instagram.txt;
+    }
+  }
+}
+
+.youtube {
+  &.bg {
+     @include bg-color($youtube,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $youtube);
+    a {
+      @extend .youtube.txt;
+    }
+  }
+}
+
+.github {
+  &.bg {
+     @include bg-color($github,  $opposite);
+  }
+  &.txt {
+    @include txt-color($opposite, $github);
+    a {
+      @extend .github.txt;
+    }
+  }
+}
+
+// 設定按鈕樣式
+.sean-btn {
+  position: relative;
+  display: inline-block;
+  *zoom: 1;
+  margin: 16px;
+  padding: 8px;
+  @include border-radius(4px);
+  cursor: pointer;
+  .fa {
+    width: 16px;
+  }
+}
+.rectangle {
+  padding-right: 32px;
+  padding-left: 32px;
+}
+.square {
+  padding: 16px;
+}
+.sean-circle {
+  position: relative;
+  padding: 16px;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  @include border-radius(50%);
+  .fa {
+    position: absolute;
+    left: 35%;
+    @include border-radius(50%);
+  }
+}
+.raised {
+  @include box-shadow($box-shadow-z1);
+  @include transition(box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+  @include transition-delay(.2s);
+  &:hover {
+    @include box-shadow($box-shadow-z2);
+  }
+  &:active {
+    @include box-shadow($box-shadow-z3);
+    @include transition-delay(0s);
+  }
+}
+
+@media (min-device-width: 767px) {
+  .fa {
+    @include transition(transform 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+  }
+  .txt:hover .fa {
+    @include transform(scale(1.5));
+  }
+}
+
+// 設定列表樣式
+ul {
+  padding-left: 0;
+  width: 170px;
+  list-style: none;
+  @include box-shadow($box-shadow-z1);
+  li {
+    position: relative;
+    padding: 16px 32px;
+    cursor: pointer;
+    a {
+      text-decoration: none;
+    }
+  }
+  .fa {
+    width: 24px;
+  }
+}
