@@ -238,7 +238,7 @@ var Projects = function Projects(props) {
           React.createElement("p", { className: "subtitle" }, "Here's a touchover of ",
             React.createElement("u", null, "some"), " of the projects and activites I've dabbled with. Grab my ",
             ' ',
-            React.createElement("a", { href: "https://drive.google.com/file/d/1KLVkLpcpqjzCE-FtjnPg7zW1zTbwr3-i/view?usp=sharing", target: "_blank", rel: "noopener noreferrer" }, "complete resume here"), " to see a more complete list of the things I've done!")),
+            React.createElement("a", { href: "documents/D%20Everett%20Hinton%20CV_SLIM%203-27-19.pdf", target: "_blank", rel: "noopener noreferrer" }, "complete resume here"), " to see a more complete list of the things I've done!")),
 
 
 
