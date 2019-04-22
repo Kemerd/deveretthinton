@@ -151,7 +151,39 @@ var About = function About(props) {
 
 React.createElement("p", null, "Funnily enough, I like to think of software engineering as a translation job. An english psuedo-code (or Japanese, if that is your flavor), broken up into its’ smallest parts, and then tediously churned into lines of code. Swapping out the grinder you use is the easiest part."),
 
-            React.createElement("p", null, "However, it’s not just code I have an affinity for. It’s anything you might need. Need a user interface designed in photoshop? Done. Need a video trailer completed in After Effects? Done. Need to tediously go through Excel? MySQL? AutoCAD? I'll get it done. We live in the information age, and I will make full use of it to educate myself."))))));
+            React.createElement("p", null, "However, it’s not just code I have an affinity for. It’s anything you might need. Need a user interface designed in photoshop? Done. Need a video trailer completed in After Effects? Done. Need to tediously go through Excel? MySQL? AutoCAD? I'll get it done. We live in the information age, and I will make full use of it to educate myself.")
+			
+			
+
+			
+			
+			),
+			
+			
+          React.createElement("div", { className: "desc full" },
+            React.createElement("h4", { className: "subtitle" }, "SKILLS"),
+            React.createElement("p", { className: "skills-list" }, "I've been doing full-stack development for about ten years. Here's a brief look at a few of my skills."),
+			
+			React.createElement("u1", { className: "skills" },
+			
+			React.createElement("li", { className: "skill", arialabel: "elite"}, "Python"),
+			React.createElement("li", { className: "skill", arialabel: "advanced"}, "C#"),
+			React.createElement("li", { className: "skill", arialabel: "adept"}, "Java"),
+			React.createElement("li", { className: "skill", arialabel: "advanced"}, "Unity"),
+			React.createElement("li", { className: "skill", arialabel: "elite"}, "Unreal Engine"),
+			React.createElement("li", { className: "skill", arialabel: "pro"}, "Source Engine"),
+			React.createElement("li", { className: "skill", arialabel: "adept"}, "C++"),
+			React.createElement("li", { className: "skill", arialabel: "advanced"}, "HTML, CSS, PHP"),
+			React.createElement("li", { className: "skill", arialabel: "pro"}, "LUA"),
+			React.createElement("li", { className: "skill", arialabel: "pro"}, "Adobe Suite"),
+			React.createElement("li", { className: "skill", arialabel: "advanced"}, "Content Production"),
+			React.createElement("li", { className: "skill", arialabel: "advanced"}, "Administration")
+			
+			),
+			
+			),
+			
+			))));
 
 
 
@@ -308,16 +340,6 @@ var Projects = function Projects(props) {
             React.createElement("small", null, "A roleplaying community and gamemode managed, coded, and designed by me."),
             React.createElement("p", null, "Beginning in 2014, one of my largest passion projects was directing a non-profit roleplaying community. This included hiring staff, designing and managing a website; setting up game servers, as well as designing and shipping the code that went on them-- and making sure the users had a fun and easy experience. Along with this, I implemented a lot of my own level designs into the game we used, which allowed for more creative freedom.")),
 
-          React.createElement(Project, {
-              title: "Voice acting.",
-              img: 'images/MetricImperialConverter.jpg',
-              tech: "mic video",
-              link: "https://www.youtube.com/c/Dremekeks",
-			  lname: "Soundcloud",
-              repo: "https://soundcloud.com/kemerd/sets/voice-acting" },
-
-            React.createElement("small", null, "The art of using my voice to make others smile."),
-            React.createElement("p", null, "Accents have always been a favorite thing of mine to practice; and one day, I realized this could transfer over to impressions of famous characters.. and eventually led to me mastering my own, independent voice. I ended up creating a YouTube to share some of the shenanigins that I get into, and people seem to like it! Beware, my content is geared towards entertaining adults, so some language may be explicit. However, it's not just my YouTube I've done voice acting both for money, and for free, for others' projects!")),
 
 
 
@@ -469,6 +491,18 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "Singing, guitar, bass, and piano."),
             React.createElement("p", null, "Deep in my heart, music is very important to me. I may be heavily involved in STEM, but I still smile a bit when people are surprised I tell them I'm not a full-time musician. However, I believe it is very important to have outlets. Life is very hard, and without music to relieve my stress-- keep me grounded, and help me deflate; I not only don't think I would be where I am today, but I don't think I could continue doing the things I'm able to do. When I'm not busy, I find myself playing whenever I can. Sometimes that means every day, and sometimes it means, at minimum, once a week.")),
+
+          React.createElement(Project, {
+              title: "Voice acting.",
+              img: 'images/MetricImperialConverter.jpg',
+              tech: "mic video",
+              link: "https://www.youtube.com/c/Dremekeks",
+			  lname: "Soundcloud",
+              repo: "https://soundcloud.com/kemerd/sets/voice-acting" },
+
+            React.createElement("small", null, "The art of using my voice to make others smile."),
+            React.createElement("p", null, "Accents have always been a favorite thing of mine to practice; and one day, I realized this could transfer over to impressions of famous characters.. and eventually led to me mastering my own, independent voice. I ended up creating a YouTube to share some of the shenanigins that I get into, and people seem to like it! Beware, my content is geared towards entertaining adults, so some language may be explicit. However, it's not just my YouTube I've done voice acting both for money, and for free, for others' projects!")),
+
 
           React.createElement(Project, {
               title: "Network Operator.",
