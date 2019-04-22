@@ -1292,3 +1292,124 @@ footer .wrapper {
     padding-bottom: .8rem;
   }
 }
+
+/*******************
+********************
+	SKILLS
+********************
+*******************/
+
+.skills-list{
+  text-align: center;	
+}
+
+.skills {
+  list-style: none;
+  font-size: 20px;
+  padding: 0;
+  text-align: center;
+  width: fit-content;
+  display: inline-block;
+}
+.skills .skill {
+  display: block;
+  position: relative;
+  height: 60px;
+  margin: 10px auto;
+  width: 90%;
+}
+@media only screen and (min-width: 900px) {
+  .skills .skill {
+    display: inline-block;
+    width: 25%;
+    margin: 10px;
+  }
+}
+.skills .skill:before, .skills .skill:after {
+  content: "";
+  position: absolute;
+  border-radius: 20px;
+  margin-top: 40px;
+}
+.skills .skill:before {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 20px;
+  background: #eeeeee;
+}
+.skills .skill:after {
+  background-color: #f300b4;
+  background: repeating-linear-gradient(-45deg, #f300b4, #f300b4 10px, #ff66d6 10px, #ff66d6 20px);
+  height: 16px;
+  top: 2px;
+  right: 95%;
+  bottom: 2px;
+  left: 2px;
+  -webkit-animation: fill 2s both;
+  -moz-animation: fill 2s both;
+  animation: fill 2s both;
+}
+.skills .skill:nth-child(1):after {
+  -webkit-animation-delay: 0.5s;
+  -moz-animation-delay: 0.5s;
+  animation-delay: 0.5s;
+}
+.skills .skill:nth-child(2):after {
+  -webkit-animation-delay: 1s;
+  -moz-animation-delay: 1s;
+  animation-delay: 1s;
+}
+.skills .skill:nth-child(3):after {
+  -webkit-animation-delay: 1.5s;
+  -moz-animation-delay: 1.5s;
+  animation-delay: 1.5s;
+}
+.skills .skill:nth-child(4):after {
+  -webkit-animation-delay: 2s;
+  -moz-animation-delay: 2s;
+  animation-delay: 2s;
+}
+.skills .skill:nth-child(5):after {
+  -webkit-animation-delay: 2.5s;
+  -moz-animation-delay: 2.5s;
+  animation-delay: 2.5s;
+}
+.skills .skill[arialabel="novice"]:after {
+  right: 75%;
+}
+.skills .skill[arialabel="average"]:after {
+  right: 50%;
+}
+.skills .skill[arialabel="adept"]:after {
+  right: 35%;
+}
+.skills .skill[arialabel="advanced"]:after {
+  right: 20%;
+}
+.skills .skill[arialabel="elite"]:after {
+  right: 10%;
+}
+.skills .skill[arialabel="pro"]:after {
+  right: 2px;
+}
+.skills .skill[arialabel="l33tasuar"]:after {
+  right: -10%;
+}
+
+@-webkit-keyframes fill {
+  from {
+    right: 100%;
+  }
+}
+@-moz-keyframes fill {
+  from {
+    right: 100%;
+  }
+}
+@keyframes fill {
+  from {
+    right: 100%;
+  }
+}
