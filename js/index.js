@@ -224,6 +224,31 @@ var Project = function Project(props) {
 	money: 'fas fa-dollar-sign',
 	server: 'fas fa-server',
 	game: 'fas fa-gamepad'};
+	
+  var techtooltips = {
+    sass: 'SASS',
+    css: 'CSS3',
+    js: 'JavaScript',
+    react: 'React',
+    vue: 'Vue',
+	video: 'Content Production',
+    d3: 'D3',
+    node: 'NodeJS',
+	award: 'Award-Winning',
+	code: 'Development',
+	people: 'Community',
+	php: 'PHP',
+	linux: 'Linux OS',
+	map: 'Level Design',
+	hammer: 'Content Creation',
+	windows: 'Windows OS',
+	mic: 'Audio Production',
+	html: 'HTML5',
+	python: 'Python',
+	math: 'Mathematics',
+	money: 'Business',
+	server: 'Dedicated Servers',
+	game: 'Games'};
 
 
   var link = props.link || 'http://';
@@ -238,8 +263,9 @@ var Project = function Project(props) {
       React.createElement("div", { className: "project-details" },
         React.createElement("div", { className: "project-tile" },
           React.createElement("p", { className: "icons" },
-            props.tech.split(' ').map(function (t) {return (
-                React.createElement("i", { className: tech[t], key: t }));})),
+			props.tech.split(' ').map(function (t) {return (
+				React.createElement("span", { className: "tooltip", datatooltip: techtooltips[t] },
+					React.createElement("i", { className: tech[t], key: t })));})),
 
 
           props.title, ' '),
