@@ -590,7 +590,7 @@ var Projects = function Projects(props) {
               repo: "http://goo.gl/bs9adh"
             },
 
-            React.createElement("small", null, "A roleplaying community and gamemode managed, coded, and designed by me."),
+            React.createElement("small", null, "A gaming company centered around community interaction. Managed, coded, and designed by me."),
             React.createElement("p", null, "Beginning in 2014, one of my largest passion projects was directing a non-profit roleplaying community. This included hiring staff, designing and managing a website; setting up game servers, as well as designing and shipping the code that went on them-- and making sure the users had a fun and easy experience. Along with this, I implemented a lot of my own level designs into the game we used, which allowed for more creative freedom.")),
 
 
