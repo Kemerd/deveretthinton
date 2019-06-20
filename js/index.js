@@ -320,7 +320,7 @@ var About = function About(props) {
               }, "Source Engine"),
               React.createElement("li", {
                 className: "skill",
-                arialabel: "adept"
+                arialabel: "elite"
               }, "C++"),
               React.createElement("li", {
                 className: "skill",
