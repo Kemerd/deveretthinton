@@ -304,8 +304,8 @@ var About = function About(props) {
               }, "C# (.NET)"),
               React.createElement("li", {
                 className: "skill",
-                arialabel: "adept"
-              }, "Java"),
+                arialabel: "pro"
+              }, "Virtual Reality"),
               React.createElement("li", {
                 className: "skill",
                 arialabel: "advanced"
@@ -332,16 +332,16 @@ var About = function About(props) {
               }, "LUA"),
               React.createElement("li", {
                 className: "skill",
-                arialabel: "pro"
+                arialabel: "elite"
               }, "Adobe Suite"),
               React.createElement("li", {
                 className: "skill",
-                arialabel: "advanced"
+                arialabel: "elite"
               }, "Content Production"),
               React.createElement("li", {
                 className: "skill",
-                arialabel: "advanced"
-              }, "Administration")
+                arialabel: "elite"
+              }, "Management")
 
             ),
 
@@ -532,6 +532,18 @@ var Projects = function Projects(props) {
         React.createElement("div", {
             className: "projects-wrapper"
           },
+          React.createElement(Project, {
+            title: "Lead VR Engineer for DMG Entertainment",
+            img: 'images/dmg-entertainment.jpg',
+            tech: "code people money game server windows",
+            link: "https://www.dmg-entertainment.com/live-entertainment/transformers-vr-center/",
+            lname: "News Article",
+            repo: "https://deadline.com/2017/05/hasbro-dmg-virtual-reality-transformers-centers-china-1202100512/"
+          },
+
+          React.createElement("small", null, "Shipping two location-based immersive VR titles for the Transformers IPO in Shanghai, China."),
+          React.createElement("p", null, "After coming into the company, I took over complete engineering responsibilities for two different immersive VR projects originally developed by different teams at two third-party studios. From there, I worked with artists to try to ship these two products, flying on-site to Shanghai, China to whip both the hardware and software into a shippable state. Intensive and fast development cycles based around on-site Q&A, which eventually included the development and maintenance of a live service after soft-opening for our FEC was approved. Currently in the process of development of new attractions, along with versions two and three of existing ones.")),
+          
           React.createElement(Project, {
               title: "Divinity Servers.",
               img: 'images/AnonMsgBoard.jpg',
@@ -766,20 +778,6 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "The art of using my voice to make others smile."),
             React.createElement("p", null, "Accents have always been a favorite thing of mine to practice; and one day, I realized this could transfer over to impressions of famous characters.. and eventually led to me mastering my own, independent voice. I ended up creating a YouTube to share some of the shenanigins that I get into, and people seem to like it! Beware, my content is geared towards entertaining adults, so some language may be explicit. However, it's not just my YouTube I've done voice acting both for money, and for free, for others' projects!")),
-
-
-          React.createElement(Project, {
-              title: "Network Operator.",
-              img: 'images/networkoperator.jpg',
-              tech: "people money",
-              link: "https://viterbigradadmission.usc.edu/denviterbi/",
-              lname: "Support",
-              repo: "https://viterbigrad.usc.edu/technical-support/"
-            },
-
-            React.createElement("small", null, "Camera and metwork operator for USC's graduate classes."),
-            React.createElement("p", null, "An on-campus job for the USC Viterbi School of Engineering. Employed at DEN@Viterbi, USC's online graduate engineering program, I worked on the pipeline for delivering content to students. This ranged from control room operation, to publishing media content on the network.")),
-
 
           React.createElement(Project, {
               title: "Your project",
