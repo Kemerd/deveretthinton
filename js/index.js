@@ -525,10 +525,37 @@ var Projects = function Projects(props) {
             }, "one of my complete resumes here"), " to see a more complete list of the things I've done!")),
 
 
+        React.createElement("div", {
+            className: "projects-wrapper"
+          },
+          React.createElement(Project, {
+            title: "Unreal Engine Developer for NexTechAR",
+            img: 'images/nextechar.jpg',
+            tech: "code people money game server windows",
+            link: "https://www.nextechar.com/",
+            lname: "Inferno",
+            repo: "https://www.nextechar.com/inferno"
+          },
+		  
+		  React.createElement("small", null, "Architecting a web-based MVP in Unreal Engine 4 for virtual events."),
+          React.createElement("p", null, "Utilizing the latest version of Unreal Engine 4, I was able to implement live-pixel streaming in the browser, allowing us to render high-fidelity 3D experiences on remote AWS instances, and stream them to our end clients. Along with this, I designed and created UI in UMG, as well as worked with Node.js webservers to configure them for HTTPS and SSL. Currently, I am designing a system that will allow for dynamic map generation based on data input from Inferno.")),
+          
 
-
-
-
+        React.createElement("div", {
+            className: "projects-wrapper"
+          },
+          React.createElement(Project, {
+            title: "Senior Game Developer for Jeep",
+            img: 'images/jeep.jpg',
+            tech: "code people money game server windows",
+            link: "https://www.jeep.com/wagoneer.html/",
+            lname: "Demo Video",
+            repo: "https://youtu.be/LRI4KjdAvh8"
+          },
+		  
+          React.createElement("small", null, "Creating a browser-based experience for the 2021 Jeep Wagoneer."),
+          React.createElement("p", null, "Working with a 3rd party studio working with Jeep, I architected all of the interactible features and controls for our car showcase and demo, originally intended for CES 2021, but now with a larger scope. This demo allows you to see the look and features of the new 2021 Jeep Wagoneer. Along with this, I created an AR companion app for iOS and Android, that allows you to view the vehicle in AR.")),
+          
         React.createElement("div", {
             className: "projects-wrapper"
           },
@@ -573,7 +600,7 @@ var Projects = function Projects(props) {
             React.createElement("small", null, "A 2017 group hackathon competition for improving city resiliency post-hurricane."),
 
 
-            React.createElement("p", null, "Quoting the Savannah Morning News, \"Working alone, Savannah Early College High School student Everett Hinton received a special award for “best turnkey” project, a web site called Savannah Storm Info that included a crowd sourcing feature to create maps of storm impacts as well as post-storm openings and closings. CEMA Director Dennis Jones loved the web site saying he could see implementing it immediately.\"")),
+            React.createElement("p", null, "Quoting the Savannah Morning News, \"Working alone, Everett Hinton received a special award for “best turnkey” project, a web site called Savannah Storm Info that included a crowd sourcing feature to create maps of storm impacts as well as post-storm openings and closings. CEMA Director Dennis Jones loved the web site saying he could see implementing it immediately.\"")),
 
 
 
@@ -588,13 +615,13 @@ var Projects = function Projects(props) {
             },
 
             React.createElement("small", null, "A tech-based contest hosted in 2018 by ACM at AASU for both graduate and undergraduate students."),
-            React.createElement("p", null, "During my early college years (attending college early instead of high school), I attended an ACM contest and presented my research on a new locomotion technique for virtual reality dubbed \"Radial Locomotion\" and achieved first place. This new technique used multi-variable calculus and an assortment of other concepts to allow for infinite movement space in VR without any extra equipment required, converting linear motion to radial motion.")),
+            React.createElement("p", null, "During my time at Armstrong State, I attended an ACM contest and presented my research on a new locomotion technique for virtual reality dubbed \"Radial Locomotion\" and achieved first place. This new technique used multi-variable calculus and an assortment of other concepts to allow for infinite movement space in VR without any extra equipment required, converting linear motion to radial motion.")),
 
 
 
 
           React.createElement(Project, {
-              title: "Novabox HL2RP.",
+              title: "Novabox.",
               img: 'images/IssueTracker.jpg',
               tech: "game people map server code html php js",
               link: "https://steamcommunity.com/groups/novabox",
@@ -603,7 +630,7 @@ var Projects = function Projects(props) {
             },
 
             React.createElement("small", null, "A gaming company centered around community interaction. Managed, coded, and designed by me."),
-            React.createElement("p", null, "Beginning in 2014, one of my largest passion projects was directing a non-profit roleplaying community. This included hiring staff, designing and managing a website; setting up game servers, as well as designing and shipping the code that went on them-- and making sure the users had a fun and easy experience. Along with this, I implemented a lot of my own level designs into the game we used, which allowed for more creative freedom.")),
+            React.createElement("p", null, "Beginning in 2014, one of my largest passion projects was directing a non-profit roleplaying game community. This included hiring staff, designing and managing a website; setting up game servers, as well as designing and shipping the code that went on them-- and making sure the players had a fun and easy experience. Along with this, I implemented a lot of my own level designs into the game we used, which allowed for more creative freedom.")),
 
 
 
@@ -623,7 +650,7 @@ var Projects = function Projects(props) {
 
 
           React.createElement(Project, {
-              title: "Freelancing Developer.",
+              title: "Freelance & Contract Developer.",
               img: 'images/ChoroplethMap.jpg',
               tech: "money people code php game server",
               link: "https://steamcommunity.com/id/dremekek/",
@@ -634,7 +661,8 @@ var Projects = function Projects(props) {
             React.createElement("small", null, "Extensive amounts of private, for-comission based projects."),
             React.createElement("p", null, "I have been coding for 10 years; practically to the point where I live and breathe coding. After 2013, I began putting my skills to use, managing an extensive clientelle base of customers who hired me on the basis of temporary comissions and for-contract work. The type of work varied in anything from website creation, to game-server development, to even to being a technical lead.")),
 
-
+			
+			/*
           React.createElement(Project, {
               title: "First Robotics.",
               img: 'images/ExerciseTracker.jpg',
@@ -646,7 +674,7 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "Team member of HVJenkin's FIRST Robotics Team, 4701, as well as being an engineering program student."),
             React.createElement("p", null, "Although I only attended this program for two years as a freshman and sophomore, I consider the robotics team close to my character; as it taught me how to manage a boss, deadlines, and working with others on an actual physical project. Even more than anything, it taught me how to seperate the workload, and how to make sure there's no time being wasted; and that when you're at work-- you're dedicating yourself to the project. We attended group robot competitions in Atlanta, GA.")),
-
+			*/
 
 
 
@@ -674,7 +702,8 @@ var Projects = function Projects(props) {
             React.createElement("small", null, "A 2019 portal-inspired puzzle platformer-esque game in which you ragdoll yourself to complete puzzles."),
             React.createElement("p", null, "After messing around with a debug feature that allowed me to ragdoll my character in Unreal Engine 4, I realized I was having a lot of fun doing nothing, just watching my character faceplant. So what if I designed levels and puzzles around this mechanic? That's what I ended up doing, and I'm trying to design a multitude of fun and engaging levels (along with a hint of storyline here and there), for a late 2019 release. Coding done in Blueprint and C#.")),
 
-
+		
+		/*
           React.createElement(Project, {
               title: "Undergraduate Student.",
               img: 'images/QuotingMachine.jpg',
@@ -686,7 +715,8 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "Pursuing an undergraduate degree in Physics & Computer Science."),
             React.createElement("p", null, "One of my proudest achievements as a low-income first generation independent, is getting into the University of Southern California as a Physics & CS student. Something I've always said is that Physics is the closest I'm ever get to being a wizard; and it really does feel like magic! Engineering and physics is like game development, but in real life; and if I've been doing game development for nine years, there's bound to be some way I can integrate my skills into a more real and profound effect! Along with this, I've also been studying Japanese for a year, with plans to study abroad.")),
-
+		*/
+		
           React.createElement(Project, {
               title: "Condemned.",
               img: 'images/Condemned.jpg',
@@ -698,7 +728,8 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "A nutscript based serious roleplaying schema set in a post zombie-outbreak earth."),
             React.createElement("p", null, "Running off of the Source Engine & Garrysmod, I created a fully-fledged, at least to the best of my abilities, a zombie survival gamemode set in a post-apocalyptic earth. This included designing the levels for said earth, coding the interface and features for the game into Nutscript, as well as managing the community behind it. The link below brings you to a YouTube playlist with a handful of the features!")),
-
+		
+		/*
           React.createElement(Project, {
               title: "Overvoice.",
               img: 'images/overvoice.jpg',
@@ -710,7 +741,8 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "A medium-sized Discord-based voice acting community hub."),
             React.createElement("p", null, "Originally starting as a coalition and meeting place for Overwatch character impersonators, it has quickly become a meeting place for voice actors, YouTubers, singers, and even cosplayers to get together and find the right person for their project needs. Currently, it fluctates anywhere from 850 to 950 members. I created this for fun, and as such the community is rather relaxed in its' rules; however it is still, in my opinion, a safe and great place to comingle!")),
-
+		*/
+		
           React.createElement(Project, {
               title: "Eclipse 2D MMORPG Engine.",
               img: 'images/TomateTimer.jpg',
@@ -722,7 +754,8 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "A 2D engine that utilizes Visual Basic 6 and DirectX8 to create a multiplayer RPG template."),
             React.createElement("p", null, "After playing Final Fantasy 5 as a child, I instantly had the urge to create my own. Learning to code through reading Wikipedia documentation on my Wii, once I got a computer under my fingers, this was my first introduction into not only the world of coding, but also game development. Through this, I've worked with the engine from 2009 to around 2013, when I felt ready to make the jump from 2D to 3D development and design.")),
-
+			
+			/*
           React.createElement(Project, {
               title: "Unity.",
               img: 'images/TicTacToe.jpg',
@@ -751,7 +784,7 @@ var Projects = function Projects(props) {
             React.createElement("small", null, "Using Unreal Engine 4's design tools, C#, and BluePrint to ship research and games."),
             React.createElement("p", null, "My first experience with Unreal was Unreal Engine 3 back in (again) 2013. Sort of clunky and not easy to use, I ended up shying away. However, as my skill improved, my taste for something a bit more versatile and \"clean\" arose. Unreal Engine 4 appealed to me not only in that it didn't have the overhead that Unity had, but the lighting was phenominal. The tools, although technically more advanced than Unity, were almost ten times more versatile. It quickly became a favorite, and it is what I use to test new Virtual Reality functions, as well as what I will be using to ship my games in the future.")),
 
-
+		
 
 
           React.createElement(Project, {
@@ -778,7 +811,8 @@ var Projects = function Projects(props) {
 
             React.createElement("small", null, "The art of using my voice to make others smile."),
             React.createElement("p", null, "Accents have always been a favorite thing of mine to practice; and one day, I realized this could transfer over to impressions of famous characters.. and eventually led to me mastering my own, independent voice. I ended up creating a YouTube to share some of the shenanigins that I get into, and people seem to like it! Beware, my content is geared towards entertaining adults, so some language may be explicit. However, it's not just my YouTube I've done voice acting both for money, and for free, for others' projects!")),
-
+		*/
+		
           React.createElement(Project, {
               title: "Your project",
               img: 'images/Documentify.jpg',
