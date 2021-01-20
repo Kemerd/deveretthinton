@@ -535,15 +535,11 @@ var Projects = function Projects(props) {
             link: "https://www.nextechar.com/",
             lname: "Inferno",
             repo: "https://www.nextechar.com/inferno"
-          },
-		  
+          },	  
 		  React.createElement("small", null, "Architecting a web-based MVP in Unreal Engine 4 for virtual events."),
           React.createElement("p", null, "Utilizing the latest version of Unreal Engine 4, I was able to implement live-pixel streaming in the browser, allowing us to render high-fidelity 3D experiences on remote AWS instances, and stream them to our end clients. Along with this, I designed and created UI in UMG, as well as worked with Node.js webservers to configure them for HTTPS and SSL. Currently, I am designing a system that will allow for dynamic map generation based on data input from Inferno.")),
           
-
-        React.createElement("div", {
-            className: "projects-wrapper"
-          },
+		  
           React.createElement(Project, {
             title: "Senior Game Developer for Jeep",
             img: 'images/jeep.jpg',
@@ -552,13 +548,9 @@ var Projects = function Projects(props) {
             lname: "Demo Video",
             repo: "https://youtu.be/LRI4KjdAvh8"
           },
-		  
           React.createElement("small", null, "Creating a browser-based experience for the 2021 Jeep Wagoneer."),
           React.createElement("p", null, "Working with a 3rd party studio working with Jeep, I architected all of the interactible features and controls for our car showcase and demo, originally intended for CES 2021, but now with a larger scope. This demo allows you to see the look and features of the new 2021 Jeep Wagoneer. Along with this, I created an AR companion app for iOS and Android, that allows you to view the vehicle in AR.")),
           
-        React.createElement("div", {
-            className: "projects-wrapper"
-          },
           React.createElement(Project, {
             title: "Lead VR Engineer for DMG Entertainment",
             img: 'images/dmg-entertainment.jpg',
@@ -567,7 +559,6 @@ var Projects = function Projects(props) {
             lname: "News Article",
             repo: "https://deadline.com/2017/05/hasbro-dmg-virtual-reality-transformers-centers-china-1202100512/"
           },
-
           React.createElement("small", null, "Shipping two location-based immersive VR titles for the Transformers IPO in Shanghai, China."),
           React.createElement("p", null, "After coming into the company, I took over complete engineering responsibilities for two different immersive VR projects originally developed by different teams at two third-party studios. From there, I worked with artists to try to ship these two products, flying on-site to Shanghai, China to whip both the hardware and software into a shippable state. Intensive and fast development cycles based around on-site Q&A, which eventually included the development and maintenance of a live service after soft-opening for our FEC was approved. Currently in the process of development of new attractions, along with versions two and three of existing ones.")),
           
