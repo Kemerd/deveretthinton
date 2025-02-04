@@ -51,6 +51,10 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
     background: rgba(255, 255, 255, 0.08);
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     
     /* Animated border style */
     border: 3px solid transparent;
@@ -74,9 +78,25 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
 `;
 
 const TitleContainer = styled(animated.div)`
-    position: relative;
-    padding: ${AppTheme.spacing[16]};
+    position: absolute;
+    bottom: ${AppTheme.spacing[24]};
+    left: 0;
+    right: 0;
+    padding: 0 ${AppTheme.spacing[16]};
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: ${AppTheme.spacing[4]};
+    
+    h3 {
+        margin: 0;
+        ${AppTheme.typography.title2};
+        color: ${AppTheme.colors.light.textPrimary};
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.3px;
+    }
 `;
 
 const DescriptionContainer = styled(animated.div)`
@@ -101,15 +121,17 @@ const ImageContainer = styled.div`
     position: relative;
     width: 100%;
     padding-bottom: 100%; // Makes it 1:1 aspect ratio
-    margin-bottom: ${AppTheme.spacing[16]};
+    margin-bottom: ${AppTheme.spacing[64]}; // Increase margin to make room for text
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: ${AppTheme.radius.large};
 `;
 
 const GlassImageWrapper = styled.div`
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: ${AppTheme.spacing[16]};
+    left: ${AppTheme.spacing[16]};
+    right: ${AppTheme.spacing[16]};
+    bottom: ${AppTheme.spacing[16]};
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
@@ -133,14 +155,13 @@ const FeatureImage = styled.img<{ isActive: boolean; fallbackColor: string }>`
 
 const YearText = styled.span`
     ${AppTheme.typography.body};
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     letter-spacing: -0.08px;
-    line-height: 1.38;
+    line-height: 1;
     color: ${AppTheme.colors.light.textSecondary};
-    display: block;
-    text-align: center;
-    margin-top: ${AppTheme.spacing[4]};
+    opacity: 0.7;
+    margin: 0;
 `;
 
 const ExpandedContent = styled.div<{ isVisible: boolean }>`
