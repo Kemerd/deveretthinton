@@ -5,7 +5,7 @@ import { AppTheme } from '../../theme/theme';
 
 const GridContainer = styled.div`
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 280px);
     gap: ${AppTheme.spacing[24]};
     padding: ${AppTheme.spacing[32]};
     max-width: 1400px;

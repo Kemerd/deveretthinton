@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { AppTheme } from '../../theme/theme';
+import { useSpring, animated, config } from 'react-spring';
 
 interface SkillBubbleProps {
     title: string;
@@ -10,6 +11,7 @@ interface SkillBubbleProps {
     years?: number;
     position: { row: number; col: number };
     totalBubbles: { rows: number; cols: number };
+    expandDirection?: 'left' | 'right';
 }
 
 // Expansion animation
@@ -26,13 +28,38 @@ const expandAnimation = keyframes`
 
 const BubbleContainer = styled.div<{ isExpanded: boolean }>`
     position: relative;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    animation: ${props => props.isExpanded ? expandAnimation : 'none'} 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    width: ${props => props.isExpanded ? '100%' : '280px'};
-    height: ${props => props.isExpanded ? '600px' : '340px'};
-    display: flex;
-    flex-direction: column;
+    width: 280px;
+    height: 340px;
+    transition: z-index 0.01s;
+    z-index: ${props => props.isExpanded ? 10 : 1};
+`;
+
+const AnimatedContent = styled(animated.div)`
+    position: absolute;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: ${AppTheme.radius.large};
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+`;
+
+const TitleContainer = styled(animated.div)`
+    position: relative;
+    padding: ${AppTheme.spacing[16]};
+    text-align: center;
+`;
+
+const DescriptionContainer = styled(animated.div)`
+    padding: ${AppTheme.spacing[16]};
+    opacity: 0;
+    transform: translateY(20px);
+`;
+
+const ImageGallery = styled(animated.div)`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: ${AppTheme.spacing[16]};
+    padding: ${AppTheme.spacing[16]};
+    opacity: 0;
 `;
 
 const ImageWrapper = styled.div<{ isExpanded: boolean }>`
@@ -74,16 +101,6 @@ const SkillImage = styled.img<{ isActive: boolean }>`
     transform: scale(${props => props.isActive ? 1 : 1.05});
 `;
 
-const Title = styled.h3`
-    ${AppTheme.typography.title2};
-    color: ${AppTheme.colors.light.textPrimary};
-    margin: 0;
-    text-align: center;
-    padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[16]};
-    font-weight: 500;
-    letter-spacing: -0.5px;
-`;
-
 const YearText = styled.span`
     ${AppTheme.typography.body};
     font-size: 13px;
@@ -113,13 +130,6 @@ const Description = styled.div`
     color: ${AppTheme.colors.light.textPrimary};
 `;
 
-const ImageGallery = styled.div`
-    flex: 2;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: ${AppTheme.spacing[16]};
-`;
-
 const GalleryImage = styled.div<{ src: string }>`
     width: 100%;
     padding-bottom: 100%;
@@ -141,7 +151,8 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     totalBubbles,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const [imageLoadError, setImageLoadError] = useState<boolean[]>([]);
 
     // Fallback colors if images fail to load
@@ -166,52 +177,96 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         };
     }, [position, totalBubbles, images.length]);
 
+    // Calculate expand direction based on position
+    const expandDirection = position.col >= totalBubbles.cols / 2 ? 'left' : 'right';
+
+    // Main container animation
+    const containerSpring = useSpring({
+        width: isHovered ? 600 : 280,
+        height: isHovered ? 340 : 340,
+        x: isHovered && expandDirection === 'left' ? -320 : 0,
+        config: {
+            mass: 1,
+            tension: 400,
+            friction: 26,
+        }
+    });
+
+    // Title animation
+    const titleSpring = useSpring({
+        y: isHovered ? -20 : 0,
+        config: {
+            mass: 1,
+            tension: 380,
+            friction: 26,
+        }
+    });
+
+    // Description animation
+    const descriptionSpring = useSpring({
+        opacity: isHovered ? 1 : 0,
+        y: isHovered ? 0 : 20,
+        delay: isHovered ? 150 : 0,
+        config: {
+            mass: 1,
+            tension: 280,
+            friction: 26,
+        }
+    });
+
+    // Image gallery animation
+    const gallerySpring = useSpring({
+        opacity: isHovered ? 1 : 0,
+        scale: isHovered ? 1 : 0.95,
+        delay: isHovered ? 200 : 0,
+        config: {
+            mass: 1,
+            tension: 280,
+            friction: 26,
+        }
+    });
+
     return (
-        <BubbleContainer isExpanded={isExpanded}>
-            <FrostedGlass
-                onClick={() => setIsExpanded(!isExpanded)}
-                glowIntensity={0.2}
-                blurIntensity={15}
-                height="100%"
-            >
-                <ImageWrapper isExpanded={isExpanded}>
-                    <ImageContainer>
-                        {images.map((image, index) => (
-                            imageLoadError[index] ? (
-                                <ColorFallback
-                                    key={index}
-                                    color={fallbackColors[index]}
-                                    style={{ opacity: !isExpanded && currentImageIndex === index ? 1 : 0 }}
-                                />
-                            ) : (
-                                <SkillImage
-                                    key={index}
-                                    src={image}
-                                    isActive={!isExpanded && currentImageIndex === index}
-                                    alt={`${title} example ${index + 1}`}
-                                    onError={() => {
-                                        const newErrors = [...imageLoadError];
-                                        newErrors[index] = true;
-                                        setImageLoadError(newErrors);
-                                    }}
-                                />
-                            )
-                        ))}
-                    </ImageContainer>
-                </ImageWrapper>
-                <div>
-                    <Title>{title}</Title>
-                    {years && <YearText>{years}+ years</YearText>}
-                </div>
-                <ExpandedContent isVisible={isExpanded}>
-                    <Description>{description}</Description>
-                    <ImageGallery>
-                        {images.map((image, index) => (
-                            <GalleryImage key={index} src={image} />
-                        ))}
-                    </ImageGallery>
-                </ExpandedContent>
-            </FrostedGlass>
+        <BubbleContainer
+            ref={containerRef}
+            isExpanded={isHovered}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <AnimatedContent style={containerSpring}>
+                <TitleContainer style={titleSpring}>
+                    <h3>{title}</h3>
+                    {years && <span>{years}+ years</span>}
+                </TitleContainer>
+
+                <DescriptionContainer style={descriptionSpring}>
+                    <p>{description}</p>
+                </DescriptionContainer>
+
+                <ImageGallery style={gallerySpring}>
+                    {images.map((image, index) => (
+                        imageLoadError[index] ? (
+                            <ColorFallback
+                                key={index}
+                                color={fallbackColors[index]}
+                                style={{ opacity: !isHovered && currentImageIndex === index ? 1 : 0 }}
+                            />
+                        ) : (
+                            <SkillImage
+                                key={index}
+                                src={image}
+                                isActive={!isHovered && currentImageIndex === index}
+                                alt={`${title} example ${index + 1}`}
+                                onError={() => {
+                                    const newErrors = [...imageLoadError];
+                                    newErrors[index] = true;
+                                    setImageLoadError(newErrors);
+                                }}
+                            />
+                        )
+                    ))}
+                </ImageGallery>
+            </AnimatedContent>
         </BubbleContainer>
     );
 }; 
