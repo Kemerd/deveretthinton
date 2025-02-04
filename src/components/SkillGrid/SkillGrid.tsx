@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { SkillBubble } from '../SkillBubble/SkillBubble';
 import { AppTheme } from '../../theme/theme';
+import { useSpring, animated, useSprings } from 'react-spring';
 
 const GridContainer = styled.div`
     display: grid;
@@ -15,15 +16,17 @@ const GridContainer = styled.div`
     width: 100%;
 `;
 
-const GridItem = styled.div<{ isBelow: boolean; isSameRow: boolean; isHovered: boolean }>`
+const GridItem = styled(animated.div) <{ isHidden: boolean; isSameRow: boolean; isHovered: boolean }>`
     transition: opacity 0.3s ease;
     opacity: ${props => props.isHovered ? 1 :
-        (props.isBelow || props.isSameRow) ? 0 : 1};
+        (props.isHidden || props.isSameRow) ? 0 : 1};
     pointer-events: ${props => props.isHovered ? 'auto' :
-        (props.isBelow || props.isSameRow) ? 'none' : 'auto'};
+        (props.isHidden || props.isSameRow) ? 'none' : 'auto'};
     z-index: ${props => props.isHovered ? 3 :
-        props.isBelow ? 0 :
+        props.isHidden ? 0 :
             props.isSameRow ? 2 : 1};
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 `;
 
 const skills = [
@@ -81,23 +84,65 @@ export const SkillGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const gridSize = { rows: Math.ceil(skills.length / 4), cols: 4 };
 
+    // Create springs for all items at once
+    const springs = useSprings(
+        skills.length,
+        skills.map((_, index) => {
+            const currentRow = Math.floor(index / 4);
+            const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+            const isSameRow = currentRow === hoveredRow;
+            const isHovered = index === hoveredIndex;
+
+            const isHidden = hoveredIndex !== null && (
+                (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+            );
+
+            return {
+                from: {
+                    opacity: 1,
+                    blur: 10,
+                },
+                to: {
+                    opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
+                    blur: isHovered ? 20 : 10,
+                },
+                config: {
+                    mass: 1,
+                    tension: 280,
+                    friction: 26,
+                }
+            };
+        })
+    );
+
     return (
         <GridContainer>
-            {skills.map((skill, index) => {
+            {springs.map((springProps, index) => {
                 const currentRow = Math.floor(index / 4);
                 const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
                 const isSameRow = currentRow === hoveredRow;
                 const isHovered = index === hoveredIndex;
 
+                const isHidden = hoveredIndex !== null && (
+                    (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                    (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                );
+
                 return (
                     <GridItem
-                        key={skill.title}
-                        isBelow={hoveredIndex !== null && currentRow < hoveredRow}
+                        key={skills[index].title}
+                        isHidden={isHidden}
                         isSameRow={isSameRow}
                         isHovered={isHovered}
+                        style={{
+                            opacity: springProps.opacity,
+                            backdropFilter: springProps.blur.to(b => `blur(${b}px)`),
+                            WebkitBackdropFilter: springProps.blur.to(b => `blur(${b}px)`),
+                        }}
                     >
                         <SkillBubble
-                            {...skill}
+                            {...skills[index]}
                             position={{
                                 row: currentRow,
                                 col: index % 4,
