@@ -79,7 +79,7 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
 
 const TitleContainer = styled(animated.div)`
     position: absolute;
-    bottom: ${AppTheme.spacing[24]};
+    top: ${AppTheme.spacing[24]};
     left: 0;
     right: 0;
     padding: 0 ${AppTheme.spacing[16]};
@@ -99,29 +99,46 @@ const TitleContainer = styled(animated.div)`
     }
 `;
 
-const DescriptionContainer = styled(animated.div)`
-    padding: ${AppTheme.spacing[16]};
-    opacity: 0;
-    transform: translateY(20px);
-    position: absolute;
-    bottom: ${AppTheme.spacing[16]};
-    left: 0;
-    right: 0;
+const Description = styled(animated.div)`
+    flex: 1;
+    ${AppTheme.typography.body};
+    color: ${AppTheme.colors.light.textPrimary};
+    padding: ${AppTheme.spacing[32]};
+    
+    h3 {
+        ${AppTheme.typography.title2};
+        margin: 0 0 ${AppTheme.spacing[8]};
+        color: ${AppTheme.colors.light.textPrimary};
+    }
+    
+    p {
+        margin: ${AppTheme.spacing[16]} 0 0;
+        opacity: 0.8;
+        line-height: 1.6;
+    }
 `;
 
 const ImageGallery = styled(animated.div)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1200px;
+    height: 340px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: ${AppTheme.spacing[16]};
-    padding: ${AppTheme.spacing[16]};
-    opacity: 0;
+    grid-template-columns: repeat(4, 280px);
+    gap: ${AppTheme.spacing[24]};
+    padding: ${AppTheme.spacing[32]};
+
+    > div {
+        width: 280px;
+        height: 280px;
+    }
 `;
 
 const ImageContainer = styled.div`
     position: relative;
-    width: 100%;
-    padding-bottom: 100%; // Makes it 1:1 aspect ratio
-    margin-bottom: ${AppTheme.spacing[64]}; // Increase margin to make room for text
+    width: 280px;
+    height: 280px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: ${AppTheme.radius.large};
 `;
@@ -175,12 +192,6 @@ const ExpandedContent = styled.div<{ isVisible: boolean }>`
     gap: ${AppTheme.spacing[32]};
 `;
 
-const Description = styled.div`
-    flex: 1;
-    ${AppTheme.typography.body};
-    color: ${AppTheme.colors.light.textPrimary};
-`;
-
 const GalleryImage = styled(animated.div) <{ src: string; fallbackColor: string }>`
     width: 100%;
     padding-bottom: 100%;
@@ -196,17 +207,16 @@ interface ExpandedLayoutProps {
 }
 
 // Update the ExpandedLayout component with proper typing
-const ExpandedLayout = styled(animated.div) <ExpandedLayoutProps>`
-    display: grid;
-    grid-template-columns: ${props =>
-        props.expandDirection === 'right' ? '280px 1fr' :
-            props.expandDirection === 'left' ? '1fr 280px' :
-                '1fr 280px 1fr'};
-    gap: ${AppTheme.spacing[24]};
-    width: 100%;
+const ExpandedLayout = styled.div<{ expandDirection: 'left' | 'right' | 'center' }>`
+    position: absolute;
+    width: 1200px;
     height: 100%;
-    opacity: 0;
-    transform: translateY(20px);
+    top: 0;
+    ${props => {
+        if (props.expandDirection === 'left') return 'right: 0;';
+        if (props.expandDirection === 'right') return 'left: 0;';
+        return 'left: 50%; transform: translateX(-50%);';
+    }}
 `;
 
 export const SkillBubble: React.FC<SkillBubbleProps> = ({
@@ -218,34 +228,36 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     totalBubbles,
     onHoverChange,
 }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [currentImageIndices, setCurrentImageIndices] = useState<number[]>(
+        Array(totalBubbles.rows * totalBubbles.cols).fill(0)
+    );
     const [imageLoadError, setImageLoadError] = useState<boolean[]>(new Array(images.length).fill(false));
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Image cycling effect
     useEffect(() => {
-        if (isHovered) return; // Don't cycle images while expanded
-
-        const baseDelay = 200; // Base delay between animations
-        const rowDelay = position.row * (baseDelay * totalBubbles.cols); // Delay for current row
-        const colDelay = position.col * baseDelay; // Delay within row
-        const totalDelay = rowDelay + colDelay;
+        // Skip animation when hovered
+        if (isHovered) return;
 
         const interval = setInterval(() => {
-            setCurrentImageIndex(prev => (prev + 1) % images.length);
-        }, 3000); // Total cycle time
+            setCurrentImageIndices(prev => {
+                const next = [...prev];
+                // Update indices in a clockwork pattern
+                for (let row = 0; row < totalBubbles.rows; row++) {
+                    for (let col = 0; col < totalBubbles.cols; col++) {
+                        const index = row * totalBubbles.cols + col;
+                        next[index] = (next[index] + 1) % images.length;
+                        // Only update one cell at a time, then break
+                        return next;
+                    }
+                }
+                return prev;
+            });
+        }, 2000); // Adjust timing as needed
 
-        // Initial stagger delay
-        const timeout = setTimeout(() => {
-            setCurrentImageIndex(1 % images.length);
-        }, totalDelay);
-
-        return () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        };
-    }, [position, totalBubbles, images.length, isHovered]);
+        return () => clearInterval(interval);
+    }, [isHovered, totalBubbles, images.length]);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -253,14 +265,27 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         height: isHovered ? 340 : 340,
         x: isHovered ? (() => {
             const col = position.col;
-            // Determine expand direction based on position
+            const totalWidth = 1200;
+            const itemWidth = 280;
+            const gap = 24;
+
+            // First and last items
             if (col === 0) return 0; // Leftmost - expand right
-            else if (col === totalBubbles.cols - 1) return -(1200 - 280); // Rightmost - expand left
-            else return -(1200 - 280) / 2; // Center columns - expand both directions
+            if (col === totalBubbles.cols - 1) return -(totalWidth - itemWidth); // Rightmost - expand left
+
+            // For middle items (col 1 and 2)
+            if (col === 1) {
+                // Second item should expand 1/3 left, 2/3 right
+                return -(itemWidth + gap);
+            }
+            if (col === 2) {
+                // Third item should expand 2/3 left, 1/3 right
+                return -((itemWidth + gap) * 2);
+            }
+
+            return 0;
         })() : 0,
         scale: 1,
-        blur: isHovered ? 20 : 10,
-        borderOpacity: isHovered ? 1 : 0.3,
         config: {
             mass: 1,
             tension: 400,
@@ -270,7 +295,9 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Title animation
     const titleSpring = useSpring({
-        y: isHovered ? -20 : 0,
+        y: 0,
+        opacity: 1,
+        scale: isHovered ? 1.1 : 1,
         config: {
             mass: 1,
             tension: 380,
@@ -280,9 +307,8 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Description animation
     const descriptionSpring = useSpring({
+        y: isHovered ? 60 : 100,
         opacity: isHovered ? 1 : 0,
-        y: isHovered ? 0 : 20,
-        delay: isHovered ? 150 : 0,
         config: {
             mass: 1,
             tension: 280,
@@ -304,8 +330,8 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Add a new spring for the main image
     const mainImageSpring = useSpring({
-        y: isHovered ? -60 : 0,
-        scale: isHovered ? 0.8 : 1,
+        opacity: isHovered ? 0 : 1,
+        scale: isHovered ? 0.9 : 1,
         config: {
             mass: 1,
             tension: 380,
@@ -332,6 +358,12 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         return 'center';
     };
 
+    const handleImageError = () => {
+        const newErrors = [...imageLoadError];
+        newErrors[currentImageIndices[position.row * totalBubbles.cols + position.col]] = true;
+        setImageLoadError(newErrors);
+    };
+
     return (
         <BubbleContainer
             ref={containerRef}
@@ -341,10 +373,7 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         >
             <AnimatedContent
                 $isExpanded={isHovered}
-                style={{
-                    ...containerSpring,
-                    backdropFilter: containerSpring.blur.to(b => `blur(${b}px)`),
-                }}
+                style={containerSpring}
             >
                 {isHovered ? (
                     <ExpandedLayout expandDirection={getExpandDirection()}>
@@ -352,53 +381,48 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                             <ImageContainer>
                                 <GlassImageWrapper>
                                     <FeatureImage
-                                        src={images[currentImageIndex]}
+                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
                                         isActive={!isHovered}
                                         fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={() => {
-                                            const newErrors = [...imageLoadError];
-                                            newErrors[currentImageIndex] = true;
-                                            setImageLoadError(newErrors);
-                                        }}
+                                        onError={handleImageError}
                                         alt={`${title} preview`}
                                     />
                                 </GlassImageWrapper>
                             </ImageContainer>
                         </animated.div>
 
-                        <DescriptionContainer style={descriptionSpring}>
+                        <TitleContainer style={titleSpring}>
+                            <h3>{title}</h3>
+                            {years && <YearText>{years}+ years</YearText>}
+                        </TitleContainer>
+
+                        <Description style={descriptionSpring}>
                             <p>{description}</p>
-                        </DescriptionContainer>
+                        </Description>
 
                         <ImageGallery style={gallerySpring}>
-                            {images.map((image, index) => (
-                                <GalleryImage
-                                    key={index}
-                                    src={image}
-                                    fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                    style={{
-                                        opacity: gallerySpring.opacity,
-                                        transform: gallerySpring.scale.to(s => `scale(${s})`),
-                                    }}
-                                />
-                            ))}
+                            {Array.from({ length: 4 }).map((_, index) => {
+                                if (index === position.col) return <div key={index} />;
+                                return (
+                                    <GalleryImage
+                                        key={index}
+                                        src={images[(index % (images.length - 1)) + 1]}
+                                        fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols) % FALLBACK_COLORS.length]}
+                                    />
+                                );
+                            })}
                         </ImageGallery>
                     </ExpandedLayout>
                 ) : (
-                    // Non-expanded content
                     <>
                         <animated.div style={mainImageSpring}>
                             <ImageContainer>
                                 <GlassImageWrapper>
                                     <FeatureImage
-                                        src={images[currentImageIndex]}
+                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
                                         isActive={!isHovered}
                                         fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={() => {
-                                            const newErrors = [...imageLoadError];
-                                            newErrors[currentImageIndex] = true;
-                                            setImageLoadError(newErrors);
-                                        }}
+                                        onError={handleImageError}
                                         alt={`${title} preview`}
                                     />
                                 </GlassImageWrapper>
