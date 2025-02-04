@@ -56,6 +56,15 @@ const ContentWrapper = styled.div`
 const TextContainer = styled.div`
     position: relative;
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8px;
+    
+    & > * {
+        transform: translateY(2px);
+    }
 `;
 
 const ProfilePicture = styled(FrostedGlass)`
