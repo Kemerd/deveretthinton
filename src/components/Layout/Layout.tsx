@@ -41,10 +41,21 @@ const Header = styled(FrostedGlass)`
 
 const HeaderContent = styled.div`
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
     gap: ${AppTheme.spacing[32]};
     position: relative;
+`;
+
+const ContentWrapper = styled.div`
+    flex: 1;
+    position: relative;
+    height: 284px;
+    display: flex;
+    align-items: center;
+`;
+
+const TextContainer = styled.div`
+    position: relative;
+    width: 100%;
 `;
 
 const ProfilePicture = styled(FrostedGlass)`
@@ -58,12 +69,12 @@ const ProfilePicture = styled(FrostedGlass)`
         width: 100%;
         height: 100%;
         object-fit: contain;
-        border-radius: 24px;
+        border-radius: 0;
     }
 `;
 
 const HeaderText = styled.div`
-    flex: 1;
+    max-width: 800px;
 `;
 
 const Name = styled.h1`
@@ -83,6 +94,7 @@ const Bio = styled.p`
     color: ${AppTheme.colors.light.textPrimary};
     max-width: 800px;
     margin: 0;
+    padding-bottom: ${AppTheme.spacing[32]};
 `;
 
 const SocialLinks = styled.div`
@@ -91,7 +103,6 @@ const SocialLinks = styled.div`
     position: absolute;
     top: 0;
     right: 0;
-    padding-right: ${AppTheme.spacing[4]};
 `;
 
 const SocialIcon = styled.a`
@@ -105,7 +116,7 @@ const SocialIcon = styled.a`
 
 const DownloadButton = styled(FrostedGlass)`
     position: absolute;
-    bottom: ${AppTheme.spacing[16]};
+    bottom: ${AppTheme.spacing[32]};
     right: 0;
     padding: 0;
     cursor: pointer;
@@ -178,47 +189,51 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         >
                             <img src="/img/pfp_16_9.png" alt="D Everett Hinton" />
                         </ProfilePicture>
-                        <HeaderText>
-                            <Name>D Everett Hinton</Name>
-                            <Title>Senior Software Engineer & Pilot</Title>
-                            <Bio>
-                                I'm Everett, a results-driven professional and a software expert.
-                                With over 10+ years of experience across app development, enterprise,
-                                film & VFX, & games— I excel at turning cross-disciplinary, ambitious
-                                ideas into reality and ensuring projects cross the finish line. Once
-                                described as 'a one man wrecking crew' by an EP, when I'm not shipping
-                                features, I'm in the hangar building planes or in the cockpit flying—bringing
-                                the same discipline & passion to the skies as I do to my work.
-                            </Bio>
-                        </HeaderText>
-                        <SocialLinks>
-                            <SocialIcon href="https://www.instagram.com/" target="_blank">
-                                <i className="fab fa-instagram" />
-                            </SocialIcon>
-                            <SocialIcon href="https://www.youtube.com/@everettengineers/videos" target="_blank">
-                                <i className="fab fa-youtube" />
-                            </SocialIcon>
-                            <SocialIcon href="https://github.com/Kemerd" target="_blank">
-                                <i className="fab fa-github" />
-                            </SocialIcon>
-                            <SocialIcon href="https://www.linkedin.com/" target="_blank">
-                                <i className="fab fa-linkedin" />
-                            </SocialIcon>
-                        </SocialLinks>
-                        <DownloadButton
-                            onClick={handleDownload}
-                            borderRadius="16px"
-                            blurIntensity={10}
-                            glowIntensity={0.2}
-                            enableGlow
-                            enableAnimatedGradient
-                            padding="0"
-                        >
-                            <ButtonContent>
-                                <ButtonIcon className="fas fa-download" />
-                                <ButtonText>Download Resume</ButtonText>
-                            </ButtonContent>
-                        </DownloadButton>
+                        <ContentWrapper>
+                            <TextContainer>
+                                <HeaderText>
+                                    <Name>D Everett Hinton</Name>
+                                    <Title>Senior Software Engineer & Pilot</Title>
+                                    <Bio>
+                                        I'm Everett, a results-driven professional and a software expert.
+                                        With over 10+ years of experience across app development, enterprise,
+                                        film & VFX, & games— I excel at turning cross-disciplinary, ambitious
+                                        ideas into reality and ensuring projects cross the finish line. Once
+                                        described as 'a one man wrecking crew' by an EP, when I'm not shipping
+                                        features, I'm in the hangar building planes or in the cockpit flying—bringing
+                                        the same discipline & passion to the skies as I do to my work.
+                                    </Bio>
+                                </HeaderText>
+                                <SocialLinks>
+                                    <SocialIcon href="https://www.instagram.com/" target="_blank">
+                                        <i className="fab fa-instagram" />
+                                    </SocialIcon>
+                                    <SocialIcon href="https://www.youtube.com/@everettengineers/videos" target="_blank">
+                                        <i className="fab fa-youtube" />
+                                    </SocialIcon>
+                                    <SocialIcon href="https://github.com/Kemerd" target="_blank">
+                                        <i className="fab fa-github" />
+                                    </SocialIcon>
+                                    <SocialIcon href="https://www.linkedin.com/" target="_blank">
+                                        <i className="fab fa-linkedin" />
+                                    </SocialIcon>
+                                </SocialLinks>
+                                <DownloadButton
+                                    onClick={handleDownload}
+                                    borderRadius="16px"
+                                    blurIntensity={10}
+                                    glowIntensity={0.2}
+                                    enableGlow
+                                    enableAnimatedGradient
+                                    padding="0"
+                                >
+                                    <ButtonContent>
+                                        <ButtonIcon className="fas fa-download" />
+                                        <ButtonText>Download Resume</ButtonText>
+                                    </ButtonContent>
+                                </DownloadButton>
+                            </TextContainer>
+                        </ContentWrapper>
                     </HeaderContent>
                 </Header>
                 {children}
