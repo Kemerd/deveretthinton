@@ -4,6 +4,17 @@ import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { AppTheme } from '../../theme/theme';
 import { useSpring, animated, config } from 'react-spring';
 
+const FALLBACK_COLORS = [
+    '#FF6B6B', // Coral Red
+    '#4ECDC4', // Turquoise
+    '#45B7D1', // Sky Blue
+    '#96CEB4', // Sage Green
+    '#FFEEAD', // Cream Yellow
+    '#D4A5A5', // Dusty Rose
+    '#9370DB', // Medium Purple
+    '#20B2AA', // Light Sea Green
+];
+
 interface SkillBubbleProps {
     title: string;
     description: string;
@@ -72,6 +83,10 @@ const DescriptionContainer = styled(animated.div)`
     padding: ${AppTheme.spacing[16]};
     opacity: 0;
     transform: translateY(20px);
+    position: absolute;
+    bottom: ${AppTheme.spacing[16]};
+    left: 0;
+    right: 0;
 `;
 
 const ImageGallery = styled(animated.div)`
@@ -82,42 +97,38 @@ const ImageGallery = styled(animated.div)`
     opacity: 0;
 `;
 
-const ImageWrapper = styled.div<{ isExpanded: boolean }>`
+const ImageContainer = styled.div`
     position: relative;
     width: 100%;
-    padding-bottom: 100%;
-    border-radius: ${AppTheme.radius.large};
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.1);
+    padding-bottom: 100%; // Makes it 1:1 aspect ratio
+    margin-bottom: ${AppTheme.spacing[16]};
 `;
 
-const ImageContainer = styled.div`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80%;
-    height: calc(80% * 9/16);
-    transform: translate(-50%, -50%);
-    overflow: hidden;
-`;
-
-const ColorFallback = styled.div<{ color: string }>`
-    width: 100%;
-    height: 100%;
-    background-color: ${props => props.color};
+const GlassImageWrapper = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    transition: opacity 0.6s ease;
+    right: 0;
+    bottom: 0;
+    border-radius: ${AppTheme.radius.large};
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
-const FeatureImage = styled.img<{ isActive: boolean }>`
+const FeatureImage = styled.img<{ isActive: boolean; fallbackColor: string }>`
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 200px;
+    height: 100%;
     object-fit: cover;
-    border-radius: ${AppTheme.radius.medium};
+    border-radius: ${AppTheme.radius.large};
     transition: opacity 0.3s ease;
     opacity: ${props => props.isActive ? 1 : 0.8};
+    background-color: ${props => props.fallbackColor};
 `;
 
 const YearText = styled.span`
@@ -149,12 +160,32 @@ const Description = styled.div`
     color: ${AppTheme.colors.light.textPrimary};
 `;
 
-const GalleryImage = styled(animated.div) <{ src: string }>`
+const GalleryImage = styled(animated.div) <{ src: string; fallbackColor: string }>`
     width: 100%;
     padding-bottom: 100%;
     background: url(${props => props.src}) no-repeat center center;
     background-size: cover;
     border-radius: ${AppTheme.radius.medium};
+    background-color: ${props => props.fallbackColor};
+`;
+
+// Add interface for ExpandedLayout props
+interface ExpandedLayoutProps {
+    expandDirection: 'left' | 'right' | 'center';
+}
+
+// Update the ExpandedLayout component with proper typing
+const ExpandedLayout = styled(animated.div) <ExpandedLayoutProps>`
+    display: grid;
+    grid-template-columns: ${props =>
+        props.expandDirection === 'right' ? '280px 1fr' :
+            props.expandDirection === 'left' ? '1fr 280px' :
+                '1fr 280px 1fr'};
+    gap: ${AppTheme.spacing[24]};
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateY(20px);
 `;
 
 export const SkillBubble: React.FC<SkillBubbleProps> = ({
@@ -167,34 +198,33 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     onHoverChange,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [imageLoadError, setImageLoadError] = useState<boolean[]>(new Array(images.length).fill(false));
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [imageLoadError, setImageLoadError] = useState<boolean[]>([]);
 
-    // Fallback colors if images fail to load
-    const fallbackColors = ['#FF0000', '#FFFFFF', '#0000FF'];
-
-    // Calculate image transition timing based on position
+    // Image cycling effect
     useEffect(() => {
-        const baseDelay = 1000; // 1 second
-        const transitionDelay = (position.row * totalBubbles.cols + position.col) * baseDelay;
+        if (isHovered) return; // Don't cycle images while expanded
+
+        const baseDelay = 200; // Base delay between animations
+        const rowDelay = position.row * (baseDelay * totalBubbles.cols); // Delay for current row
+        const colDelay = position.col * baseDelay; // Delay within row
+        const totalDelay = rowDelay + colDelay;
 
         const interval = setInterval(() => {
             setCurrentImageIndex(prev => (prev + 1) % images.length);
-        }, baseDelay * (totalBubbles.rows * totalBubbles.cols));
+        }, 3000); // Total cycle time
 
-        // Use the delay for initial stagger if needed
-        setTimeout(() => {
+        // Initial stagger delay
+        const timeout = setTimeout(() => {
             setCurrentImageIndex(1 % images.length);
-        }, transitionDelay);
+        }, totalDelay);
 
         return () => {
             clearInterval(interval);
+            clearTimeout(timeout);
         };
-    }, [position, totalBubbles, images.length]);
-
-    // Calculate expand direction based on position
-    const expandDirection = position.col >= totalBubbles.cols / 2 ? 'left' : 'right';
+    }, [position, totalBubbles, images.length, isHovered]);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -202,11 +232,10 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         height: isHovered ? 340 : 340,
         x: isHovered ? (() => {
             const col = position.col;
-            const gap = 24; // Match the grid gap
+            // Determine expand direction based on position
             if (col === 0) return 0; // Leftmost - expand right
             else if (col === totalBubbles.cols - 1) return -(1200 - 280); // Rightmost - expand left
-            else if (col === 1) return -(1200 - 280) / 3; // Second from left
-            else return -(1200 - 280) * 2 / 3; // Second from right
+            else return -(1200 - 280) / 2; // Center columns - expand both directions
         })() : 0,
         scale: 1,
         blur: isHovered ? 20 : 10,
@@ -274,6 +303,14 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         onHoverChange?.(false);
     };
 
+    // Calculate expand direction based on position
+    const getExpandDirection = (): 'left' | 'right' | 'center' => {
+        const col = position.col;
+        if (col === 0) return 'right';
+        if (col === totalBubbles.cols - 1) return 'left';
+        return 'center';
+    };
+
     return (
         <BubbleContainer
             ref={containerRef}
@@ -288,41 +325,70 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                     backdropFilter: containerSpring.blur.to(b => `blur(${b}px)`),
                 }}
             >
-                {/* Main feature image */}
-                <animated.div style={mainImageSpring}>
-                    <FeatureImage
-                        src={images[currentImageIndex]}
-                        isActive={!isHovered}
-                        onError={() => {
-                            const newErrors = [...imageLoadError];
-                            newErrors[currentImageIndex] = true;
-                            setImageLoadError(newErrors);
-                        }}
-                        alt={`${title} preview`}
-                    />
-                </animated.div>
+                {isHovered ? (
+                    <ExpandedLayout expandDirection={getExpandDirection()}>
+                        <animated.div style={mainImageSpring}>
+                            <ImageContainer>
+                                <GlassImageWrapper>
+                                    <FeatureImage
+                                        src={images[currentImageIndex]}
+                                        isActive={!isHovered}
+                                        fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                        onError={() => {
+                                            const newErrors = [...imageLoadError];
+                                            newErrors[currentImageIndex] = true;
+                                            setImageLoadError(newErrors);
+                                        }}
+                                        alt={`${title} preview`}
+                                    />
+                                </GlassImageWrapper>
+                            </ImageContainer>
+                        </animated.div>
 
-                <TitleContainer style={titleSpring}>
-                    <h3>{title}</h3>
-                    {years && <YearText>{years}+ years</YearText>}
-                </TitleContainer>
+                        <DescriptionContainer style={descriptionSpring}>
+                            <p>{description}</p>
+                        </DescriptionContainer>
 
-                <DescriptionContainer style={descriptionSpring}>
-                    <p>{description}</p>
-                </DescriptionContainer>
-
-                <ImageGallery style={gallerySpring}>
-                    {images.map((image, index) => (
-                        <GalleryImage
-                            key={index}
-                            src={image}
-                            style={{
-                                opacity: gallerySpring.opacity,
-                                transform: gallerySpring.scale.to(s => `scale(${s})`),
-                            } as any} // Type assertion to handle spring animation props
-                        />
-                    ))}
-                </ImageGallery>
+                        <ImageGallery style={gallerySpring}>
+                            {images.map((image, index) => (
+                                <GalleryImage
+                                    key={index}
+                                    src={image}
+                                    fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                    style={{
+                                        opacity: gallerySpring.opacity,
+                                        transform: gallerySpring.scale.to(s => `scale(${s})`),
+                                    }}
+                                />
+                            ))}
+                        </ImageGallery>
+                    </ExpandedLayout>
+                ) : (
+                    // Non-expanded content
+                    <>
+                        <animated.div style={mainImageSpring}>
+                            <ImageContainer>
+                                <GlassImageWrapper>
+                                    <FeatureImage
+                                        src={images[currentImageIndex]}
+                                        isActive={!isHovered}
+                                        fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                        onError={() => {
+                                            const newErrors = [...imageLoadError];
+                                            newErrors[currentImageIndex] = true;
+                                            setImageLoadError(newErrors);
+                                        }}
+                                        alt={`${title} preview`}
+                                    />
+                                </GlassImageWrapper>
+                            </ImageContainer>
+                        </animated.div>
+                        <TitleContainer style={titleSpring}>
+                            <h3>{title}</h3>
+                            {years && <YearText>{years}+ years</YearText>}
+                        </TitleContainer>
+                    </>
+                )}
             </AnimatedContent>
         </BubbleContainer>
     );
