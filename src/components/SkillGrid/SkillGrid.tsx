@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { SkillBubble } from '../SkillBubble/SkillBubble';
 import { AppTheme } from '../../theme/theme';
@@ -10,6 +10,14 @@ const GridContainer = styled.div`
     padding: ${AppTheme.spacing[32]};
     max-width: 1400px;
     margin: 0 auto;
+    position: relative;
+`;
+
+const GridItem = styled.div<{ isBelow: boolean; isSameRow: boolean }>`
+    transition: opacity 0.3s ease;
+    opacity: ${props => (props.isBelow || props.isSameRow) ? 1 : 0};
+    pointer-events: ${props => (props.isBelow || props.isSameRow) ? 'auto' : 'none'};
+    z-index: ${props => props.isBelow ? 1 : props.isSameRow ? 2 : 0};
 `;
 
 const skills = [
@@ -64,21 +72,36 @@ const skills = [
 ];
 
 export const SkillGrid: React.FC = () => {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const gridSize = { rows: Math.ceil(skills.length / 4), cols: 4 };
 
     return (
         <GridContainer>
-            {skills.map((skill, index) => (
-                <SkillBubble
-                    key={skill.title}
-                    {...skill}
-                    position={{
-                        row: Math.floor(index / 4),
-                        col: index % 4,
-                    }}
-                    totalBubbles={gridSize}
-                />
-            ))}
+            {skills.map((skill, index) => {
+                const currentRow = Math.floor(index / 4);
+                const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+                const isSameRow = currentRow === hoveredRow;
+
+                return (
+                    <GridItem
+                        key={skill.title}
+                        isBelow={hoveredIndex === null || currentRow > hoveredRow}
+                        isSameRow={isSameRow}
+                    >
+                        <SkillBubble
+                            {...skill}
+                            position={{
+                                row: currentRow,
+                                col: index % 4,
+                            }}
+                            totalBubbles={gridSize}
+                            onHoverChange={(isHovered) => {
+                                setHoveredIndex(isHovered ? index : null);
+                            }}
+                        />
+                    </GridItem>
+                );
+            })}
         </GridContainer>
     );
 }; 

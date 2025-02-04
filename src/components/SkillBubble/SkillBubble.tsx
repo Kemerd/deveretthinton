@@ -12,6 +12,7 @@ interface SkillBubbleProps {
     position: { row: number; col: number };
     totalBubbles: { rows: number; cols: number };
     expandDirection?: 'left' | 'right';
+    onHoverChange?: (isHovered: boolean) => void;
 }
 
 // Expansion animation
@@ -34,12 +35,31 @@ const BubbleContainer = styled.div<{ isExpanded: boolean }>`
     z-index: ${props => props.isExpanded ? 10 : 1};
 `;
 
-const AnimatedContent = styled(animated.div)`
+const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
     position: absolute;
     background: rgba(255, 255, 255, 0.08);
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    
+    /* Animated border style */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: -3px; left: -3px;
+        right: -3px; bottom: -3px;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.1)
+        );
+        border-radius: inherit;
+        z-index: -1;
+        transition: opacity 0.3s ease;
+        opacity: ${props => props.$isExpanded ? 1 : 0.3};
+    }
 `;
 
 const TitleContainer = styled(animated.div)`
@@ -91,14 +111,13 @@ const ColorFallback = styled.div<{ color: string }>`
     transition: opacity 0.6s ease;
 `;
 
-const SkillImage = styled.img<{ isActive: boolean }>`
+const FeatureImage = styled.img<{ isActive: boolean }>`
     width: 100%;
-    height: 100%;
+    height: 200px;
     object-fit: cover;
-    position: absolute;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: ${props => props.isActive ? 1 : 0};
-    transform: scale(${props => props.isActive ? 1 : 1.05});
+    border-radius: ${AppTheme.radius.medium};
+    transition: opacity 0.3s ease;
+    opacity: ${props => props.isActive ? 1 : 0.8};
 `;
 
 const YearText = styled.span`
@@ -130,16 +149,12 @@ const Description = styled.div`
     color: ${AppTheme.colors.light.textPrimary};
 `;
 
-const GalleryImage = styled.div<{ src: string }>`
+const GalleryImage = styled(animated.div) <{ src: string }>`
     width: 100%;
     padding-bottom: 100%;
     background: url(${props => props.src}) no-repeat center center;
     background-size: cover;
     border-radius: ${AppTheme.radius.medium};
-    transition: transform 0.3s ease;
-    &:hover {
-        transform: scale(1.05);
-    }
 `;
 
 export const SkillBubble: React.FC<SkillBubbleProps> = ({
@@ -149,6 +164,7 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     years,
     position,
     totalBubbles,
+    onHoverChange,
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
@@ -182,9 +198,19 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Main container animation
     const containerSpring = useSpring({
-        width: isHovered ? 600 : 280,
+        width: isHovered ? 1200 : 280,
         height: isHovered ? 340 : 340,
-        x: isHovered && expandDirection === 'left' ? -320 : 0,
+        // Calculate x-offset based on position to expand into available space
+        x: isHovered ? (() => {
+            const col = position.col;
+            if (col === 0) return 0; // Leftmost - expand right
+            else if (col === totalBubbles.cols - 1) return -920; // Rightmost - expand left
+            else if (col === 1) return -280; // Second from left - expand mostly right
+            else return -640; // Second from right - expand mostly left
+        })() : 0,
+        scale: 1,
+        blur: isHovered ? 20 : 10,
+        borderOpacity: isHovered ? 1 : 0.3,
         config: {
             mass: 1,
             tension: 400,
@@ -226,17 +252,59 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         }
     });
 
+    // Add a new spring for the main image
+    const mainImageSpring = useSpring({
+        y: isHovered ? -60 : 0,
+        scale: isHovered ? 0.8 : 1,
+        config: {
+            mass: 1,
+            tension: 380,
+            friction: 26,
+        }
+    });
+
+    // Update hover handlers to call onHoverChange
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+        onHoverChange?.(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        onHoverChange?.(false);
+    };
+
     return (
         <BubbleContainer
             ref={containerRef}
             isExpanded={isHovered}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
-            <AnimatedContent style={containerSpring}>
+            <AnimatedContent
+                $isExpanded={isHovered}
+                style={{
+                    ...containerSpring,
+                    backdropFilter: containerSpring.blur.to(b => `blur(${b}px)`),
+                }}
+            >
+                {/* Main feature image */}
+                <animated.div style={mainImageSpring}>
+                    <FeatureImage
+                        src={images[currentImageIndex]}
+                        isActive={!isHovered}
+                        onError={() => {
+                            const newErrors = [...imageLoadError];
+                            newErrors[currentImageIndex] = true;
+                            setImageLoadError(newErrors);
+                        }}
+                        alt={`${title} preview`}
+                    />
+                </animated.div>
+
                 <TitleContainer style={titleSpring}>
                     <h3>{title}</h3>
-                    {years && <span>{years}+ years</span>}
+                    {years && <YearText>{years}+ years</YearText>}
                 </TitleContainer>
 
                 <DescriptionContainer style={descriptionSpring}>
@@ -245,25 +313,14 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
                 <ImageGallery style={gallerySpring}>
                     {images.map((image, index) => (
-                        imageLoadError[index] ? (
-                            <ColorFallback
-                                key={index}
-                                color={fallbackColors[index]}
-                                style={{ opacity: !isHovered && currentImageIndex === index ? 1 : 0 }}
-                            />
-                        ) : (
-                            <SkillImage
-                                key={index}
-                                src={image}
-                                isActive={!isHovered && currentImageIndex === index}
-                                alt={`${title} example ${index + 1}`}
-                                onError={() => {
-                                    const newErrors = [...imageLoadError];
-                                    newErrors[index] = true;
-                                    setImageLoadError(newErrors);
-                                }}
-                            />
-                        )
+                        <GalleryImage
+                            key={index}
+                            src={image}
+                            style={{
+                                opacity: gallerySpring.opacity,
+                                transform: gallerySpring.scale.to(s => `scale(${s})`),
+                            } as any} // Type assertion to handle spring animation props
+                        />
                     ))}
                 </ImageGallery>
             </AnimatedContent>
