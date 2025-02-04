@@ -200,13 +200,13 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     const containerSpring = useSpring({
         width: isHovered ? 1200 : 280,
         height: isHovered ? 340 : 340,
-        // Calculate x-offset based on position to expand into available space
         x: isHovered ? (() => {
             const col = position.col;
+            const gap = 24; // Match the grid gap
             if (col === 0) return 0; // Leftmost - expand right
-            else if (col === totalBubbles.cols - 1) return -920; // Rightmost - expand left
-            else if (col === 1) return -280; // Second from left - expand mostly right
-            else return -640; // Second from right - expand mostly left
+            else if (col === totalBubbles.cols - 1) return -(1200 - 280); // Rightmost - expand left
+            else if (col === 1) return -(1200 - 280) / 3; // Second from left
+            else return -(1200 - 280) * 2 / 3; // Second from right
         })() : 0,
         scale: 1,
         blur: isHovered ? 20 : 10,

@@ -11,13 +11,19 @@ const GridContainer = styled.div`
     max-width: 1400px;
     margin: 0 auto;
     position: relative;
+    justify-content: center;
+    width: 100%;
 `;
 
-const GridItem = styled.div<{ isBelow: boolean; isSameRow: boolean }>`
+const GridItem = styled.div<{ isBelow: boolean; isSameRow: boolean; isHovered: boolean }>`
     transition: opacity 0.3s ease;
-    opacity: ${props => (props.isBelow || props.isSameRow) ? 1 : 0};
-    pointer-events: ${props => (props.isBelow || props.isSameRow) ? 'auto' : 'none'};
-    z-index: ${props => props.isBelow ? 1 : props.isSameRow ? 2 : 0};
+    opacity: ${props => props.isHovered ? 1 :
+        (props.isBelow || props.isSameRow) ? 0 : 1};
+    pointer-events: ${props => props.isHovered ? 'auto' :
+        (props.isBelow || props.isSameRow) ? 'none' : 'auto'};
+    z-index: ${props => props.isHovered ? 3 :
+        props.isBelow ? 0 :
+            props.isSameRow ? 2 : 1};
 `;
 
 const skills = [
@@ -81,12 +87,14 @@ export const SkillGrid: React.FC = () => {
                 const currentRow = Math.floor(index / 4);
                 const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
                 const isSameRow = currentRow === hoveredRow;
+                const isHovered = index === hoveredIndex;
 
                 return (
                     <GridItem
                         key={skill.title}
-                        isBelow={hoveredIndex === null || currentRow > hoveredRow}
+                        isBelow={hoveredIndex !== null && currentRow < hoveredRow}
                         isSameRow={isSameRow}
+                        isHovered={isHovered}
                     >
                         <SkillBubble
                             {...skill}
