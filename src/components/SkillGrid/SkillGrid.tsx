@@ -8,7 +8,7 @@ const GridContainer = styled.div`
     grid-template-columns: repeat(4, 1fr);
     gap: ${AppTheme.spacing[24]};
     padding: ${AppTheme.spacing[32]};
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 `;
 

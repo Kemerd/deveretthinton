@@ -36,23 +36,53 @@ const GlassContainer = styled.div<FrostedGlassProps>`
   position: relative;
   width: ${props => (typeof props.width === 'number' ? `${props.width}px` : props.width)};
   height: ${props => (typeof props.height === 'number' ? `${props.height}px` : props.height)};
-  border-radius: ${props => props.borderRadius};
+  border-radius: ${props => props.borderRadius || '24px'};
   padding: ${props => props.padding};
-  background: rgba(255, 255, 255, 0.05);
+  
+  /* Base glass effect - following NN/g guidelines for complex backgrounds */
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(${props => props.blurIntensity}px) saturate(180%);
   -webkit-backdrop-filter: blur(${props => props.blurIntensity}px) saturate(180%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  
+  /* Gradient stroke with curved corners */
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1)
+    );
+    border-radius: inherit;
+    z-index: -1;
+  }
+  
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    
+    &::after {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.5),
+        rgba(255, 255, 255, 0.2)
+      );
+    }
   }
 
-  /* Glass effect overlay */
+  /* Low-opacity stroke overlay */
   &::before {
     content: '';
     position: absolute;
@@ -62,13 +92,14 @@ const GlassContainer = styled.div<FrostedGlassProps>`
     bottom: 0;
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, ${props => props.opacity || 0.05}) 0%,
-      rgba(255, 255, 255, ${props => (props.opacity || 0.05) * 0.5}) 100%
+      rgba(255, 255, 255, ${props => props.opacity || 0.08}) 0%,
+      rgba(255, 255, 255, ${props => (props.opacity || 0.08) * 0.5}) 100%
     );
+    border-radius: inherit;
     z-index: 1;
   }
 
-  /* Improved gradient background */
+  /* Gradient background animation */
   ${props =>
         props.enableAnimatedGradient &&
         props.enableGlow &&
@@ -82,14 +113,15 @@ const GlassContainer = styled.div<FrostedGlassProps>`
         bottom: -50%;
         background: linear-gradient(
           45deg,
-          ${props.upperLeftGlow}${Math.round((props.glowIntensity || 0.1) * 255).toString(16)} 0%,
-          ${props.bottomRightGlow}${Math.round((props.glowIntensity || 0.1) * 255).toString(16)} 100%
+          ${props.upperLeftGlow}${Math.round((props.glowIntensity || 0.15) * 255).toString(16)} 0%,
+          ${props.bottomRightGlow}${Math.round((props.glowIntensity || 0.15) * 255).toString(16)} 100%
         );
         background-size: 200% 200%;
         animation: ${gradientShift} 15s ease infinite;
         z-index: 0;
         filter: blur(30px);
-        opacity: 0.3;
+        opacity: 0.25;
+        border-radius: inherit;
       }
     `}
 

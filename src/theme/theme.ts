@@ -72,6 +72,15 @@ export const AppTheme = {
             letterSpacing: '-0.41px',
             lineHeight: 1.5,
         },
+
+        // Adding caption style for smaller text elements
+        caption: {
+            fontFamily: '"SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            fontSize: '13px',
+            fontWeight: 400,
+            letterSpacing: '-0.08px',
+            lineHeight: 1.38, // Apple's typical caption line height
+        },
     },
 
     // Spacing - 8pt Grid System

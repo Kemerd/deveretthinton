@@ -28,27 +28,30 @@ const BubbleContainer = styled.div<{ isExpanded: boolean }>`
     position: relative;
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     animation: ${props => props.isExpanded ? expandAnimation : 'none'} 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    width: ${props => props.isExpanded ? '100%' : '200px'};
-    height: ${props => props.isExpanded ? '400px' : '240px'};
+    width: ${props => props.isExpanded ? '100%' : '280px'};
+    height: ${props => props.isExpanded ? '600px' : '340px'};
     display: flex;
     flex-direction: column;
-    gap: ${AppTheme.spacing[8]};
+    gap: ${AppTheme.spacing[16]};
 `;
 
 const ImageWrapper = styled.div<{ isExpanded: boolean }>`
     position: relative;
     width: 100%;
-    height: ${props => props.isExpanded ? '400px' : '200px'};
-    border-radius: ${AppTheme.radius.medium};
+    padding-bottom: 100%;
+    border-radius: ${AppTheme.radius.large};
     overflow: hidden;
+    background: rgba(0, 0, 0, 0.1);
 `;
 
 const ImageContainer = styled.div`
-    width: 100%;
-    height: 100%;
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: calc(80% * 9/16);
+    transform: translate(-50%, -50%);
     overflow: hidden;
-    border-radius: inherit;
 `;
 
 const ColorFallback = styled.div<{ color: string }>`
@@ -58,6 +61,7 @@ const ColorFallback = styled.div<{ color: string }>`
     position: absolute;
     top: 0;
     left: 0;
+    transition: opacity 0.6s ease;
 `;
 
 const SkillImage = styled.img<{ isActive: boolean }>`
@@ -65,8 +69,9 @@ const SkillImage = styled.img<{ isActive: boolean }>`
     height: 100%;
     object-fit: cover;
     position: absolute;
-    transition: opacity 0.6s ease;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     opacity: ${props => props.isActive ? 1 : 0};
+    transform: scale(${props => props.isActive ? 1 : 1.05});
 `;
 
 const Title = styled.h3`
@@ -74,7 +79,21 @@ const Title = styled.h3`
     color: ${AppTheme.colors.light.textPrimary};
     margin: 0;
     text-align: center;
-    padding: ${AppTheme.spacing[8]} 0;
+    padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[16]};
+    font-weight: 500;
+    letter-spacing: -0.5px;
+`;
+
+const YearText = styled.span`
+    ${AppTheme.typography.body};
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.08px;
+    line-height: 1.38;
+    color: ${AppTheme.colors.light.textSecondary};
+    display: block;
+    text-align: center;
+    margin-top: ${AppTheme.spacing[4]};
 `;
 
 const ExpandedContent = styled.div<{ isVisible: boolean }>`
@@ -156,32 +175,34 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                 height="100%"
             >
                 <ImageWrapper isExpanded={isExpanded}>
-                    {images.map((image, index) => (
-                        imageLoadError[index] ? (
-                            <ColorFallback
-                                key={index}
-                                color={fallbackColors[index]}
-                                style={{ opacity: !isExpanded && currentImageIndex === index ? 1 : 0 }}
-                            />
-                        ) : (
-                            <SkillImage
-                                key={index}
-                                src={image}
-                                isActive={!isExpanded && currentImageIndex === index}
-                                alt={`${title} example ${index + 1}`}
-                                onError={() => {
-                                    const newErrors = [...imageLoadError];
-                                    newErrors[index] = true;
-                                    setImageLoadError(newErrors);
-                                }}
-                            />
-                        )
-                    ))}
+                    <ImageContainer>
+                        {images.map((image, index) => (
+                            imageLoadError[index] ? (
+                                <ColorFallback
+                                    key={index}
+                                    color={fallbackColors[index]}
+                                    style={{ opacity: !isExpanded && currentImageIndex === index ? 1 : 0 }}
+                                />
+                            ) : (
+                                <SkillImage
+                                    key={index}
+                                    src={image}
+                                    isActive={!isExpanded && currentImageIndex === index}
+                                    alt={`${title} example ${index + 1}`}
+                                    onError={() => {
+                                        const newErrors = [...imageLoadError];
+                                        newErrors[index] = true;
+                                        setImageLoadError(newErrors);
+                                    }}
+                                />
+                            )
+                        ))}
+                    </ImageContainer>
                 </ImageWrapper>
-                <Title>
-                    {title}
-                    {years && ` (${years}+ years)`}
-                </Title>
+                <div>
+                    <Title>{title}</Title>
+                    {years && <YearText>{years}+ years</YearText>}
+                </div>
                 <ExpandedContent isVisible={isExpanded}>
                     <Description>{description}</Description>
                     <ImageGallery>
