@@ -81,6 +81,15 @@ export const AppTheme = {
             letterSpacing: '-0.08px',
             lineHeight: 1.38, // Apple's typical caption line height
         },
+
+        // Button style for interactive elements
+        button: {
+            fontFamily: '"SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+            fontSize: '15px',
+            fontWeight: 500,
+            letterSpacing: '0.4px',
+            lineHeight: 1.2,
+        },
     },
 
     // Spacing - 8pt Grid System
