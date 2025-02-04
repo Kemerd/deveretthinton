@@ -50,15 +50,15 @@ const HeaderContent = styled.div`
 const ProfilePicture = styled(FrostedGlass)`
     flex-shrink: 0;
     width: 160px;
-    height: 160px;
-    border-radius: 50%;
+    height: 284px;
+    border-radius: 24px;
     overflow: hidden;
     
     img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
+        object-fit: contain;
+        border-radius: 24px;
     }
 `;
 
@@ -176,7 +176,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             enableAnimatedGradient
                             padding="0"
                         >
-                            <img src="/img/pfp.png" alt="D Everett Hinton" />
+                            <img src="/img/pfp_16_9.png" alt="D Everett Hinton" />
                         </ProfilePicture>
                         <HeaderText>
                             <Name>D Everett Hinton</Name>
