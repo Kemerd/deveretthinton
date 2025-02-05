@@ -228,7 +228,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                     <Title>Senior Software Engineer & Pilot</Title>
                                     <Bio>
                                         I'm Everett, a results-driven professional and a software expert.
-                                        With over 10+ years of experience across app development, enterprise,
+                                        With over 10+ years of experience across full-stack development, enterprise,
                                         film & VFX, & games— I excel at turning cross-disciplinary, ambitious
                                         ideas into reality and ensuring projects cross the finish line. Once
                                         described as 'a one man wrecking crew' by an EP, when I'm not shipping

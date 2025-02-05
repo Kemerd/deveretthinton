@@ -56,7 +56,13 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     display: flex;
     flex-direction: column;
     transform-origin: ${props => props.$isExpanded ? 'center center' : 'left center'};
-    will-change: transform, width, height;
+    will-change: transform, width, height, filter, opacity;
+    /* Update backdrop-filter intensity to match header */
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    /* Smooth transition for backdrop-filter */
+    transition: backdrop-filter 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                -webkit-backdrop-filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     
     /* Animated border style */
     &::after {
@@ -71,7 +77,8 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
         border-radius: inherit;
         z-index: -1;
         opacity: ${props => props.$isExpanded ? 1 : 0.3};
-        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Match the transition timing */
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 `;
 
@@ -87,9 +94,10 @@ const TitleContainer = styled(animated.div)`
     flex-direction: column;
     align-items: flex-start;
     gap: ${AppTheme.spacing[4]};
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    /* Update background opacity to match header card */
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
     border-radius: ${AppTheme.radius.medium};
     width: 100%;
     
@@ -149,10 +157,9 @@ const GlassImageWrapper = styled(FrostedGlass)`
     bottom: ${AppTheme.spacing[16]};
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    $blurIntensity={10}
+    border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const FeatureImage = styled.img<{ $isActive: boolean; $fallbackColor: string }>`
@@ -231,7 +238,9 @@ const ExpandedLayout = styled.div<{ $expandDirection: 'left' | 'right' | 'center
 `;
 
 const GridItem = styled(animated.div) <{ $isHidden: boolean; $isSameRow: boolean; $isHovered: boolean }>`
-    transition: opacity 0.3s ease;
+    /* Change from transition to transitions to handle multiple properties */
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     opacity: ${props => props.$isHovered ? 1 :
         (props.$isHidden || props.$isSameRow) ? 0 : 1};
     pointer-events: ${props => props.$isHovered ? 'auto' :
@@ -239,6 +248,16 @@ const GridItem = styled(animated.div) <{ $isHidden: boolean; $isSameRow: boolean
     z-index: ${props => props.$isHovered ? 3 :
         props.$isHidden ? 0 :
             props.$isSameRow ? 2 : 1};
+    /* Add a default blur that's always present but varies in intensity */
+    filter: blur(${props =>
+        props.$isHovered ? '0px' :
+            props.$isHidden || props.$isSameRow ? '8px' : '0px'
+    });
+    /* Ensure GPU acceleration for smoother transitions */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: opacity, filter;
 `;
 
 // Update FrostedGlass component props
