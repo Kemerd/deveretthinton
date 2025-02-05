@@ -57,7 +57,7 @@ const professionalSkills = [
     },
     {
         title: 'Unreal & Unity',
-        description: 'I\'ve been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to end to end Netflix virtual production pipeline tooling, I\'ve probably broken and fixed every subsystem in both engines at least twice. Yes, even that one.',
+        description: 'As a passionate gamer, I\'ve been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to end to end Netflix virtual production pipeline tooling, I\'ve probably broken and fixed every subsystem in both engines at least twice. Yes, even that one.',
         years: '10+ years',
         images: ['/img/skills/unreal1.jpg', '/img/skills/unreal2.jpg', '/img/skills/unreal3.jpg'],
 
