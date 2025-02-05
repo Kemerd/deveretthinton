@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { AppTheme } from '../../theme/theme';
 import { useSpring, animated, config, useSprings } from 'react-spring';
+import { createPortal } from 'react-dom';
 
 const FALLBACK_COLORS = [
     '#FF6B6B', // Coral Red
@@ -322,28 +323,126 @@ const GallerySection = styled(animated.div)`
     height: fit-content;
 `;
 
-const GalleryItem = styled(animated.div)`
+const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
     position: relative;
     aspect-ratio: 1/1;
     border-radius: ${AppTheme.radius.medium};
     overflow: hidden;
     background: rgba(0, 0, 0, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    cursor: zoom-in;
     
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         border-radius: inherit;
+        transform: scale(${props => props.$isHovering ? 1.1 : 1});
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Enhanced hover effect */
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     
     &:hover {
         transform: translateY(-4px) scale(1.02);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
     }
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.1);
+        opacity: ${props => props.$isHovering ? 1 : 0};
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+`;
+
+// Update the MagnifiedGalleryOverlay styling
+const MagnifiedGalleryOverlay = styled.div<{ $visible: boolean }>`
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Lighter, more translucent background with frosted glass effect */
+    background: rgba(28, 32, 38, 0.75);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    opacity: ${props => props.$visible ? 1 : 0};
+    pointer-events: ${props => props.$visible ? 'auto' : 'none'};
+    z-index: 999999;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+`;
+
+// Add this new styled component for the close button
+const CloseButton = styled.button`
+    position: absolute;
+    top: ${AppTheme.spacing[24]};
+    right: ${AppTheme.spacing[24]};
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${AppTheme.colors.light.textPrimary};
+    font-size: 24px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+    }
+
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 2px;
+        background-color: currentColor;
+        border-radius: 1px;
+    }
+
+    &::before {
+        transform: rotate(45deg);
+    }
+
+    &::after {
+        transform: rotate(-45deg);
+    }
+`;
+
+// Update the MagnifiedImageContainer to be content-aware
+const MagnifiedImageContainer = styled(FrostedGlass)`
+    position: relative;
+    width: min(90vw, calc(90vh * 16/9)); // Maintain aspect ratio
+    height: min(90vh, calc(90vw * 9/16));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: ${AppTheme.spacing[32]};
+    background: rgba(255, 255, 255, 0.05);
+`;
+
+// Update the MagnifiedImage component
+const MagnifiedImage = styled(animated.div) <{ $src: string }>`
+    width: 100%;
+    height: 100%;
+    background-image: url(${props => props.$src});
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: ${AppTheme.radius.large};
 `;
 
 export const BaseBubble: React.FC<BaseBubbleProps> = ({
@@ -360,6 +459,9 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [imageLoadError, setImageLoadError] = useState<boolean[]>(new Array(images.length).fill(false));
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
+    const [magnifiedImage, setMagnifiedImage] = useState<string | null>(null);
+    const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -459,6 +561,52 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         setImageLoadError(newErrors);
     };
 
+    // Add these new handlers
+    const handleImageHoverStart = (index: number) => {
+        hoverTimerRef.current = setTimeout(() => {
+            setHoveredImageIndex(index);
+        }, 500);
+    };
+
+    const handleImageHoverEnd = () => {
+        if (hoverTimerRef.current) {
+            clearTimeout(hoverTimerRef.current);
+            hoverTimerRef.current = null;
+        }
+        setHoveredImageIndex(null);
+    };
+
+    const handleImageClick = (image: string) => {
+        setMagnifiedImage(image);
+    };
+
+    const closeMagnifiedView = () => {
+        setMagnifiedImage(null);
+    };
+
+    // Add keyboard support
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && magnifiedImage) {
+                closeMagnifiedView();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [magnifiedImage]);
+
+    // Add this spring animation
+    const magnifiedSpring = useSpring({
+        scale: magnifiedImage ? 1 : 0.9,
+        opacity: magnifiedImage ? 1 : 0,
+        config: {
+            mass: 0.8,
+            tension: 300,
+            friction: 26,
+        }
+    });
+
     useEffect(() => {
         console.log('BaseBubble State:', {
             title,
@@ -474,71 +622,103 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     }, [isHovered, title, position, containerSpring]);
 
     return (
-        <BubbleContainer
-            $isExpanded={isHovered}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <AnimatedContent
+        <>
+            <BubbleContainer
                 $isExpanded={isHovered}
-                style={containerSpring}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
             >
-                <StyledFrostedGlass>
-                    {!isHovered ? (
-                        <NonExpandedContent>
-                            <ImageContainer>
-                                <GlassImageWrapper>
-                                    <FeatureImage
-                                        src={images[currentImageIndex || 0]}
-                                        $isActive={!isHovered}
-                                        $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={handleImageError}
-                                        alt={`${title} preview`}
-                                    />
-                                </GlassImageWrapper>
-                            </ImageContainer>
-                            <TitleWrapper style={titleSpring}>
-                                <TitleContainer>
-                                    <h3>{title}</h3>
-                                    <YearText>
-                                        {typeof years === 'number' ? `${years}+ years` : years}
-                                    </YearText>
-                                </TitleContainer>
-                            </TitleWrapper>
-                        </NonExpandedContent>
-                    ) : (
-                        <ExpandedContentLayout>
-                            <InfoSection>
-                                <animated.div style={titleAnimation}>
-                                    <ExpandedTitle>{title}</ExpandedTitle>
-                                    <YearText>
-                                        {typeof years === 'number' ? `${years}+ years` : years}
-                                    </YearText>
-                                </animated.div>
-                                <animated.div style={descriptionAnimation}>
-                                    <ExpandedDescription>{description}</ExpandedDescription>
-                                </animated.div>
-                            </InfoSection>
-                            <GallerySection>
-                                {images.slice(0, 3).map((image, index) => (
-                                    <animated.div
-                                        key={image}
-                                        style={galleryAnimations[index]}
-                                    >
-                                        <GalleryItem>
-                                            <img
-                                                src={image}
-                                                alt={`${title} gallery ${index + 1}`}
-                                                loading="lazy"
-                                            />
-                                        </GalleryItem>
+                <AnimatedContent
+                    $isExpanded={isHovered}
+                    style={containerSpring}
+                >
+                    <StyledFrostedGlass>
+                        {!isHovered ? (
+                            <NonExpandedContent>
+                                <ImageContainer>
+                                    <GlassImageWrapper>
+                                        <FeatureImage
+                                            src={images[currentImageIndex || 0]}
+                                            $isActive={!isHovered}
+                                            $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                            onError={handleImageError}
+                                            alt={`${title} preview`}
+                                        />
+                                    </GlassImageWrapper>
+                                </ImageContainer>
+                                <TitleWrapper style={titleSpring}>
+                                    <TitleContainer>
+                                        <h3>{title}</h3>
+                                        <YearText>
+                                            {typeof years === 'number' ? `${years}+ years` : years}
+                                        </YearText>
+                                    </TitleContainer>
+                                </TitleWrapper>
+                            </NonExpandedContent>
+                        ) : (
+                            <ExpandedContentLayout>
+                                <InfoSection>
+                                    <animated.div style={titleAnimation}>
+                                        <ExpandedTitle>{title}</ExpandedTitle>
+                                        <YearText>
+                                            {typeof years === 'number' ? `${years}+ years` : years}
+                                        </YearText>
                                     </animated.div>
-                                ))}
-                            </GallerySection>
-                        </ExpandedContentLayout>
-                    )}
-                </StyledFrostedGlass>
-            </AnimatedContent>
-        </BubbleContainer>
+                                    <animated.div style={descriptionAnimation}>
+                                        <ExpandedDescription>{description}</ExpandedDescription>
+                                    </animated.div>
+                                </InfoSection>
+                                <GallerySection>
+                                    {images.slice(0, 3).map((image, index) => (
+                                        <animated.div
+                                            key={image}
+                                            style={galleryAnimations[index]}
+                                            onMouseEnter={() => handleImageHoverStart(index)}
+                                            onMouseLeave={handleImageHoverEnd}
+                                            onClick={() => handleImageClick(image)}
+                                        >
+                                            <GalleryItem $isHovering={hoveredImageIndex === index}>
+                                                <img
+                                                    src={image}
+                                                    alt={`${title} gallery ${index + 1}`}
+                                                    loading="lazy"
+                                                />
+                                            </GalleryItem>
+                                        </animated.div>
+                                    ))}
+                                </GallerySection>
+                            </ExpandedContentLayout>
+                        )}
+                    </StyledFrostedGlass>
+                </AnimatedContent>
+            </BubbleContainer>
+
+            {magnifiedImage && createPortal(
+                <MagnifiedGalleryOverlay
+                    $visible={!!magnifiedImage}
+                    onClick={closeMagnifiedView}
+                >
+                    <CloseButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            closeMagnifiedView();
+                        }}
+                        aria-label="Close"
+                    />
+                    <MagnifiedImageContainer
+                        $blurIntensity={16}
+                        $enableGlow
+                        $glowIntensity={0.1}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <MagnifiedImage
+                            $src={magnifiedImage}
+                            style={magnifiedSpring}
+                        />
+                    </MagnifiedImageContainer>
+                </MagnifiedGalleryOverlay>,
+                document.body
+            )}
+        </>
     );
 }; 
