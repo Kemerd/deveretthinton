@@ -150,6 +150,30 @@ export const AppTheme = {
         large: '12px',
         pill: '9999px',
     },
+
+    // Add styled components section
+    styledComponents: {
+        QuipText: `
+            /* Using typography.body as base style */
+            ${(props: any) => props.theme.typography.body};
+            color: ${(props: any) => props.theme.colors.light.textSecondary};
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 300;
+            font-style: italic;
+            text-align: center;
+            white-space: nowrap;
+            max-width: none;
+            margin: ${(props: any) => props.theme.spacing[8]} auto ${(props: any) => props.theme.spacing[4]};
+            opacity: 0.8;
+            letter-spacing: +0.05em;
+            font-size: 1em;
+            
+            /* Add fallback handling */
+            @supports not (font-variation-settings: normal) {
+                font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            }
+        `,
+    },
 };
 
 export type Theme = typeof AppTheme; 
