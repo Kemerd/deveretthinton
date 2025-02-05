@@ -422,19 +422,43 @@ const CloseButton = styled.button`
     }
 `;
 
-// Update the MagnifiedImageContainer to be content-aware
-const MagnifiedImageContainer = styled(FrostedGlass)`
+// Update the MagnifiedImageContainer to remove padding
+const MagnifiedImageContainer = styled(FrostedGlass) <{ $dimensions: { width: number; height: number } | null }>`
     position: relative;
-    width: min(90vw, calc(90vh * 16/9)); // Maintain aspect ratio
-    height: min(90vh, calc(90vw * 9/16));
+    ${props => {
+        if (!props.$dimensions) return '';
+
+        const maxWidth = Math.min(window.innerWidth * 0.9, 1600);
+        const maxHeight = window.innerHeight * 0.9;
+
+        const aspectRatio = props.$dimensions.width / props.$dimensions.height;
+        let width = props.$dimensions.width;
+        let height = props.$dimensions.height;
+
+        if (width > maxWidth) {
+            width = maxWidth;
+            height = width / aspectRatio;
+        }
+
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = height * aspectRatio;
+        }
+
+        return `
+            width: ${width}px;
+            height: ${height}px;
+        `;
+    }}
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: ${AppTheme.spacing[32]};
     background: rgba(255, 255, 255, 0.05);
+    padding: 0; // Remove padding
+    overflow: hidden; // Add overflow hidden to handle the rounded corners
 `;
 
-// Update the MagnifiedImage component
+// Update the MagnifiedImage component to handle the rounded corners
 const MagnifiedImage = styled(animated.div) <{ $src: string }>`
     width: 100%;
     height: 100%;
@@ -462,6 +486,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
     const [magnifiedImage, setMagnifiedImage] = useState<string | null>(null);
     const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -576,12 +601,25 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         setHoveredImageIndex(null);
     };
 
+    const handleImageLoad = (image: string) => {
+        const img = new Image();
+        img.onload = () => {
+            setImageDimensions({
+                width: img.naturalWidth,
+                height: img.naturalHeight
+            });
+        };
+        img.src = image;
+    };
+
     const handleImageClick = (image: string) => {
         setMagnifiedImage(image);
+        handleImageLoad(image);
     };
 
     const closeMagnifiedView = () => {
         setMagnifiedImage(null);
+        setImageDimensions(null);
     };
 
     // Add keyboard support
@@ -706,6 +744,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                         aria-label="Close"
                     />
                     <MagnifiedImageContainer
+                        $dimensions={imageDimensions}
                         $blurIntensity={16}
                         $enableGlow
                         $glowIntensity={0.1}
