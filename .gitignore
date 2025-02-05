@@ -2,3 +2,5 @@
 /fonts/woff2-master
 /.vscode/chrome-debug-profile
 /build
+/src/fonts/woff2-master
+/public/fonts/woff2-master
