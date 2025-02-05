@@ -359,7 +359,67 @@ const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
     }
 `;
 
-// Update the MagnifiedGalleryOverlay styling
+// Add these new styled components after CloseButton
+const NavigationButton = styled.button`
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${AppTheme.colors.light.textPrimary};
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    &::before {
+        content: '';
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        position: absolute;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+        }
+    }
+`;
+
+const PrevButton = styled(NavigationButton)`
+    left: ${AppTheme.spacing[24]};
+    &::before {
+        transform: rotate(135deg);
+        margin-left: 4px;
+    }
+`;
+
+const NextButton = styled(NavigationButton)`
+    right: ${AppTheme.spacing[24]};
+    &::before {
+        transform: rotate(-45deg);
+        margin-right: 4px;
+    }
+`;
+
+// Update the MagnifiedGalleryOverlay to add a closing animation
 const MagnifiedGalleryOverlay = styled.div<{ $visible: boolean }>`
     position: fixed;
     inset: 0;
@@ -368,14 +428,13 @@ const MagnifiedGalleryOverlay = styled.div<{ $visible: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Lighter, more translucent background with frosted glass effect */
-    background: rgba(28, 32, 38, 0.75);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    background: rgba(28, 32, 38, ${props => props.$visible ? 0.75 : 0});
+    backdrop-filter: blur(${props => props.$visible ? 24 : 0}px) saturate(180%);
+    -webkit-backdrop-filter: blur(${props => props.$visible ? 24 : 0}px) saturate(180%);
     opacity: ${props => props.$visible ? 1 : 0};
     pointer-events: ${props => props.$visible ? 'auto' : 'none'};
     z-index: 999999;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 `;
 
 // Add this new styled component for the close button
@@ -487,6 +546,8 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [magnifiedImage, setMagnifiedImage] = useState<string | null>(null);
     const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
+    const [currentMagnifiedIndex, setCurrentMagnifiedIndex] = useState<number>(0);
+    const [isClosing, setIsClosing] = useState(false);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -612,14 +673,40 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         img.src = image;
     };
 
-    const handleImageClick = (image: string) => {
+    const handleImageClick = (image: string, index: number) => {
+        setCurrentMagnifiedIndex(index);
         setMagnifiedImage(image);
         handleImageLoad(image);
     };
 
+    const handlePrevImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentMagnifiedIndex((prev) => {
+            const newIndex = (prev - 1 + images.length) % images.length;
+            setMagnifiedImage(images[newIndex]);
+            handleImageLoad(images[newIndex]);
+            return newIndex;
+        });
+    };
+
+    const handleNextImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setCurrentMagnifiedIndex((prev) => {
+            const newIndex = (prev + 1) % images.length;
+            setMagnifiedImage(images[newIndex]);
+            handleImageLoad(images[newIndex]);
+            return newIndex;
+        });
+    };
+
     const closeMagnifiedView = () => {
-        setMagnifiedImage(null);
-        setImageDimensions(null);
+        setIsClosing(true);
+        setTimeout(() => {
+            setMagnifiedImage(null);
+            setImageDimensions(null);
+            setCurrentMagnifiedIndex(0);
+            setIsClosing(false);
+        }, 200);
     };
 
     // Add keyboard support
@@ -713,7 +800,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                                             style={galleryAnimations[index]}
                                             onMouseEnter={() => handleImageHoverStart(index)}
                                             onMouseLeave={handleImageHoverEnd}
-                                            onClick={() => handleImageClick(image)}
+                                            onClick={() => handleImageClick(image, index)}
                                         >
                                             <GalleryItem $isHovering={hoveredImageIndex === index}>
                                                 <img
@@ -733,7 +820,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
 
             {magnifiedImage && createPortal(
                 <MagnifiedGalleryOverlay
-                    $visible={!!magnifiedImage}
+                    $visible={!!magnifiedImage && !isClosing}
                     onClick={closeMagnifiedView}
                 >
                     <CloseButton
@@ -743,12 +830,22 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                         }}
                         aria-label="Close"
                     />
+                    <PrevButton
+                        onClick={handlePrevImage}
+                        disabled={images.length <= 1}
+                        aria-label="Previous image"
+                    />
+                    <NextButton
+                        onClick={handleNextImage}
+                        disabled={images.length <= 1}
+                        aria-label="Next image"
+                    />
                     <MagnifiedImageContainer
                         $dimensions={imageDimensions}
                         $blurIntensity={16}
                         $enableGlow
                         $glowIntensity={0.1}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={closeMagnifiedView}
                     >
                         <MagnifiedImage
                             $src={magnifiedImage}
