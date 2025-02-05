@@ -31,6 +31,16 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
+const QuipText = styled.p`
+    ${AppTheme.typography.body};
+    color: ${AppTheme.colors.light.textSecondary};
+    font-style: italic;
+    text-align: center;
+    max-width: 800px;
+    margin: ${AppTheme.spacing[16]} auto ${AppTheme.spacing[8]};
+    opacity: 0.8;
+`;
+
 const workExperience = [
     {
         title: 'Unreal Engine',
@@ -119,40 +129,45 @@ export const WorkGrid: React.FC = () => {
     );
 
     return (
-        <GridContainer>
-            {springs.map((springProps, index) => {
-                const currentRow = Math.floor(index / 4);
-                const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
-                const isSameRow = currentRow === hoveredRow;
-                const isHovered = index === hoveredIndex;
+        <>
+            <QuipText>
+                These are but a few of the companies I've worked for. Please check out my LinkedIn for a full CV.
+            </QuipText>
+            <GridContainer>
+                {springs.map((springProps, index) => {
+                    const currentRow = Math.floor(index / 4);
+                    const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+                    const isSameRow = currentRow === hoveredRow;
+                    const isHovered = index === hoveredIndex;
 
-                const isHidden = hoveredIndex !== null && (
-                    (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                    (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
-                );
+                    const isHidden = hoveredIndex !== null && (
+                        (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                        (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                    );
 
-                return (
-                    <GridItem
-                        key={workExperience[index].title}
-                        $isHidden={isHidden}
-                        $isSameRow={isSameRow}
-                        $isHovered={isHovered}
-                        style={springProps}
-                    >
-                        <BaseBubble
-                            {...workExperience[index]}
-                            position={{
-                                row: currentRow,
-                                col: index % 4,
-                            }}
-                            totalBubbles={gridSize}
-                            onHoverChange={(isHovered) => {
-                                setHoveredIndex(isHovered ? index : null);
-                            }}
-                        />
-                    </GridItem>
-                );
-            })}
-        </GridContainer>
+                    return (
+                        <GridItem
+                            key={workExperience[index].title}
+                            $isHidden={isHidden}
+                            $isSameRow={isSameRow}
+                            $isHovered={isHovered}
+                            style={springProps}
+                        >
+                            <BaseBubble
+                                {...workExperience[index]}
+                                position={{
+                                    row: currentRow,
+                                    col: index % 4,
+                                }}
+                                totalBubbles={gridSize}
+                                onHoverChange={(isHovered) => {
+                                    setHoveredIndex(isHovered ? index : null);
+                                }}
+                            />
+                        </GridItem>
+                    );
+                })}
+            </GridContainer>
+        </>
     );
 }; 

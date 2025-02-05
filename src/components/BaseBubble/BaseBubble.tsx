@@ -19,7 +19,7 @@ interface BaseBubbleProps {
     title: string;
     description: string;
     images: string[];
-    years?: number;
+    years?: string | number;
     position: { row: number; col: number };
     totalBubbles: { rows: number; cols: number };
     expandDirection?: 'left' | 'right';
@@ -176,14 +176,9 @@ const FeatureImage = styled.img<{ $isActive: boolean; $fallbackColor: string }>`
 `;
 
 const YearText = styled.span`
-    ${AppTheme.typography.body};
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: -0.08px;
-    line-height: 1;
+    ${AppTheme.typography.caption};
     color: ${AppTheme.colors.light.textSecondary};
-    opacity: 0.7;
-    margin: 0;
+    opacity: 0.8;
 `;
 
 const ExpandedContent = styled.div<{ $isVisible: boolean }>`
@@ -327,7 +322,7 @@ const GallerySection = styled(animated.div)`
 
 const GalleryItem = styled(animated.div)`
     position: relative;
-    aspect-ratio: 16/10;
+    aspect-ratio: 1/1;
     border-radius: ${AppTheme.radius.medium};
     overflow: hidden;
     background: rgba(0, 0, 0, 0.2);
@@ -528,7 +523,9 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                             <TitleWrapper style={titleSpring}>
                                 <TitleContainer>
                                     <h3>{title}</h3>
-                                    {years && <YearText>{years}+ years</YearText>}
+                                    <YearText>
+                                        {typeof years === 'number' ? `${years}+ years` : years}
+                                    </YearText>
                                 </TitleContainer>
                             </TitleWrapper>
                         </NonExpandedContent>
@@ -537,7 +534,9 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                             <InfoSection>
                                 <animated.div style={titleAnimation}>
                                     <ExpandedTitle>{title}</ExpandedTitle>
-                                    {years && <YearText>{years}+ years</YearText>}
+                                    <YearText>
+                                        {typeof years === 'number' ? `${years}+ years` : years}
+                                    </YearText>
                                 </animated.div>
                                 <animated.div style={descriptionAnimation}>
                                     <ExpandedDescription>{description}</ExpandedDescription>

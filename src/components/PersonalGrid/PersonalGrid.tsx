@@ -16,6 +16,16 @@ const GridContainer = styled.div`
     width: 100%;
 `;
 
+const QuipText = styled.p`
+    ${AppTheme.typography.body};
+    color: ${AppTheme.colors.light.textSecondary};
+    font-style: italic;
+    text-align: center;
+    max-width: 800px;
+    margin: ${AppTheme.spacing[16]} auto ${AppTheme.spacing[8]};
+    opacity: 0.8;
+`;
+
 const GridItem = styled(animated.div) <{
     $isHidden: boolean;
     $isSameRow: boolean;
@@ -33,52 +43,52 @@ const GridItem = styled(animated.div) <{
 
 const personalExperience = [
     {
-        title: 'Unreal Engine',
-        description: 'Over a decade of experience in Unreal Engine development, from game development to film & VFX. Expertise in blueprints, C++, and real-time rendering.',
-        years: 10,
-        images: ['/unreal1.jpg', '/unreal2.jpg', '/unreal3.jpg'],
+        title: 'IFR Pilot',
+        description: 'Licensed instrument-rated pilot with 250+ hours in the logbook. Turns out the clouds look pretty much the same from both sides.',
+        years: '250 hrs',
+        images: ['/pilot1.jpg', '/pilot2.jpg', '/pilot3.jpg'],
     },
     {
-        title: 'Unity',
-        description: 'Extensive experience in Unity development, focusing on performance optimization and cross-platform development.',
-        years: 10,
-        images: ['/unity1.jpg', '/unity2.jpg', '/unity3.jpg'],
+        title: 'Building Planes',
+        description: 'Currently constructing a Glasair III. Because buying a plane is too easy, and who doesn\'t enjoy spending weekends covered in epoxy and aluminum shavings?',
+        years: 'Glasair III',
+        images: ['/glasair1.jpg', '/glasair2.jpg', '/glasair3.jpg'],
     },
     {
-        title: 'C++',
-        description: 'Deep expertise in C++ development, from low-level systems programming to high-performance game engines.',
-        years: 10,
-        images: ['/cpp1.jpg', '/cpp2.jpg', '/cpp3.jpg'],
+        title: 'Mechanical Engineering',
+        description: 'From CAD to fabrication, bringing ideas to life through design and implementation. Sometimes the best solution is the one that makes other engineers say "you did what?"',
+        years: 'Design & Build',
+        images: ['/mech1.jpg', '/mech2.jpg', '/mech3.jpg'],
     },
     {
-        title: 'Python',
-        description: 'Proficient in Python development, with focus on automation, data processing, and machine learning applications.',
-        years: 5,
-        images: ['/python1.jpg', '/python2.jpg', '/python3.jpg'],
+        title: 'Electrical Engineering',
+        description: 'Turning coffee into circuits since college. Specializing in embedded systems and trying not to let the magic smoke out of components.',
+        years: 'Circuit Wizard',
+        images: ['/ee1.jpg', '/ee2.jpg', '/ee3.jpg'],
     },
     {
-        title: 'Machine Learning',
-        description: 'Experience in implementing ML solutions, from computer vision to natural language processing.',
-        years: 3,
-        images: ['/ml1.jpg', '/ml2.jpg', '/ml3.jpg'],
+        title: 'AutoCAD Master',
+        description: 'Creating precision designs and technical drawings with the accuracy of a surgeon and the patience of a saint. Because sometimes, the 47th revision is the charm.',
+        years: '3D Design',
+        images: ['/cad1.jpg', '/cad2.jpg', '/cad3.jpg'],
     },
     {
-        title: 'Flutter & Dart',
-        description: 'Expert in cross-platform mobile development using Flutter, creating beautiful and performant applications.',
-        years: 4,
-        images: ['/flutter1.jpg', '/flutter2.jpg', '/flutter3.jpg'],
+        title: 'Mixed Martial Arts',
+        description: 'Training in various martial arts disciplines. Because sometimes debugging code requires the patience of a martial artist (and the ability to take a hit).',
+        years: 'Fighter',
+        images: ['/mma1.jpg', '/mma2.jpg', '/mma3.jpg'],
     },
     {
-        title: 'JavaScript',
-        description: 'Extensive experience in modern JavaScript development, including React and Node.js.',
-        years: 8,
-        images: ['/js1.jpg', '/js2.jpg', '/js3.jpg'],
+        title: 'Live Music',
+        description: 'Multi-instrumentalist proficient in piano, guitar, bass, and vocals. Making beautiful noise across four different instruments (and occasionally all at once).',
+        years: 'Musician',
+        images: ['/music1.jpg', '/music2.jpg', '/music3.jpg'],
     },
     {
-        title: 'TypeScript',
-        description: 'Strong advocate for type-safe development, using TypeScript to build robust applications.',
-        years: 5,
-        images: ['/ts1.jpg', '/ts2.jpg', '/ts3.jpg'],
+        title: 'Audio Engineering',
+        description: 'Studio production wizard with Ableton Live. Taking sounds from "what was that?" to "how did you do that?" one track at a time.',
+        years: 'Producer',
+        images: ['/audio1.jpg', '/audio2.jpg', '/audio3.jpg'],
     },
 ];
 
@@ -119,40 +129,45 @@ export const PersonalGrid: React.FC = () => {
     );
 
     return (
-        <GridContainer>
-            {springs.map((springProps, index) => {
-                const currentRow = Math.floor(index / 4);
-                const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
-                const isSameRow = currentRow === hoveredRow;
-                const isHovered = index === hoveredIndex;
+        <>
+            <QuipText>
+                People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.
+            </QuipText>
+            <GridContainer>
+                {springs.map((springProps, index) => {
+                    const currentRow = Math.floor(index / 4);
+                    const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+                    const isSameRow = currentRow === hoveredRow;
+                    const isHovered = index === hoveredIndex;
 
-                const isHidden = hoveredIndex !== null && (
-                    (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                    (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
-                );
+                    const isHidden = hoveredIndex !== null && (
+                        (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                        (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                    );
 
-                return (
-                    <GridItem
-                        key={personalExperience[index].title}
-                        $isHidden={isHidden}
-                        $isSameRow={isSameRow}
-                        $isHovered={isHovered}
-                        style={springProps}
-                    >
-                        <BaseBubble
-                            {...personalExperience[index]}
-                            position={{
-                                row: currentRow,
-                                col: index % 4,
-                            }}
-                            totalBubbles={gridSize}
-                            onHoverChange={(isHovered) => {
-                                setHoveredIndex(isHovered ? index : null);
-                            }}
-                        />
-                    </GridItem>
-                );
-            })}
-        </GridContainer>
+                    return (
+                        <GridItem
+                            key={personalExperience[index].title}
+                            $isHidden={isHidden}
+                            $isSameRow={isSameRow}
+                            $isHovered={isHovered}
+                            style={springProps}
+                        >
+                            <BaseBubble
+                                {...personalExperience[index]}
+                                position={{
+                                    row: currentRow,
+                                    col: index % 4,
+                                }}
+                                totalBubbles={gridSize}
+                                onHoverChange={(isHovered) => {
+                                    setHoveredIndex(isHovered ? index : null);
+                                }}
+                            />
+                        </GridItem>
+                    );
+                })}
+            </GridContainer>
+        </>
     );
 }; 
