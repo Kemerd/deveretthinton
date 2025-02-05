@@ -1,3 +1,4 @@
 /node_modules
 /fonts/woff2-master
 /.vscode/chrome-debug-profile
+/build
