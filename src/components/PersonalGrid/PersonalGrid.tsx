@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { BaseBubble } from '../BaseBubble/BaseBubble';
 import { AppTheme } from '../../theme/theme';
 import { useSpring, animated, useSprings } from 'react-spring';
 
-// Reuse the same GridContainer styling
 const GridContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 280px);
@@ -17,42 +16,80 @@ const GridContainer = styled.div`
     width: 100%;
 `;
 
-// Placeholder personal projects data
-const personalProjects = [
+const GridItem = styled(animated.div) <{
+    $isHidden: boolean;
+    $isSameRow: boolean;
+    $isHovered: boolean;
+}>`
+    transition: opacity 0.3s ease;
+    opacity: ${props => props.$isHovered ? 1 :
+        (props.$isHidden || props.$isSameRow) ? 0 : 1};
+    pointer-events: ${props => props.$isHovered ? 'auto' :
+        (props.$isHidden || props.$isSameRow) ? 'none' : 'auto'};
+    z-index: ${props => props.$isHovered ? 3 :
+        props.$isHidden ? 0 :
+            props.$isSameRow ? 2 : 1};
+`;
+
+const personalExperience = [
     {
-        title: 'Aviation',
-        description: 'Private pilot and aircraft builder. Currently building an RV-14.',
+        title: 'Unreal Engine',
+        description: 'Over a decade of experience in Unreal Engine development, from game development to film & VFX. Expertise in blueprints, C++, and real-time rendering.',
+        years: 10,
+        images: ['/unreal1.jpg', '/unreal2.jpg', '/unreal3.jpg'],
+    },
+    {
+        title: 'Unity',
+        description: 'Extensive experience in Unity development, focusing on performance optimization and cross-platform development.',
+        years: 10,
+        images: ['/unity1.jpg', '/unity2.jpg', '/unity3.jpg'],
+    },
+    {
+        title: 'C++',
+        description: 'Deep expertise in C++ development, from low-level systems programming to high-performance game engines.',
+        years: 10,
+        images: ['/cpp1.jpg', '/cpp2.jpg', '/cpp3.jpg'],
+    },
+    {
+        title: 'Python',
+        description: 'Proficient in Python development, with focus on automation, data processing, and machine learning applications.',
         years: 5,
-        images: ['/personal/aviation1.jpg', '/personal/aviation2.jpg', '/personal/aviation3.jpg'],
+        images: ['/python1.jpg', '/python2.jpg', '/python3.jpg'],
     },
     {
-        title: 'Photography',
-        description: 'Landscape and aviation photography enthusiast.',
-        years: 8,
-        images: ['/personal/photo1.jpg', '/personal/photo2.jpg', '/personal/photo3.jpg'],
-    },
-    {
-        title: '3D Printing',
-        description: 'Custom 3D printer builds and design work.',
+        title: 'Machine Learning',
+        description: 'Experience in implementing ML solutions, from computer vision to natural language processing.',
         years: 3,
-        images: ['/personal/3d1.jpg', '/personal/3d2.jpg', '/personal/3d3.jpg'],
+        images: ['/ml1.jpg', '/ml2.jpg', '/ml3.jpg'],
     },
     {
-        title: 'Electronics',
-        description: 'Custom PCB design and embedded systems projects.',
+        title: 'Flutter & Dart',
+        description: 'Expert in cross-platform mobile development using Flutter, creating beautiful and performant applications.',
         years: 4,
-        images: ['/personal/electronics1.jpg', '/personal/electronics2.jpg', '/personal/electronics3.jpg'],
+        images: ['/flutter1.jpg', '/flutter2.jpg', '/flutter3.jpg'],
+    },
+    {
+        title: 'JavaScript',
+        description: 'Extensive experience in modern JavaScript development, including React and Node.js.',
+        years: 8,
+        images: ['/js1.jpg', '/js2.jpg', '/js3.jpg'],
+    },
+    {
+        title: 'TypeScript',
+        description: 'Strong advocate for type-safe development, using TypeScript to build robust applications.',
+        years: 5,
+        images: ['/ts1.jpg', '/ts2.jpg', '/ts3.jpg'],
     },
 ];
 
 export const PersonalGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const gridSize = { rows: Math.ceil(personalProjects.length / 4), cols: 4 };
+    const gridSize = { rows: Math.ceil(personalExperience.length / 4), cols: 4 };
 
-    // Reuse the same spring logic as SkillGrid
+    // Create springs for all items at once
     const springs = useSprings(
-        personalProjects.length,
-        personalProjects.map((_, index) => {
+        personalExperience.length,
+        personalExperience.map((_, index) => {
             const currentRow = Math.floor(index / 4);
             const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
             const isSameRow = currentRow === hoveredRow;
@@ -64,8 +101,14 @@ export const PersonalGrid: React.FC = () => {
             );
 
             return {
-                opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
-                scale: isHovered ? 1.05 : 1,
+                from: {
+                    opacity: 1,
+                    blur: 10,
+                },
+                to: {
+                    opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
+                    blur: isHovered ? 20 : 10,
+                },
                 config: {
                     mass: 1,
                     tension: 280,
@@ -77,20 +120,39 @@ export const PersonalGrid: React.FC = () => {
 
     return (
         <GridContainer>
-            {springs.map((springProps, index) => (
-                <BaseBubble
-                    key={personalProjects[index].title}
-                    {...personalProjects[index]}
-                    position={{
-                        row: Math.floor(index / 4),
-                        col: index % 4,
-                    }}
-                    totalBubbles={gridSize}
-                    onHoverChange={(isHovered) => {
-                        setHoveredIndex(isHovered ? index : null);
-                    }}
-                />
-            ))}
+            {springs.map((springProps, index) => {
+                const currentRow = Math.floor(index / 4);
+                const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+                const isSameRow = currentRow === hoveredRow;
+                const isHovered = index === hoveredIndex;
+
+                const isHidden = hoveredIndex !== null && (
+                    (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                    (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                );
+
+                return (
+                    <GridItem
+                        key={personalExperience[index].title}
+                        $isHidden={isHidden}
+                        $isSameRow={isSameRow}
+                        $isHovered={isHovered}
+                        style={springProps}
+                    >
+                        <BaseBubble
+                            {...personalExperience[index]}
+                            position={{
+                                row: currentRow,
+                                col: index % 4,
+                            }}
+                            totalBubbles={gridSize}
+                            onHoverChange={(isHovered) => {
+                                setHoveredIndex(isHovered ? index : null);
+                            }}
+                        />
+                    </GridItem>
+                );
+            })}
         </GridContainer>
     );
 }; 
