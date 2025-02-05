@@ -55,6 +55,8 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transform-origin: ${props => props.$isExpanded ? 'center center' : 'left center'};
+    will-change: transform, width, height;
     
     /* Animated border style */
     &::after {
@@ -69,7 +71,7 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
         border-radius: inherit;
         z-index: -1;
         opacity: ${props => props.$isExpanded ? 1 : 0.3};
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 `;
 
@@ -332,35 +334,35 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Description animation
     const descriptionSpring = useSpring({
-        y: isHovered ? 60 : 100,
+        y: isHovered ? 0 : 20,
         opacity: isHovered ? 1 : 0,
         config: {
-            mass: 1,
+            mass: 0.8,
             tension: 280,
-            friction: 26,
+            friction: 24,
         }
     });
 
     // Image gallery animation
     const gallerySpring = useSpring({
         opacity: isHovered ? 1 : 0,
-        scale: isHovered ? 1 : 0.95,
-        delay: isHovered ? 200 : 0,
+        scale: isHovered ? 1 : 0.98,
+        delay: isHovered ? 100 : 0,
         config: {
-            mass: 1,
+            mass: 0.8,
             tension: 280,
-            friction: 26,
+            friction: 24,
         }
     });
 
     // Add a new spring for the main image
     const mainImageSpring = useSpring({
         opacity: isHovered ? 0 : 1,
-        scale: isHovered ? 0.9 : 1,
+        scale: isHovered ? 0.95 : 1,
         config: {
-            mass: 1,
+            mass: 0.8,
             tension: 380,
-            friction: 26,
+            friction: 24,
         }
     });
 
