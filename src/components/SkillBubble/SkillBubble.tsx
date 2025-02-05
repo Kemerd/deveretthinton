@@ -76,9 +76,8 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
 `;
 
 const TitleWrapper = styled(animated.div)`
+    position: relative;
     width: 100%;
-    padding: ${AppTheme.spacing[12]} ${AppTheme.spacing[16]};
-    margin-top: auto;
 `;
 
 const TitleContainer = styled(animated.div)`
@@ -92,6 +91,7 @@ const TitleContainer = styled(animated.div)`
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: ${AppTheme.radius.medium};
+    width: 100%;
     
     h3 {
         margin: 0;
@@ -133,11 +133,12 @@ const ImageGallery = styled(animated.div)`
 
 const ImageContainer = styled.div`
     position: relative;
-    width: 280px;
+    width: 100%;
     height: 260px;
     background: rgba(0, 0, 0, 0.1);
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
+    margin-bottom: ${AppTheme.spacing[12]};
 `;
 
 const GlassImageWrapper = styled(FrostedGlass)`
@@ -250,6 +251,8 @@ const NonExpandedContent = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+    padding: ${AppTheme.spacing[16]};
 `;
 
 export const SkillBubble: React.FC<SkillBubbleProps> = ({
@@ -321,12 +324,8 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     };
 
     const titleSpring = useSpring({
-        from: { opacity: 1 },
-        to: {
-            opacity: 1
-        },
         config: {
-            mass: 1,
+            mass: 0.8,
             tension: 380,
             friction: 26,
         }
@@ -416,44 +415,25 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                 style={containerSpring}
             >
                 <StyledFrostedGlass>
-                    {isHovered ? (
-                        <>
-                            <Description style={descriptionSpring}>
+                    <NonExpandedContent>
+                        <ImageContainer>
+                            <GlassImageWrapper>
+                                <FeatureImage
+                                    src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
+                                    $isActive={!isHovered}
+                                    $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                    onError={handleImageError}
+                                    alt={`${title} preview`}
+                                />
+                            </GlassImageWrapper>
+                        </ImageContainer>
+                        <TitleWrapper style={titleSpring}>
+                            <TitleContainer>
                                 <h3>{title}</h3>
-                                <p>{description}</p>
-                            </Description>
-
-                            <ImageGallery style={gallerySpring}>
-                                {images.slice(1).map((image, index) => (
-                                    <GalleryImage
-                                        key={index}
-                                        $src={image}
-                                        $fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols) % FALLBACK_COLORS.length]}
-                                    />
-                                ))}
-                            </ImageGallery>
-                        </>
-                    ) : (
-                        <NonExpandedContent>
-                            <ImageContainer>
-                                <GlassImageWrapper>
-                                    <FeatureImage
-                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
-                                        $isActive={!isHovered}
-                                        $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={handleImageError}
-                                        alt={`${title} preview`}
-                                    />
-                                </GlassImageWrapper>
-                            </ImageContainer>
-                            <TitleWrapper style={titleSpring}>
-                                <TitleContainer>
-                                    <h3>{title}</h3>
-                                    {years && <YearText>{years}+ years</YearText>}
-                                </TitleContainer>
-                            </TitleWrapper>
-                        </NonExpandedContent>
-                    )}
+                                {years && <YearText>{years}+ years</YearText>}
+                            </TitleContainer>
+                        </TitleWrapper>
+                    </NonExpandedContent>
                 </StyledFrostedGlass>
             </AnimatedContent>
         </BubbleContainer>
