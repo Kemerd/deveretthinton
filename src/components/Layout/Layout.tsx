@@ -144,7 +144,7 @@ const DownloadButton = styled(FrostedGlass)`
     position: absolute;
     bottom: ${AppTheme.spacing[32]};
     right: 0;
-    padding: 0;
+    padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[12]};
     cursor: pointer;
     height: 28px;
     display: inline-flex;
@@ -178,16 +178,28 @@ const ButtonContent = styled.div`
     display: flex;
     align-items: center;
     gap: ${AppTheme.spacing[4]};
-    padding: ${AppTheme.spacing[2]} ${AppTheme.spacing[4]};
+    padding: ${AppTheme.spacing[2]} ${AppTheme.spacing[2]};
 `;
 
 const ButtonText = styled.span`
     font-family: ${AppTheme.typography.body.fontFamily};
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    line-height: 1.2;
+    ${AppTheme.typography.body};
     color: ${AppTheme.colors.light.textPrimary};
+    font-family: 'Artico', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+
+    text-align: center;
+    white-space: nowrap;
+    max-width: none;
+    margin: ${AppTheme.spacing[8]} auto ${AppTheme.spacing[4]};
+    opacity: 0.8;
+    letter-spacing: +0.05em;
+    font-size: 1em;
+    
+    /* Add fallback handling */
+    @supports not (font-variation-settings: normal) {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
 `;
 
 const ButtonIcon = styled.i`

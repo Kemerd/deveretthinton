@@ -6,9 +6,7 @@ const GlobalStyles = createGlobalStyle`
     @font-face {
         font-family: 'Artico';
         src: local('Artico'),
-             url('../fonts/woff2/Artico.woff2') format('woff2'),
-             url('../fonts/woff/Artico.woff') format('woff'),
-             url('../fonts/otf/Artico.otf') format('opentype');
+             url('/fonts/woff2/Artico.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: block;
@@ -18,9 +16,7 @@ const GlobalStyles = createGlobalStyle`
     @font-face {
         font-family: 'Artico';
         src: local('Artico Bold'),
-             url('../fonts/woff2/Artico-Bold.woff2') format('woff2'),
-             url('../fonts/woff/Artico-Bold.woff') format('woff'),
-             url('../fonts/otf/Artico-Bold.otf') format('opentype');
+             url('/fonts/woff2/Artico-Bold.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
         font-display: block;
@@ -30,9 +26,7 @@ const GlobalStyles = createGlobalStyle`
     @font-face {
         font-family: 'Artico Expanded';
         src: local('Artico Expanded'),
-             url('../fonts/woff2/Artico-Expanded.woff2') format('woff2'),
-             url('../fonts/woff/Artico-Expanded.woff') format('woff'),
-             url('../fonts/otf/Artico-Expanded.otf') format('opentype');
+             url('/fonts/woff2/Artico-Expanded.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: block;
@@ -44,9 +38,7 @@ const GlobalStyles = createGlobalStyle`
         font-family: 'SF Pro Display';
         src: local('SF Pro Display'),
              local('.SFNSDisplay-Regular'),
-             url('../fonts/woff2/SF-Pro-Display-Regular.woff2') format('woff2'),
-             url('../fonts/woff/SF-Pro-Display-Regular.woff') format('woff'),
-             url('../fonts/otf/SF-Pro-Display-Regular.otf') format('opentype');
+             url('/fonts/woff2/SF-Pro-Display-Regular.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: block;
@@ -56,11 +48,57 @@ const GlobalStyles = createGlobalStyle`
         font-family: 'SF Pro Display';
         src: local('SF Pro Display Bold'),
              local('.SFNSDisplay-Bold'),
-             url('../fonts/woff2/SF-Pro-Display-Bold.woff2') format('woff2'),
-             url('../fonts/woff/SF-Pro-Display-Bold.woff') format('woff'),
-             url('../fonts/otf/SF-Pro-Display-Bold.otf') format('opentype');
+             url('/fonts/woff2/SF-Pro-Display-Bold.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-Regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-RegularItalic.woff2') format('woff2');
+        font-weight: 400;
+        font-style: italic;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-Medium.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-MediumItalic.woff2') format('woff2');
+        font-weight: 500;
+        font-style: italic;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-Thin.woff2') format('woff2');
+        font-weight: 200;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'SF Pro Display';
+        src: url('/fonts/woff2/SF-Pro-Display-ThinItalic.woff2') format('woff2');
+        font-weight: 200;
+        font-style: italic;
         font-display: swap;
     }
 
@@ -69,9 +107,7 @@ const GlobalStyles = createGlobalStyle`
         font-family: 'SF Pro Text';
         src: local('SF Pro Text'),
              local('.SFNSText-Regular'),
-             url('../fonts/woff2/SF-Pro-Text-Regular.woff2') format('woff2'),
-             url('../fonts/woff/SF-Pro-Text-Regular.woff') format('woff'),
-             url('../fonts/otf/SF-Pro-Text-Regular.otf') format('opentype');
+             url('/fonts/woff2/SF-Pro-Text-Regular.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -81,9 +117,7 @@ const GlobalStyles = createGlobalStyle`
         font-family: 'SF Pro Text';
         src: local('SF Pro Text Medium'),
              local('.SFNSText-Medium'),
-             url('../fonts/woff2/SF-Pro-Text-Medium.woff2') format('woff2'),
-             url('../fonts/woff/SF-Pro-Text-Medium.woff') format('woff'),
-             url('../fonts/otf/SF-Pro-Text-Medium.otf') format('opentype');
+             url('/fonts/woff2/SF-Pro-Text-Medium.woff2') format('woff2');
         font-weight: 500;
         font-style: normal;
         font-display: swap;
@@ -93,9 +127,7 @@ const GlobalStyles = createGlobalStyle`
         font-family: 'SF Pro Text';
         src: local('SF Pro Text Bold'),
              local('.SFNSText-Bold'),
-             url('../fonts/woff2/SF-Pro-Text-Bold.woff2') format('woff2'),
-             url('../fonts/woff/SF-Pro-Text-Bold.woff') format('woff'),
-             url('../fonts/otf/SF-Pro-Text-Bold.otf') format('opentype');
+             url('/fonts/woff2/SF-Pro-Text-Bold.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
         font-display: swap;

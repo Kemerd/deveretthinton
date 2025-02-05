@@ -19,13 +19,22 @@ const GridContainer = styled.div`
 const QuipText = styled.p`
     ${AppTheme.typography.body};
     color: ${AppTheme.colors.light.textSecondary};
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
     font-style: italic;
     text-align: center;
-    max-width: 800px;
+    white-space: nowrap;
+    max-width: none;
     margin: ${AppTheme.spacing[8]} auto ${AppTheme.spacing[4]};
     opacity: 0.8;
+    letter-spacing: +0.05em;
+    font-size: 1em;
+    
+    /* Add fallback handling */
+    @supports not (font-variation-settings: normal) {
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
 `;
-
 const GridItem = styled(animated.div) <{
     $isHidden: boolean;
     $isSameRow: boolean;
@@ -182,7 +191,7 @@ export const WorkGrid: React.FC = () => {
     return (
         <>
             <QuipText>
-                People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.
+                Just a few highlights from my journey. For the full saga (and my caffeine consumption stats), check my CV or LinkedIn.
             </QuipText>
             <GridContainer>
                 {springs.map((springProps, index) => {
