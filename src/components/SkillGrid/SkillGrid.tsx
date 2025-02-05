@@ -82,13 +82,13 @@ const professionalSkills = [
     },
     {
         title: 'XR/VR Development',
-        description: 'I\'ve had the privilege of developing with VR since its public inception with the Oculus DK1. From award-winning research projects to Skydance\'s Behemoth and Transformers VR experiences, I\'ve been making people motion sick (professionally) for years!',
+        description: 'I\'ve had the privilege of developing with VR since its public inception with the Oculus DK1. From award-winning research projects to Skydance\'s Behemoth and LBE Transformers VR experiences, I\'ve been making people motion sick (professionally) for years!',
         years: 'Since the beginning!',
         images: ['/img/skills/vr1.jpg', '/img/skills/vr2.jpg', '/img/skills/vr3.jpg'],
     },
     {
         title: 'Design & UI',
-        description: 'My goal is to create interfaces that ensure Steve Jobs doesn\'t turn over in his grave. Because good UI is like a joke - if you have to explain it, it\'s probably not that good. I\'ve been designing interfaces since 2009, and I still learn something new every day!',
+        description: 'My goal is to create interfaces that ensure Steve Jobs doesn\'t turn over in his grave. Because good UI is like a joke - if you have to explain it, it\'s probably not that good. I\'ve been designing & implementing interfaces since 2009, and I still learn something new every day!',
         years: 'UI Architect',
         images: ['/img/skills/ui1.jpg', '/img/skills/ui2.jpg', '/img/skills/ui3.jpg'],
     },
