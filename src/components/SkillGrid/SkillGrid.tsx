@@ -15,6 +15,15 @@ const GridContainer = styled.div`
     position: relative;
     justify-content: center;
     width: 100%;
+
+    @media (max-width: 1268px) {
+        /* Force minimum width to fit all columns plus gaps */
+        min-width: calc(280px * 4 + ${AppTheme.spacing[24]} * 3);
+        margin: 0;
+        justify-content: flex-start;
+        padding-left: ${AppTheme.spacing[32]};
+        padding-right: ${AppTheme.spacing[32]};
+    }
 `;
 
 const GridItem = styled(animated.div) <{
@@ -30,6 +39,41 @@ const GridItem = styled(animated.div) <{
     z-index: ${props => props.$isHovered ? 3 :
         props.$isHidden ? 0 :
             props.$isSameRow ? 2 : 1};
+`;
+
+const ScrollContainer = styled.div`
+    /* Default state - no scrolling */
+    width: 100%;
+    
+    /* Enable horizontal scrolling under 1268px */
+    @media (max-width: 1268px) {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        /* Show scrollbar above content */
+        position: relative;
+        z-index: 2;
+        
+        /* Customize scrollbar appearance */
+        &::-webkit-scrollbar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+        }
+        
+        /* Firefox scrollbar styling */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+    }
 `;
 
 const professionalSkills = [
@@ -177,47 +221,49 @@ export const SkillGrid: React.FC = () => {
             <QuipText>
                 They say a jack of all trades is a master of none... but better than a master of one. Good thing I mastered quite a few!
             </QuipText>
-            <GridContainer>
-                {springs.map((springProps, index) => {
-                    const currentRow = Math.floor(index / 4);
-                    const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
-                    const isSameRow = currentRow === hoveredRow;
-                    const isHovered = index === hoveredIndex;
+            <ScrollContainer>
+                <GridContainer>
+                    {springs.map((springProps, index) => {
+                        const currentRow = Math.floor(index / 4);
+                        const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+                        const isSameRow = currentRow === hoveredRow;
+                        const isHovered = index === hoveredIndex;
 
-                    const isHidden = hoveredIndex !== null && (
-                        (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                        (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
-                    );
+                        const isHidden = hoveredIndex !== null && (
+                            (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                            (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                        );
 
-                    return (
-                        <GridItem
-                            key={professionalSkills[index].title}
-                            $isHidden={isHidden}
-                            $isSameRow={isSameRow}
-                            $isHovered={isHovered}
-                            style={{
-                                ...springProps,
-                                transform: springProps.rotation.to(
-                                    r => `rotate(${r}deg)`
-                                ),
-                            }}
-                        >
-                            <BaseBubble
-                                {...professionalSkills[index]}
-                                position={{
-                                    row: currentRow,
-                                    col: index % 4,
+                        return (
+                            <GridItem
+                                key={professionalSkills[index].title}
+                                $isHidden={isHidden}
+                                $isSameRow={isSameRow}
+                                $isHovered={isHovered}
+                                style={{
+                                    ...springProps,
+                                    transform: springProps.rotation.to(
+                                        r => `rotate(${r}deg)`
+                                    ),
                                 }}
-                                totalBubbles={gridSize}
-                                currentImageIndex={getCurrentImageIndex(index)}
-                                onHoverChange={(isHovered) => {
-                                    setHoveredIndex(isHovered ? index : null);
-                                }}
-                            />
-                        </GridItem>
-                    );
-                })}
-            </GridContainer>
+                            >
+                                <BaseBubble
+                                    {...professionalSkills[index]}
+                                    position={{
+                                        row: currentRow,
+                                        col: index % 4,
+                                    }}
+                                    totalBubbles={gridSize}
+                                    currentImageIndex={getCurrentImageIndex(index)}
+                                    onHoverChange={(isHovered) => {
+                                        setHoveredIndex(isHovered ? index : null);
+                                    }}
+                                />
+                            </GridItem>
+                        );
+                    })}
+                </GridContainer>
+            </ScrollContainer>
         </>
     );
 }; 
