@@ -96,41 +96,46 @@ export const PersonalGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [currentCycleIndex, setCurrentCycleIndex] = useState(0);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [itemImageIndices, setItemImageIndices] = useState<number[]>(
+        new Array(personalExperience.length).fill(0)
+    );
     const gridSize = { rows: Math.ceil(personalExperience.length / 4), cols: 4 };
     const totalItems = personalExperience.length;
 
     // Function to get the current image index for a specific grid position
     const getCurrentImageIndex = (itemIndex: number) => {
         // Only show cycling images for the current active item
-        return itemIndex === currentCycleIndex ? activeImageIndex : 0;
+        return itemIndex === currentCycleIndex ? activeImageIndex : itemImageIndices[itemIndex];
     };
-
-    // Effect to handle cycling through images for the active item
-    useEffect(() => {
-        if (hoveredIndex !== null) return; // Don't cycle when an item is hovered
-
-        const imageInterval = setInterval(() => {
-            setActiveImageIndex(prev => (prev + 1) % 3); // Cycle through 0, 1, 2
-        }, 1000); // Change image every second
-
-        return () => clearInterval(imageInterval);
-    }, [hoveredIndex]);
 
     // Effect to handle cycling through grid items
     useEffect(() => {
         if (hoveredIndex !== null) return; // Don't cycle when an item is hovered
 
-        const itemInterval = setInterval(() => {
-            setCurrentCycleIndex(prev => {
-                const nextIndex = (prev + 1) % totalItems;
-                // Reset image index when moving to next item
-                setActiveImageIndex(0);
-                return nextIndex;
-            });
-        }, 3000); // Move to next item every 3 seconds
+        let isChangingImage = true; // Flag to alternate between changing image and moving item
 
-        return () => clearInterval(itemInterval);
-    }, [hoveredIndex, totalItems]);
+        const cycleInterval = setInterval(() => {
+            if (isChangingImage) {
+                // Update image for current item
+                setActiveImageIndex(prevImageIndex => {
+                    const nextImageIndex = (prevImageIndex + 1) % 3;
+                    setItemImageIndices(prevIndices => {
+                        const newIndices = [...prevIndices];
+                        newIndices[currentCycleIndex] = nextImageIndex;
+                        return newIndices;
+                    });
+                    return nextImageIndex;
+                });
+            } else {
+                // Move to next item
+                setCurrentCycleIndex(prev => (prev + 1) % totalItems);
+            }
+
+            isChangingImage = !isChangingImage; // Toggle flag
+        }, 1000); // Alternate every second
+
+        return () => clearInterval(cycleInterval);
+    }, [hoveredIndex, totalItems, currentCycleIndex]);
 
     // Create springs for all items at once
     const springs = useSprings(
