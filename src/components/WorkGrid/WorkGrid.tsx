@@ -59,7 +59,7 @@ const workExperience = [
     },
     {
         title: 'FCA Fiat Chrysler',
-        description: '(Nov 2020 - Jan 2021) Architected interactive features for CES 2021 car showcase using Unreal Engine. Created web-based immersive experience and AR companion apps for iOS/Android.',
+        description: '(Nov 2020 - Jan 2021) Architected interactive features for CES 2021 car showcase using Unreal Engine. Created web-based immersive experience and AR companion apps for iOS/Android!',
         years: 'Senior Game Developer',
         images: ['/img/work/fca1.jpg', '/img/work/fca2.jpg', '/img/work/fca3.jpg'],
     },
