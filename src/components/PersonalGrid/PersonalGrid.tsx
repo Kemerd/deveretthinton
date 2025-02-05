@@ -95,8 +95,7 @@ const personalExperience = [
 export const PersonalGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [currentCycleIndex, setCurrentCycleIndex] = useState(0);
-    const [activeImageIndex, setActiveImageIndex] = useState(0);
-    const [itemImageIndices, setItemImageIndices] = useState<number[]>(
+    const [activeImageIndices, setActiveImageIndices] = useState<number[]>(
         new Array(personalExperience.length).fill(0)
     );
     const gridSize = { rows: Math.ceil(personalExperience.length / 4), cols: 4 };
@@ -105,34 +104,27 @@ export const PersonalGrid: React.FC = () => {
     // Function to get the current image index for a specific grid position
     const getCurrentImageIndex = (itemIndex: number) => {
         // Only show cycling images for the current active item
-        return itemIndex === currentCycleIndex ? activeImageIndex : itemImageIndices[itemIndex];
+        return activeImageIndices[itemIndex];
     };
 
     // Effect to handle cycling through grid items
     useEffect(() => {
-        if (hoveredIndex !== null) return; // Don't cycle when an item is hovered
-
-        let isChangingImage = true; // Flag to alternate between changing image and moving item
+        // Exit early if an item is being hovered
+        if (hoveredIndex !== null) return;
 
         const cycleInterval = setInterval(() => {
-            if (isChangingImage) {
-                // Update image for current item
-                setActiveImageIndex(prevImageIndex => {
-                    const nextImageIndex = (prevImageIndex + 1) % 3;
-                    setItemImageIndices(prevIndices => {
-                        const newIndices = [...prevIndices];
-                        newIndices[currentCycleIndex] = nextImageIndex;
-                        return newIndices;
-                    });
-                    return nextImageIndex;
-                });
-            } else {
+            // Update image for current item
+            setActiveImageIndices(prevIndices => {
+                const newIndices = [...prevIndices];
+                // Increment only the current cycle index's image
+                newIndices[currentCycleIndex] = (newIndices[currentCycleIndex] + 1) % 3;
+
                 // Move to next item
                 setCurrentCycleIndex(prev => (prev + 1) % totalItems);
-            }
 
-            isChangingImage = !isChangingImage; // Toggle flag
-        }, 1000); // Alternate every second
+                return newIndices;
+            });
+        }, 1000); // Change every 1 seconds to give more time to view each image
 
         return () => clearInterval(cycleInterval);
     }, [hoveredIndex, totalItems, currentCycleIndex]);
