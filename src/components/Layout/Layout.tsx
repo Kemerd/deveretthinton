@@ -44,6 +44,12 @@ const HeaderContent = styled.div`
     display: flex;
     gap: ${AppTheme.spacing[32]};
     position: relative;
+
+    @media (max-width: 1268px) {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 `;
 
 const ContentWrapper = styled.div`
@@ -52,6 +58,11 @@ const ContentWrapper = styled.div`
     height: 284px;
     display: flex;
     align-items: center;
+
+    @media (max-width: 1268px) {
+        height: auto;
+        padding-top: ${AppTheme.spacing[24]};
+    }
 `;
 
 const TextContainer = styled.div`
@@ -65,6 +76,10 @@ const TextContainer = styled.div`
     
     & > * {
         transform: translateY(2px);
+    }
+
+    @media (max-width: 1268px) {
+        height: auto;
     }
 `;
 
@@ -129,14 +144,42 @@ const SocialLinks = styled.div`
     position: absolute;
     top: 0;
     right: 0;
+
+    @media (max-width: 1268px) {
+        position: relative;
+        justify-content: center;
+        margin-top: ${AppTheme.spacing[24]};
+    }
+
+    /* Add new breakpoint for very small screens */
+    @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: center;
+        gap: ${AppTheme.spacing[12]};
+    }
 `;
 
 const SocialIcon = styled.a`
     color: ${AppTheme.colors.light.textPrimary};
     font-size: 24px;
     transition: transform 0.3s ease;
+    
     &:hover {
         transform: translateY(-2px);
+    }
+
+    /* Add styles for very small screens */
+    @media (max-width: 480px) {
+        font-size: 28px; // Slightly larger for better touch targets
+        padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[12]};
+        
+        /* Optional: Add a subtle background for better visibility */
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: ${AppTheme.radius.medium};
+        width: 200px; // Fixed width for consistent look
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 `;
 
@@ -171,6 +214,20 @@ const DownloadButton = styled(FrostedGlass)`
 
     &:active {
         transform: translateY(0);
+    }
+
+    @media (max-width: 1268px) {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        margin-top: ${AppTheme.spacing[24]};
+    }
+
+    /* Add styles for very small screens */
+    @media (max-width: 480px) {
+        width: 200px; // Match the width of social icons
+        height: 40px; // Slightly taller for better touch target
+        margin-top: ${AppTheme.spacing[12]};
     }
 `;
 
