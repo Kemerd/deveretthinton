@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { AppTheme } from '../../theme/theme';
-import { useSpring, animated, config } from 'react-spring';
+import { useSpring, animated, config, useSprings } from 'react-spring';
 
 const FALLBACK_COLORS = [
     '#FF6B6B', // Coral Red
@@ -274,6 +274,81 @@ const NonExpandedContent = styled.div`
     padding: ${AppTheme.spacing[16]};
 `;
 
+// Keep the existing container styles, but update ExpandedContentLayout
+const ExpandedContentLayout = styled.div`
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: 100%;
+    gap: ${AppTheme.spacing[24]};
+    padding: ${AppTheme.spacing[32]};
+`;
+
+const InfoSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${AppTheme.spacing[24]};
+    padding: ${AppTheme.spacing[32]};
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: ${AppTheme.radius.large};
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: fit-content;
+`;
+
+const ExpandedTitle = styled(animated.div)`
+    ${AppTheme.typography.title1};
+    color: ${AppTheme.colors.light.textPrimary};
+    margin: 0;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+`;
+
+const ExpandedDescription = styled(animated.div)`
+    ${AppTheme.typography.body};
+    color: ${AppTheme.colors.light.textPrimary};
+    opacity: 0.9;
+    line-height: 1.6;
+    font-size: 15px;
+    margin-top: ${AppTheme.spacing[16]};
+`;
+
+const GallerySection = styled(animated.div)`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: ${AppTheme.spacing[24]};
+    align-items: start;
+    padding: ${AppTheme.spacing[32]};
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: ${AppTheme.radius.large};
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: fit-content;
+`;
+
+const GalleryItem = styled(animated.div)`
+    position: relative;
+    aspect-ratio: 16/10;
+    border-radius: ${AppTheme.radius.medium};
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+    }
+
+    /* Enhanced hover effect */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    &:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+`;
+
 export const BaseBubble: React.FC<BaseBubbleProps> = ({
     title,
     description,
@@ -324,11 +399,10 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
             if (col === totalBubbles.cols - 1) return -920; // 1200 - 280
             return -((280 + 24) * col);
         })() : 0,
-        immediate: false,
         config: {
             mass: 1,
-            tension: 400,
-            friction: 26,
+            tension: 380,
+            friction: 28,
         }
     });
 
@@ -350,39 +424,43 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         }
     });
 
+    // Move useSpring hooks outside of JSX
+    const titleAnimation = useSpring({
+        from: { x: -40, opacity: 0 },
+        to: { x: isHovered ? 0 : -40, opacity: isHovered ? 1 : 0 },
+        config: { mass: 1, tension: 280, friction: 24 }
+    });
+
     // Description animation
-    const descriptionSpring = useSpring({
-        y: isHovered ? 0 : 20,
-        opacity: isHovered ? 1 : 0,
-        config: {
-            mass: 0.8,
-            tension: 280,
-            friction: 24,
-        }
-    });
-
-    // Image gallery animation
-    const gallerySpring = useSpring({
-        opacity: isHovered ? 1 : 0,
-        scale: isHovered ? 1 : 0.98,
+    const descriptionAnimation = useSpring({
+        from: { y: 20, opacity: 0 },
+        to: { y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 },
         delay: isHovered ? 100 : 0,
-        config: {
-            mass: 0.8,
-            tension: 280,
-            friction: 24,
-        }
+        config: { mass: 0.8, tension: 280, friction: 26 }
     });
 
-    // Add a new spring for the main image
-    const mainImageSpring = useSpring({
-        opacity: isHovered ? 0 : 1,
-        scale: isHovered ? 0.95 : 1,
-        config: {
-            mass: 0.8,
-            tension: 380,
-            friction: 24,
-        }
-    });
+    // Replace the galleryAnimations code with this:
+    const galleryAnimations = useSprings(
+        3,
+        Array(3).fill(0).map((_, index) => ({
+            from: {
+                x: 40,
+                opacity: 0,
+                scale: 0.9,
+            },
+            to: {
+                x: isHovered ? 0 : 40,
+                opacity: isHovered ? 1 : 0,
+                scale: isHovered ? 1 : 0.9,
+            },
+            delay: isHovered ? 200 + index * 60 : 0,
+            config: {
+                mass: 0.8,
+                tension: 300,
+                friction: 24,
+            }
+        }))
+    );
 
     // Update hover handlers to call onHoverChange
     const handleMouseEnter = () => {
@@ -434,25 +512,55 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                 style={containerSpring}
             >
                 <StyledFrostedGlass>
-                    <NonExpandedContent>
-                        <ImageContainer>
-                            <GlassImageWrapper>
-                                <FeatureImage
-                                    src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
-                                    $isActive={!isHovered}
-                                    $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                    onError={handleImageError}
-                                    alt={`${title} preview`}
-                                />
-                            </GlassImageWrapper>
-                        </ImageContainer>
-                        <TitleWrapper style={titleSpring}>
-                            <TitleContainer>
-                                <h3>{title}</h3>
-                                {years && <YearText>{years}+ years</YearText>}
-                            </TitleContainer>
-                        </TitleWrapper>
-                    </NonExpandedContent>
+                    {!isHovered ? (
+                        <NonExpandedContent>
+                            <ImageContainer>
+                                <GlassImageWrapper>
+                                    <FeatureImage
+                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
+                                        $isActive={!isHovered}
+                                        $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                        onError={handleImageError}
+                                        alt={`${title} preview`}
+                                    />
+                                </GlassImageWrapper>
+                            </ImageContainer>
+                            <TitleWrapper style={titleSpring}>
+                                <TitleContainer>
+                                    <h3>{title}</h3>
+                                    {years && <YearText>{years}+ years</YearText>}
+                                </TitleContainer>
+                            </TitleWrapper>
+                        </NonExpandedContent>
+                    ) : (
+                        <ExpandedContentLayout>
+                            <InfoSection>
+                                <animated.div style={titleAnimation}>
+                                    <ExpandedTitle>{title}</ExpandedTitle>
+                                    {years && <YearText>{years}+ years</YearText>}
+                                </animated.div>
+                                <animated.div style={descriptionAnimation}>
+                                    <ExpandedDescription>{description}</ExpandedDescription>
+                                </animated.div>
+                            </InfoSection>
+                            <GallerySection>
+                                {images.slice(0, 3).map((image, index) => (
+                                    <animated.div
+                                        key={image}
+                                        style={galleryAnimations[index]}
+                                    >
+                                        <GalleryItem>
+                                            <img
+                                                src={image}
+                                                alt={`${title} gallery ${index + 1}`}
+                                                loading="lazy"
+                                            />
+                                        </GalleryItem>
+                                    </animated.div>
+                                ))}
+                            </GallerySection>
+                        </ExpandedContentLayout>
+                    )}
                 </StyledFrostedGlass>
             </AnimatedContent>
         </BubbleContainer>
