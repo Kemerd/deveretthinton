@@ -71,13 +71,13 @@ const workExperience = [
     },
     {
         title: 'Armstrong State University',
-        description: '(Aug 2017 - May 2018) Created cutting-edge primality-test algorithms using Python and SAGE. Constructed Elliptical curves over Finite Fields and implemented complex mathematical processes for prime number verification.',
+        description: '(Aug 2017 - May 2018) With the power of "elliptical curves over finite fields," we created cutting-edge primality-test algorithms using Python and SAGE.',
         years: 'Mathematics Researcher',
         images: ['/img/work/armstrong1.jpg', '/img/work/armstrong2.jpg', '/img/work/armstrong3.jpg'],
     },
     {
         title: 'Code Mercenary',
-        description: '(2009 - 2016) Led multiple game development projects across various companies including Novabox, UserCS, and Red-Skye. Developed game servers, implemented AI systems, and created custom features using C++, LUA, and various web technologies.',
+        description: '(2009 - 2016) Led multiple software projects across various companies including Novabox, UserCS, and more. Developed game servers, AI systems, and created custom features using C++, C#, LUA, and various web technologies.',
         years: 'Freelance Contractor',
         images: ['/img/work/freelance1.jpg', '/img/work/freelance2.jpg', '/img/work/freelance3.jpg'],
     },

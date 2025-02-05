@@ -35,27 +35,27 @@ const GridItem = styled(animated.div) <{
 const professionalSkills = [
     {
         title: 'Full-Stack Development',
-        description: 'From pixel-perfect, beautifully crafted, animated frontends— to scalable backends, I\'ve built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.',
+        description: 'From pixel-perfect, beautifully animated frontends— to scalable backends, I\'ve built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.',
         years: '10+ years',
         images: ['/img/skills/fullstack1.jpg', '/img/skills/fullstack2.jpg', '/img/skills/fullstack3.jpg'],
     },
     {
         title: 'Machine Learning & Python',
-        description: 'Turning caffeine into weights and biases since before it was cool. I\'ve been using linear algebra and statistics to train models since 2016— when it was just a niche class in college, we didn\'t have PyTorch or TensorFlow!',
+        description: 'Turning caffeine into weights & biases since before it was cool. I\'ve used linear algebra + statistics to train models since 2016— when it was just a niche class in college, we didn\'t have PyTorch or TensorFlow!',
         years: '7+ years',
         images: ['/img/skills/ml1.jpg', '/img/skills/ml2.jpg', '/img/skills/ml3.jpg'],
 
     },
     {
         title: 'Unreal & Unity',
-        description: 'As a passionate gamer, I\'ve been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to end to end Netflix virtual production pipeline tooling, I\'ve probably broken and fixed every subsystem in both engines at least twice. Yes, even that one.',
+        description: 'As a passionate gamer, I\'ve been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to Netflix VP pipeline tooling, I\'ve probably broken & fixed every subsystem in both engines at least twice. Yes, even that one.',
         years: '10+ years',
         images: ['/img/skills/unreal1.jpg', '/img/skills/unreal2.jpg', '/img/skills/unreal3.jpg'],
 
     },
     {
         title: 'C++ & C#',
-        description: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit.. even if it takes 200 extra lines, the performance can be very worth it! With C++ in mind, C# is easy by comparison!',
+        description: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit.. even if it takes 200 extra lines, the performance can be very worth it! C# is easy by comparison!',
         years: '10+ years',
         images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
@@ -67,7 +67,7 @@ const professionalSkills = [
     },
     {
         title: 'CI/CD Pipeline',
-        description: 'I build end-to-end multi-platform deployment pipelines that would make a DevOps engineer shed tears of joy. Because the best deployments are the ones that happen smoothly, predictably, and without surprises. A well thought out architecture can save a lot of headaches!',
+        description: 'I build end-to-end multi-platform deployment pipelines that would make a DevOps engineer shed tears of joy. Because the best deployments are the ones that happen smoothly, predictably, and without surprises or headaches.',
         years: 'DevOps Evangelist',
         images: ['/img/skills/cicd1.jpg', '/img/skills/cicd2.jpg', '/img/skills/cicd3.jpg'],
     },
@@ -79,7 +79,7 @@ const professionalSkills = [
     },
     {
         title: 'Design & UI',
-        description: 'My goal is to create interfaces that ensure Steve Jobs doesn\'t turn over in his grave. Because good UI is like a joke - if you have to explain it, it\'s probably not that good. I\'ve been designing & implementing interfaces since 2009, and I still learn something new every day!',
+        description: 'My goal is to create interfaces that ensure Steve Jobs doesn\'t turn over in his grave. Because good UI is like a joke - if you have to explain it, it\'s probably not that good. I\'ve been designing & implementing interfaces since 2009, and still learning!',
         years: 'UI Architect',
         images: ['/img/skills/ui1.jpg', '/img/skills/ui2.jpg', '/img/skills/ui3.jpg'],
     },
