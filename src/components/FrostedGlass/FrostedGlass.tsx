@@ -4,36 +4,36 @@ import { AppTheme } from '../../theme/theme';
 
 // Props interface for the actual React component
 interface FrostedGlassProps extends React.HTMLAttributes<HTMLDivElement> {
-    $blurIntensity?: number;
-    $borderRadius?: string;
-    $padding?: string;
-    $upperLeftGlow?: boolean;
-    $bottomRightGlow?: boolean;
-    $glowIntensity?: number;
-    $enableGlow?: boolean;
-    $enableAnimatedGradient?: boolean;
-    children?: React.ReactNode;
-    className?: string; // Important for styled-components
+  $blurIntensity?: number;
+  $borderRadius?: string;
+  $padding?: string;
+  $upperLeftGlow?: boolean;
+  $bottomRightGlow?: boolean;
+  $glowIntensity?: number;
+  $enableGlow?: boolean;
+  $enableAnimatedGradient?: boolean;
+  children?: React.ReactNode;
+  className?: string; // Important for styled-components
 }
 
 // Create a base component that will filter the props
 const FrostedGlassBase = React.forwardRef<HTMLDivElement, FrostedGlassProps>(({
-    children,
-    className,
-    // Destructure all styled props to prevent them from reaching the DOM
-    $blurIntensity,
-    $borderRadius,
-    $padding,
-    $upperLeftGlow,
-    $bottomRightGlow,
-    $glowIntensity,
-    $enableGlow,
-    $enableAnimatedGradient,
-    ...rest // Keep other valid HTML props
+  children,
+  className,
+  // Destructure all styled props to prevent them from reaching the DOM
+  $blurIntensity,
+  $borderRadius,
+  $padding,
+  $upperLeftGlow,
+  $bottomRightGlow,
+  $glowIntensity,
+  $enableGlow,
+  $enableAnimatedGradient,
+  ...rest // Keep other valid HTML props
 }, ref) => (
-    <div ref={ref} className={className} {...rest}>
-        {children}
-    </div>
+  <div ref={ref} className={className} {...rest}>
+    {children}
+  </div>
 ));
 
 // Add display name for better debugging
@@ -98,9 +98,9 @@ const FrostedGlassContainer = styled(FrostedGlassBase)`
 
   /* Gradient animation with reduced intensity */
   ${props =>
-        props.$enableAnimatedGradient &&
-        props.$enableGlow &&
-        css`
+    props.$enableAnimatedGradient &&
+    props.$enableGlow &&
+    css`
       &::after {
         content: '';
         position: absolute;

@@ -50,7 +50,7 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.08);
+    
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
     display: flex;
@@ -157,7 +157,7 @@ const GlassImageWrapper = styled(FrostedGlass)`
     bottom: ${AppTheme.spacing[16]};
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.08);
+ 
     $blurIntensity={10}
     border: 1px solid rgba(255, 255, 255, 0.1);
 `;
