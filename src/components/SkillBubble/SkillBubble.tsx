@@ -78,15 +78,11 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
 `;
 
 const TitleContainer = styled(animated.div)`
-    position: absolute;
-    top: ${AppTheme.spacing[24]};
-    left: 0;
-    right: 0;
-    padding: 0 ${AppTheme.spacing[16]};
-    text-align: center;
+    position: relative;
+    padding: ${AppTheme.spacing[16]};
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: ${AppTheme.spacing[4]};
     
     h3 {
@@ -97,6 +93,13 @@ const TitleContainer = styled(animated.div)`
         font-weight: 500;
         letter-spacing: -0.3px;
     }
+`;
+
+const TitleWrapper = styled(animated.div)`
+    position: absolute;
+    bottom: ${AppTheme.spacing[24]};
+    left: ${AppTheme.spacing[24]};
+    right: ${AppTheme.spacing[24]};
 `;
 
 const Description = styled(animated.div)`
@@ -295,9 +298,9 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
 
     // Title animation
     const titleSpring = useSpring({
-        y: 0,
+        y: isHovered ? -240 : 0,
+        x: 0,
         opacity: 1,
-        scale: isHovered ? 1.1 : 1,
         config: {
             mass: 1,
             tension: 380,
@@ -391,10 +394,12 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                             </ImageContainer>
                         </animated.div>
 
-                        <TitleContainer style={titleSpring}>
-                            <h3>{title}</h3>
-                            {years && <YearText>{years}+ years</YearText>}
-                        </TitleContainer>
+                        <TitleWrapper style={titleSpring}>
+                            <TitleContainer>
+                                <h3>{title}</h3>
+                                {years && <YearText>{years}+ years</YearText>}
+                            </TitleContainer>
+                        </TitleWrapper>
 
                         <Description style={descriptionSpring}>
                             <p>{description}</p>
@@ -428,10 +433,12 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                                 </GlassImageWrapper>
                             </ImageContainer>
                         </animated.div>
-                        <TitleContainer style={titleSpring}>
-                            <h3>{title}</h3>
-                            {years && <YearText>{years}+ years</YearText>}
-                        </TitleContainer>
+                        <TitleWrapper style={titleSpring}>
+                            <TitleContainer>
+                                <h3>{title}</h3>
+                                {years && <YearText>{years}+ years</YearText>}
+                            </TitleContainer>
+                        </TitleWrapper>
                     </>
                 )}
             </AnimatedContent>
