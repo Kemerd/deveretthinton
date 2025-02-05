@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
-import { SkillBubble } from '../SkillBubble/SkillBubble';
+import { BaseBubble } from '../BaseBubble/BaseBubble';
 import { AppTheme } from '../../theme/theme';
 import { useSpring, animated, useSprings } from 'react-spring';
 
@@ -139,7 +139,7 @@ export const SkillGrid: React.FC = () => {
                         $isHovered={isHovered}
                         style={springProps}
                     >
-                        <SkillBubble
+                        <BaseBubble
                             {...skills[index]}
                             position={{
                                 row: currentRow,

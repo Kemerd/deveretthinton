@@ -15,7 +15,7 @@ const FALLBACK_COLORS = [
     '#20B2AA', // Light Sea Green
 ];
 
-interface SkillBubbleProps {
+interface BaseBubbleProps {
     title: string;
     description: string;
     images: string[];
@@ -274,7 +274,7 @@ const NonExpandedContent = styled.div`
     padding: ${AppTheme.spacing[16]};
 `;
 
-export const SkillBubble: React.FC<SkillBubbleProps> = ({
+export const BaseBubble: React.FC<BaseBubbleProps> = ({
     title,
     description,
     images,
@@ -410,7 +410,7 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     };
 
     useEffect(() => {
-        console.log('SkillBubble State:', {
+        console.log('BaseBubble State:', {
             title,
             isHovered,
             position,

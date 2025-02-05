@@ -145,9 +145,10 @@ export const AppTheme = {
 
     // Border Radius
     radius: {
-        small: '8px',
-        medium: '12px',
-        large: '16px',
+        small: '4px',
+        medium: '8px',
+        large: '12px',
+        pill: '9999px',
     },
 };
 
