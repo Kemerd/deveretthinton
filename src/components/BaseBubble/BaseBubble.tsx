@@ -733,18 +733,21 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     });
 
     useEffect(() => {
-        console.log('BaseBubble State:', {
-            title,
-            isHovered,
-            position,
-            currentImageIndex,
-            containerSpring: {
-                width: containerSpring.width.get(),
-                height: containerSpring.height.get(),
-                x: containerSpring.x.get(),
-            }
-        });
+        // console.log('BaseBubble State:', {
+        //     title,
+        //     isHovered,
+        //     position,
+        //     currentImageIndex,
+        //     containerSpring: {
+
+        //         width: containerSpring.width.get(),
+        //         height: containerSpring.height.get(),
+        //         x: containerSpring.x.get(),
+        //     }
+
+        //});
     }, [isHovered, title, position, containerSpring]);
+
 
     return (
         <>
