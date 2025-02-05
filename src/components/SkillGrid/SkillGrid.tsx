@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { BaseBubble } from '../BaseBubble/BaseBubble';
 import { AppTheme } from '../../theme/theme';
@@ -8,12 +8,22 @@ const GridContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 280px);
     gap: ${AppTheme.spacing[24]};
-    padding: ${AppTheme.spacing[32]};
+    padding: ${AppTheme.spacing[24]} ${AppTheme.spacing[32]};
     max-width: 1400px;
     margin: 0 auto;
     position: relative;
     justify-content: center;
     width: 100%;
+`;
+
+const QuipText = styled.p`
+    ${AppTheme.typography.body};
+    color: ${AppTheme.colors.light.textSecondary};
+    font-style: italic;
+    text-align: center;
+    max-width: 800px;
+    margin: ${AppTheme.spacing[8]} auto ${AppTheme.spacing[4]};
+    opacity: 0.8;
 `;
 
 const GridItem = styled(animated.div) <{
@@ -31,79 +41,119 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
-const QuipText = styled.p`
-    ${AppTheme.typography.body};
-    color: ${AppTheme.colors.light.textSecondary};
-    font-style: italic;
-    text-align: center;
-    max-width: 800px;
-    margin: ${AppTheme.spacing[16]} auto ${AppTheme.spacing[8]};
-    opacity: 0.8;
-`;
+const professionalSkills = [
+    {
+        title: 'Full-Stack Development',
+        description: 'From pixel-perfect, beautifully crafted, animated frontends— to scalable backends, I\'ve built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.',
+        years: '10+ years',
+        images: ['/img/skills/fullstack1.jpg', '/img/skills/fullstack2.jpg', '/img/skills/fullstack3.jpg'],
+    },
+    {
+        title: 'Machine Learning & Python',
+        description: 'Turning caffeine into weights and biases since before it was cool. I\'ve been using linear algebra and statistics to train models since 2016— when it was just a niche class in college, we didn\'t have PyTorch or TensorFlow!',
+        years: '7+ years',
+        images: ['/img/skills/ml1.jpg', '/img/skills/ml2.jpg', '/img/skills/ml3.jpg'],
 
-const skills = [
-    {
-        title: 'Unreal Engine',
-        description: 'Over a decade of experience in Unreal Engine development, from game development to film & VFX. Expertise in blueprints, C++, and real-time rendering.',
-        years: 10,
-        images: ['/unreal1.jpg', '/unreal2.jpg', '/unreal3.jpg'],
     },
     {
-        title: 'Unity',
-        description: 'Extensive experience in Unity development, focusing on performance optimization and cross-platform development.',
-        years: 10,
-        images: ['/unity1.jpg', '/unity2.jpg', '/unity3.jpg'],
+        title: 'Unreal & Unity',
+        description: 'I\'ve been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to end to end Netflix virtual production pipeline tooling, I\'ve probably broken and fixed every subsystem in both engines at least twice. Yes, even that one.',
+        years: '10+ years',
+        images: ['/img/skills/unreal1.jpg', '/img/skills/unreal2.jpg', '/img/skills/unreal3.jpg'],
+
     },
     {
-        title: 'C++',
-        description: 'Deep expertise in C++ development, from low-level systems programming to high-performance game engines.',
-        years: 10,
-        images: ['/cpp1.jpg', '/cpp2.jpg', '/cpp3.jpg'],
+        title: 'C++ & C#',
+        description: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit.. even if it takes 200 extra lines, the performance can be very worth it! With C++ in mind, C# is easy by comparison!',
+        years: '10+ years',
+        images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
     {
-        title: 'Python',
-        description: 'Proficient in Python development, with focus on automation, data processing, and machine learning applications.',
-        years: 5,
-        images: ['/python1.jpg', '/python2.jpg', '/python3.jpg'],
+        title: 'TypeScript & JavaScript',
+        description: 'After years of using PHP, using modern libraries is easy by comparison. From using TypeScript to build scalable backends, to using JavaScript to build pixel-perfect frontends, I\'ve got you covered. I mean, this website is proof, isn\'t it pretty?!',
+        years: '6+ years',
+        images: ['/img/skills/ts1.jpg', '/img/skills/ts2.jpg', '/img/skills/ts3.jpg'],
     },
     {
-        title: 'Machine Learning',
-        description: 'Experience in implementing ML solutions, from computer vision to natural language processing.',
-        years: 3,
-        images: ['/ml1.jpg', '/ml2.jpg', '/ml3.jpg'],
+        title: 'CI/CD Pipeline',
+        description: 'I build end-to-end multi-platform deployment pipelines that would make a DevOps engineer shed tears of joy. Because the best deployments are the ones that happen smoothly, predictably, and without surprises. A well thought out architecture can save a lot of headaches!',
+        years: 'DevOps Evangelist',
+        images: ['/img/skills/cicd1.jpg', '/img/skills/cicd2.jpg', '/img/skills/cicd3.jpg'],
     },
     {
-        title: 'Flutter & Dart',
-        description: 'Expert in cross-platform mobile development using Flutter, creating beautiful and performant applications.',
-        years: 4,
-        images: ['/flutter1.jpg', '/flutter2.jpg', '/flutter3.jpg'],
+        title: 'XR/VR Development',
+        description: 'I\'ve had the privilege of developing with VR since its public inception with the Oculus DK1. From award-winning research projects to Skydance\'s Behemoth and Transformers VR experiences, I\'ve been making people motion sick (professionally) for years!',
+        years: 'Since the beginning!',
+        images: ['/img/skills/vr1.jpg', '/img/skills/vr2.jpg', '/img/skills/vr3.jpg'],
     },
     {
-        title: 'JavaScript',
-        description: 'Extensive experience in modern JavaScript development, including React and Node.js.',
-        years: 8,
-        images: ['/js1.jpg', '/js2.jpg', '/js3.jpg'],
-    },
-    {
-        title: 'TypeScript',
-        description: 'Strong advocate for type-safe development, using TypeScript to build robust applications.',
-        years: 5,
-        images: ['/ts1.jpg', '/ts2.jpg', '/ts3.jpg'],
+        title: 'Design & UI',
+        description: 'My goal is to create interfaces that ensure Steve Jobs doesn\'t turn over in his grave. Because good UI is like a joke - if you have to explain it, it\'s probably not that good. I\'ve been designing interfaces since 2009, and I still learn something new every day!',
+        years: 'UI Architect',
+        images: ['/img/skills/ui1.jpg', '/img/skills/ui2.jpg', '/img/skills/ui3.jpg'],
     },
 ];
 
 export const SkillGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const gridSize = { rows: Math.ceil(skills.length / 4), cols: 4 };
+    const [currentCycleIndex, setCurrentCycleIndex] = useState(0);
+    const [activeImageIndices, setActiveImageIndices] = useState<number[]>(
+        new Array(professionalSkills.length).fill(0)
+    );
+    const gridSize = { rows: Math.ceil(professionalSkills.length / 4), cols: 4 };
+    const totalItems = professionalSkills.length;
+
+    // Function to get the current image index for a specific grid position
+    const getCurrentImageIndex = (itemIndex: number) => {
+        // Only show cycling images for the current active item
+        return activeImageIndices[itemIndex];
+    };
+
+    // Create a subtle rotation spring for the cycling effect
+    const cycleSpring = useSpring({
+        from: { rotation: 0 },
+        to: { rotation: 360 },
+        config: {
+            // Use a spring configuration that feels like a gentle clock dial
+            tension: 120, // Slightly lower tension for softness
+            friction: 14, // Lower friction for a more natural bounce
+            mass: 1.2, // Slightly higher mass for weight
+        },
+        reset: true,
+        loop: { reverse: false },
+    });
+
+    // Effect to handle cycling through grid items
+    useEffect(() => {
+        // Exit early if an item is being hovered
+        if (hoveredIndex !== null) return;
+
+        const cycleInterval = setInterval(() => {
+            // Update image for current item
+            setActiveImageIndices(prevIndices => {
+                const newIndices = [...prevIndices];
+                // Increment only the current cycle index's image
+                newIndices[currentCycleIndex] = (newIndices[currentCycleIndex] + 1) % 3;
+
+                // Move to next item
+                setCurrentCycleIndex(prev => (prev + 1) % totalItems);
+
+                return newIndices;
+            });
+        }, 1000); // Keep it at 1 second as requested
+
+        return () => clearInterval(cycleInterval);
+    }, [hoveredIndex, totalItems, currentCycleIndex]);
 
     // Create springs for all items at once
     const springs = useSprings(
-        skills.length,
-        skills.map((_, index) => {
+        professionalSkills.length,
+        professionalSkills.map((_, index) => {
             const currentRow = Math.floor(index / 4);
             const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
             const isSameRow = currentRow === hoveredRow;
             const isHovered = index === hoveredIndex;
+            const isCurrentCycle = index === currentCycleIndex;
 
             const isHidden = hoveredIndex !== null && (
                 (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
@@ -114,10 +164,13 @@ export const SkillGrid: React.FC = () => {
                 from: {
                     opacity: 1,
                     blur: 10,
+                    rotation: 0,
                 },
                 to: {
                     opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
                     blur: isHovered ? 20 : 10,
+                    // Only apply rotation to the current cycling item
+                    rotation: isCurrentCycle ? 2 : 0,
                 },
                 config: {
                     mass: 1,
@@ -131,7 +184,7 @@ export const SkillGrid: React.FC = () => {
     return (
         <>
             <QuipText>
-                At the end of the day, coding is just a translation job from English to programming. The hard part is the thinking!
+                They say a jack of all trades is a master of none, but the full quote continues "...is better than a master of one." Good thing I mastered quite a few!
             </QuipText>
             <GridContainer>
                 {springs.map((springProps, index) => {
@@ -147,19 +200,25 @@ export const SkillGrid: React.FC = () => {
 
                     return (
                         <GridItem
-                            key={skills[index].title}
+                            key={professionalSkills[index].title}
                             $isHidden={isHidden}
                             $isSameRow={isSameRow}
                             $isHovered={isHovered}
-                            style={springProps}
+                            style={{
+                                ...springProps,
+                                transform: springProps.rotation.to(
+                                    r => `rotate(${r}deg)`
+                                ),
+                            }}
                         >
                             <BaseBubble
-                                {...skills[index]}
+                                {...professionalSkills[index]}
                                 position={{
                                     row: currentRow,
                                     col: index % 4,
                                 }}
                                 totalBubbles={gridSize}
+                                currentImageIndex={getCurrentImageIndex(index)}
                                 onHoverChange={(isHovered) => {
                                     setHoveredIndex(isHovered ? index : null);
                                 }}
