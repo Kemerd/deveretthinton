@@ -44,7 +44,7 @@ const GridItem = styled(animated.div) <{
 const workExperience = [
     {
         title: 'Skydance Interactive',
-        description: '(Apr 2023 - Present) Led UE5 & C++ VR development for Oculus Quest, contributing to Behemoth beta launch and an unannounced title. Implemented multiplayer VR systems, replication, and AWS backend services.',
+        description: '(Apr 2023 - Present) Driving force in UE5 & C++ VR development for Oculus Quest, contributing to Behemoth beta launch and an unannounced title. Implemented multiplayer VR systems, replication, and AWS backend services.',
         years: 'Senior Software Engineer',
         images: ['/img/work/skydance1.jpg', '/img/work/skydance2.jpg', '/img/work/skydance3.jpg'],
     },
