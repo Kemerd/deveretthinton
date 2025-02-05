@@ -16,17 +16,19 @@ const GridContainer = styled.div`
     width: 100%;
 `;
 
-const GridItem = styled(animated.div) <{ isHidden: boolean; isSameRow: boolean; isHovered: boolean }>`
+const GridItem = styled(animated.div) <{
+    $isHidden: boolean;
+    $isSameRow: boolean;
+    $isHovered: boolean;
+}>`
     transition: opacity 0.3s ease;
-    opacity: ${props => props.isHovered ? 1 :
-        (props.isHidden || props.isSameRow) ? 0 : 1};
-    pointer-events: ${props => props.isHovered ? 'auto' :
-        (props.isHidden || props.isSameRow) ? 'none' : 'auto'};
-    z-index: ${props => props.isHovered ? 3 :
-        props.isHidden ? 0 :
-            props.isSameRow ? 2 : 1};
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    opacity: ${props => props.$isHovered ? 1 :
+        (props.$isHidden || props.$isSameRow) ? 0 : 1};
+    pointer-events: ${props => props.$isHovered ? 'auto' :
+        (props.$isHidden || props.$isSameRow) ? 'none' : 'auto'};
+    z-index: ${props => props.$isHovered ? 3 :
+        props.$isHidden ? 0 :
+            props.$isSameRow ? 2 : 1};
 `;
 
 const skills = [
@@ -132,14 +134,10 @@ export const SkillGrid: React.FC = () => {
                 return (
                     <GridItem
                         key={skills[index].title}
-                        isHidden={isHidden}
-                        isSameRow={isSameRow}
-                        isHovered={isHovered}
-                        style={{
-                            opacity: springProps.opacity,
-                            backdropFilter: springProps.blur.to(b => `blur(${b}px)`),
-                            WebkitBackdropFilter: springProps.blur.to(b => `blur(${b}px)`),
-                        }}
+                        $isHidden={isHidden}
+                        $isSameRow={isSameRow}
+                        $isHovered={isHovered}
+                        style={springProps}
                     >
                         <SkillBubble
                             {...skills[index]}

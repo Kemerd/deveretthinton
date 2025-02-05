@@ -1,0 +1,35 @@
+# Fonts
+*.eot binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.otf binary
+
+# Ensure fonts are handled as binary files
+fonts/**/*.eot binary
+fonts/**/*.ttf binary
+fonts/**/*.woff binary
+fonts/**/*.woff2 binary
+fonts/**/*.otf binary
+
+# Set the default behavior, in case people don't have core.autocrlf set
+* text=auto
+
+# Documents
+*.md text diff=markdown
+*.txt text
+*.html text diff=html
+
+# Scripts
+*.js text
+*.ts text
+*.tsx text
+*.json text
+
+# Configs
+.gitattributes text
+.gitignore text
+*.yml text
+*.yaml text
+*.config.js text
+tsconfig.json text 

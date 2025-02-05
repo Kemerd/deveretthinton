@@ -61,5 +61,16 @@
         "svgo": "^3.2.0",
         "@svgr/webpack": "^8.1.0",
         "css-select": "^5.1.0"
+    },
+    "devServer": {
+        "static": {
+            "directory": "public",
+            "publicPath": "/"
+        },
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+        }
     }
 }

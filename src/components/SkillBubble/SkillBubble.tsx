@@ -38,15 +38,15 @@ const expandAnimation = keyframes`
     }
 `;
 
-const BubbleContainer = styled.div<{ isExpanded: boolean }>`
+const BubbleContainer = styled.div<{ $isExpanded: boolean }>`
     position: relative;
     width: 280px;
     height: 340px;
     transition: z-index 0.01s;
-    z-index: ${props => props.isExpanded ? 10 : 1};
+    z-index: ${props => props.$isExpanded ? 10 : 1};
 `;
 
-const AnimatedContent = styled(animated.div) <{ $isExpanded?: boolean }>`
+const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     position: absolute;
     background: rgba(255, 255, 255, 0.08);
     border-radius: ${AppTheme.radius.large};
@@ -98,8 +98,7 @@ const TitleContainer = styled(animated.div)`
 const TitleWrapper = styled(animated.div)`
     position: absolute;
     bottom: ${AppTheme.spacing[24]};
-    left: ${AppTheme.spacing[24]};
-    right: ${AppTheme.spacing[24]};
+    width: 280px;
 `;
 
 const Description = styled(animated.div)`
@@ -146,7 +145,7 @@ const ImageContainer = styled.div`
     border-radius: ${AppTheme.radius.large};
 `;
 
-const GlassImageWrapper = styled.div`
+const GlassImageWrapper = styled(FrostedGlass)`
     position: absolute;
     top: ${AppTheme.spacing[16]};
     left: ${AppTheme.spacing[16]};
@@ -160,7 +159,7 @@ const GlassImageWrapper = styled.div`
     border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
-const FeatureImage = styled.img<{ isActive: boolean; fallbackColor: string }>`
+const FeatureImage = styled.img<{ $isActive: boolean; $fallbackColor: string }>`
     position: absolute;
     top: 0;
     left: 0;
@@ -169,8 +168,8 @@ const FeatureImage = styled.img<{ isActive: boolean; fallbackColor: string }>`
     object-fit: cover;
     border-radius: ${AppTheme.radius.large};
     transition: opacity 0.3s ease;
-    opacity: ${props => props.isActive ? 1 : 0.8};
-    background-color: ${props => props.fallbackColor};
+    opacity: ${props => props.$isActive ? 1 : 0.8};
+    background-color: ${props => props.$fallbackColor};
 `;
 
 const YearText = styled.span`
@@ -184,24 +183,25 @@ const YearText = styled.span`
     margin: 0;
 `;
 
-const ExpandedContent = styled.div<{ isVisible: boolean }>`
+const ExpandedContent = styled.div<{ $isVisible: boolean }>`
     position: absolute;
     left: ${AppTheme.spacing[32]};
     right: ${AppTheme.spacing[32]};
-    opacity: ${props => props.isVisible ? 1 : 0};
-    transform: translateY(${props => props.isVisible ? 0 : '20px'});
+    opacity: ${props => props.$isVisible ? 1 : 0};
+    transform: translateY(${props => props.$isVisible ? 0 : '20px'});
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     gap: ${AppTheme.spacing[32]};
 `;
 
-const GalleryImage = styled(animated.div) <{ src: string; fallbackColor: string }>`
+const GalleryImage = styled(animated.div) <{ $src: string; $fallbackColor: string }>`
     width: 100%;
     padding-bottom: 100%;
-    background: url(${props => props.src}) no-repeat center center;
+    background-image: url(${props => props.$src});
     background-size: cover;
+    background-position: center;
     border-radius: ${AppTheme.radius.medium};
-    background-color: ${props => props.fallbackColor};
+    background-color: ${props => props.$fallbackColor};
 `;
 
 // Add interface for ExpandedLayout props
@@ -210,16 +210,32 @@ interface ExpandedLayoutProps {
 }
 
 // Update the ExpandedLayout component with proper typing
-const ExpandedLayout = styled.div<{ expandDirection: 'left' | 'right' | 'center' }>`
+const ExpandedLayout = styled.div<{ $expandDirection: 'left' | 'right' | 'center' }>`
     position: absolute;
     width: 1200px;
     height: 100%;
     top: 0;
     ${props => {
-        if (props.expandDirection === 'left') return 'right: 0;';
-        if (props.expandDirection === 'right') return 'left: 0;';
-        return 'left: 50%; transform: translateX(-50%);';
+        if (props.$expandDirection === 'left') return 'right: 0;';
+        if (props.$expandDirection === 'right') return 'left: 0;';
+        return 'left: 50%';
     }}
+`;
+
+const GridItem = styled(animated.div) <{ $isHidden: boolean; $isSameRow: boolean; $isHovered: boolean }>`
+    transition: opacity 0.3s ease;
+    opacity: ${props => props.$isHovered ? 1 :
+        (props.$isHidden || props.$isSameRow) ? 0 : 1};
+    pointer-events: ${props => props.$isHovered ? 'auto' :
+        (props.$isHidden || props.$isSameRow) ? 'none' : 'auto'};
+    z-index: ${props => props.$isHovered ? 3 :
+        props.$isHidden ? 0 :
+            props.$isSameRow ? 2 : 1};
+`;
+
+// Update FrostedGlass component props
+const StyledFrostedGlass = styled(FrostedGlass)`
+    /* Your existing styles... */
 `;
 
 export const SkillBubble: React.FC<SkillBubbleProps> = ({
@@ -296,11 +312,23 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
         }
     });
 
-    // Title animation
+    // Calculate initial position based on grid layout
+    const calculateInitialPosition = () => {
+        const itemWidth = 280;
+        const gap = 24;
+        return {
+            x: position.col * (itemWidth + gap),
+            y: 0
+        };
+    };
+
     const titleSpring = useSpring({
-        y: isHovered ? -240 : 0,
-        x: 0,
-        opacity: 1,
+        from: { ...calculateInitialPosition(), opacity: 1 },
+        to: {
+            ...calculateInitialPosition(),
+            y: isHovered ? -240 : 0,
+            opacity: 1
+        },
         config: {
             mass: 1,
             tension: 380,
@@ -370,7 +398,7 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
     return (
         <BubbleContainer
             ref={containerRef}
-            isExpanded={isHovered}
+            $isExpanded={isHovered}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -378,69 +406,92 @@ export const SkillBubble: React.FC<SkillBubbleProps> = ({
                 $isExpanded={isHovered}
                 style={containerSpring}
             >
-                {isHovered ? (
-                    <ExpandedLayout expandDirection={getExpandDirection()}>
-                        <animated.div style={mainImageSpring}>
-                            <ImageContainer>
-                                <GlassImageWrapper>
-                                    <FeatureImage
-                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
-                                        isActive={!isHovered}
-                                        fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={handleImageError}
-                                        alt={`${title} preview`}
-                                    />
-                                </GlassImageWrapper>
-                            </ImageContainer>
-                        </animated.div>
+                <StyledFrostedGlass
+                    $blurIntensity={8}
+                    $borderRadius={AppTheme.radius.large}
+                    $padding={AppTheme.spacing[16]}
+                    $upperLeftGlow={true}
+                    $bottomRightGlow={true}
+                    $glowIntensity={0.5}
+                    $enableGlow={true}
+                    $enableAnimatedGradient={true}
+                >
+                    {isHovered ? (
+                        <ExpandedLayout $expandDirection={getExpandDirection()}>
+                            <animated.div style={mainImageSpring}>
+                                <ImageContainer>
+                                    <GlassImageWrapper
+                                        $upperLeftGlow={true}
+                                        $bottomRightGlow={true}
+                                        $glowIntensity={0.5}
+                                        $enableGlow={true}
+                                        $enableAnimatedGradient={true}
+                                    >
+                                        <FeatureImage
+                                            src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
+                                            $isActive={!isHovered}
+                                            $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                            onError={handleImageError}
+                                            alt={`${title} preview`}
+                                        />
+                                    </GlassImageWrapper>
+                                </ImageContainer>
+                            </animated.div>
 
-                        <TitleWrapper style={titleSpring}>
-                            <TitleContainer>
-                                <h3>{title}</h3>
-                                {years && <YearText>{years}+ years</YearText>}
-                            </TitleContainer>
-                        </TitleWrapper>
+                            <TitleWrapper style={titleSpring}>
+                                <TitleContainer>
+                                    <h3>{title}</h3>
+                                    {years && <YearText>{years}+ years</YearText>}
+                                </TitleContainer>
+                            </TitleWrapper>
 
-                        <Description style={descriptionSpring}>
-                            <p>{description}</p>
-                        </Description>
+                            <Description style={descriptionSpring}>
+                                <p>{description}</p>
+                            </Description>
 
-                        <ImageGallery style={gallerySpring}>
-                            {Array.from({ length: 4 }).map((_, index) => {
-                                if (index === position.col) return <div key={index} />;
-                                return (
-                                    <GalleryImage
-                                        key={index}
-                                        src={images[(index % (images.length - 1)) + 1]}
-                                        fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols) % FALLBACK_COLORS.length]}
-                                    />
-                                );
-                            })}
-                        </ImageGallery>
-                    </ExpandedLayout>
-                ) : (
-                    <>
-                        <animated.div style={mainImageSpring}>
-                            <ImageContainer>
-                                <GlassImageWrapper>
-                                    <FeatureImage
-                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
-                                        isActive={!isHovered}
-                                        fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                        onError={handleImageError}
-                                        alt={`${title} preview`}
-                                    />
-                                </GlassImageWrapper>
-                            </ImageContainer>
-                        </animated.div>
-                        <TitleWrapper style={titleSpring}>
-                            <TitleContainer>
-                                <h3>{title}</h3>
-                                {years && <YearText>{years}+ years</YearText>}
-                            </TitleContainer>
-                        </TitleWrapper>
-                    </>
-                )}
+                            <ImageGallery style={gallerySpring}>
+                                {Array.from({ length: 4 }).map((_, index) => {
+                                    if (index === position.col) return <div key={index} />;
+                                    return (
+                                        <GalleryImage
+                                            key={index}
+                                            $src={images[(index % (images.length - 1)) + 1]}
+                                            $fallbackColor={FALLBACK_COLORS[(index + position.row * totalBubbles.cols) % FALLBACK_COLORS.length]}
+                                        />
+                                    );
+                                })}
+                            </ImageGallery>
+                        </ExpandedLayout>
+                    ) : (
+                        <>
+                            <animated.div style={mainImageSpring}>
+                                <ImageContainer>
+                                    <GlassImageWrapper
+                                        $upperLeftGlow={true}
+                                        $bottomRightGlow={true}
+                                        $glowIntensity={0.5}
+                                        $enableGlow={true}
+                                        $enableAnimatedGradient={true}
+                                    >
+                                        <FeatureImage
+                                            src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
+                                            $isActive={!isHovered}
+                                            $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
+                                            onError={handleImageError}
+                                            alt={`${title} preview`}
+                                        />
+                                    </GlassImageWrapper>
+                                </ImageContainer>
+                            </animated.div>
+                            <TitleWrapper style={titleSpring}>
+                                <TitleContainer>
+                                    <h3>{title}</h3>
+                                    {years && <YearText>{years}+ years</YearText>}
+                                </TitleContainer>
+                            </TitleWrapper>
+                        </>
+                    )}
+                </StyledFrostedGlass>
             </AnimatedContent>
         </BubbleContainer>
     );

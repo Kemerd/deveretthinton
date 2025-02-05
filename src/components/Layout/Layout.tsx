@@ -37,6 +37,7 @@ const ContentContainer = styled.div`
 const Header = styled(FrostedGlass)`
     margin-bottom: ${AppTheme.spacing[48]};
     padding: ${AppTheme.spacing[32]};
+    border-radius: ${AppTheme.radius.large};
 `;
 
 const HeaderContent = styled.div`
@@ -68,17 +69,33 @@ const TextContainer = styled.div`
 `;
 
 const ProfilePicture = styled(FrostedGlass)`
-    flex-shrink: 0;
     width: 160px;
     height: 284px;
-    border-radius: 24px;
+    flex-shrink: 0;
+    border-radius: ${AppTheme.radius.large};
     overflow: hidden;
+    padding: 0;
     
     img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        border-radius: 0;
+        object-fit: cover;
+        object-position: center;
+        border-radius: inherit;
+        margin: 0;
+        display: block;
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+        image-rendering: auto;
+        
+        filter: brightness(1.0) contrast(1.0);
+        
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
     }
 `;
 
@@ -190,13 +207,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 <Header>
                     <HeaderContent>
                         <ProfilePicture
-                            blurIntensity={5}
-                            glowIntensity={0.2}
-                            enableGlow
-                            enableAnimatedGradient
-                            padding="0"
+                            $blurIntensity={5}
+                            $glowIntensity={0.2}
+                            $enableGlow={true}
+                            $enableAnimatedGradient={true}
+                            $padding={AppTheme.spacing[16]}
                         >
-                            <img src="/img/pfp_16_9.png" alt="D Everett Hinton" />
+                            <img
+                                src="/img/pfp_16_9.png"
+                                alt="D Everett Hinton"
+                                loading="eager"
+                                decoding="sync"
+                                draggable="false"
+                            />
                         </ProfilePicture>
                         <ContentWrapper>
                             <TextContainer>
@@ -228,13 +251,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                     </SocialIcon>
                                 </SocialLinks>
                                 <DownloadButton
+                                    $blurIntensity={10}
+                                    $borderRadius={AppTheme.radius.medium}
+                                    $padding={AppTheme.spacing[8]}
+                                    $enableGlow={true}
+                                    $glowIntensity={0.3}
                                     onClick={handleDownload}
-                                    borderRadius="16px"
-                                    blurIntensity={10}
-                                    glowIntensity={0.2}
-                                    enableGlow
-                                    enableAnimatedGradient
-                                    padding="0"
                                 >
                                     <ButtonContent>
                                         <ButtonIcon className="fas fa-download" />
