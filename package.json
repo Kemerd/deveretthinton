@@ -2,7 +2,7 @@
     "name": "resume-website",
     "version": "1.0.0",
     "private": true,
-    "homepage": "https://kemerd.github.io",
+    "homepage": "https://deveretthinton.net",
     "dependencies": {
         "@svgr/webpack": "^8.1.0",
         "@testing-library/jest-dom": "^6.4.2",
