@@ -107,6 +107,20 @@ export const PersonalGrid: React.FC = () => {
         return activeImageIndices[itemIndex];
     };
 
+    // Create a subtle rotation spring for the cycling effect
+    const cycleSpring = useSpring({
+        from: { rotation: 0 },
+        to: { rotation: 360 },
+        config: {
+            // Use a spring configuration that feels like a gentle clock dial
+            tension: 120, // Slightly lower tension for softness
+            friction: 14, // Lower friction for a more natural bounce
+            mass: 1.2, // Slightly higher mass for weight
+        },
+        reset: true,
+        loop: { reverse: false },
+    });
+
     // Effect to handle cycling through grid items
     useEffect(() => {
         // Exit early if an item is being hovered
@@ -124,7 +138,7 @@ export const PersonalGrid: React.FC = () => {
 
                 return newIndices;
             });
-        }, 1000); // Change every 1 seconds to give more time to view each image
+        }, 1000); // Keep it at 1 second as requested
 
         return () => clearInterval(cycleInterval);
     }, [hoveredIndex, totalItems, currentCycleIndex]);
@@ -137,6 +151,7 @@ export const PersonalGrid: React.FC = () => {
             const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
             const isSameRow = currentRow === hoveredRow;
             const isHovered = index === hoveredIndex;
+            const isCurrentCycle = index === currentCycleIndex;
 
             const isHidden = hoveredIndex !== null && (
                 (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
@@ -147,10 +162,13 @@ export const PersonalGrid: React.FC = () => {
                 from: {
                     opacity: 1,
                     blur: 10,
+                    rotation: 0,
                 },
                 to: {
                     opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
                     blur: isHovered ? 20 : 10,
+                    // Only apply rotation to the current cycling item
+                    rotation: isCurrentCycle ? 2 : 0,
                 },
                 config: {
                     mass: 1,
@@ -184,7 +202,12 @@ export const PersonalGrid: React.FC = () => {
                             $isHidden={isHidden}
                             $isSameRow={isSameRow}
                             $isHovered={isHovered}
-                            style={springProps}
+                            style={{
+                                ...springProps,
+                                transform: springProps.rotation.to(
+                                    r => `rotate(${r}deg)`
+                                ),
+                            }}
                         >
                             <BaseBubble
                                 {...personalExperience[index]}
