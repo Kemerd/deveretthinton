@@ -35,7 +35,7 @@ const ContentContainer = styled.div`
 `;
 
 const Header = styled(FrostedGlass)`
-    margin-bottom: ${AppTheme.spacing[48]};
+    margin-bottom: ${AppTheme.spacing[32]};
     padding: ${AppTheme.spacing[32]};
     border-radius: ${AppTheme.radius.large};
 `;

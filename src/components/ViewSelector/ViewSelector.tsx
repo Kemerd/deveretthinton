@@ -8,9 +8,9 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: ${AppTheme.spacing[32]} 0;
+    padding: ${AppTheme.spacing[16]} 0;
     position: relative;
-    margin-bottom: ${AppTheme.spacing[16]};
+    margin-bottom: ${AppTheme.spacing[8]};
 `;
 
 const SelectorContainer = styled(FrostedGlass)`
