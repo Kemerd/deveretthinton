@@ -24,6 +24,8 @@ interface BaseBubbleProps {
     totalBubbles: { rows: number; cols: number };
     expandDirection?: 'left' | 'right';
     onHoverChange?: (isHovered: boolean) => void;
+    currentImageIndex?: number;
+    onNextImage?: () => void;
 }
 
 // Expansion animation
@@ -352,37 +354,12 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     position,
     totalBubbles,
     onHoverChange,
+    currentImageIndex,
+    onNextImage,
 }) => {
-    const [currentImageIndices, setCurrentImageIndices] = useState<number[]>(
-        Array(totalBubbles.rows * totalBubbles.cols).fill(0)
-    );
     const [imageLoadError, setImageLoadError] = useState<boolean[]>(new Array(images.length).fill(false));
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // Image cycling effect
-    useEffect(() => {
-        // Skip animation when hovered
-        if (isHovered) return;
-
-        const interval = setInterval(() => {
-            setCurrentImageIndices(prev => {
-                const next = [...prev];
-                // Update indices in a clockwork pattern
-                for (let row = 0; row < totalBubbles.rows; row++) {
-                    for (let col = 0; col < totalBubbles.cols; col++) {
-                        const index = row * totalBubbles.cols + col;
-                        next[index] = (next[index] + 1) % images.length;
-                        // Only update one cell at a time, then break
-                        return next;
-                    }
-                }
-                return prev;
-            });
-        }, 2000); // Adjust timing as needed
-
-        return () => clearInterval(interval);
-    }, [isHovered, totalBubbles, images.length]);
 
     // Main container animation
     const containerSpring = useSpring({
@@ -478,7 +455,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
 
     const handleImageError = () => {
         const newErrors = [...imageLoadError];
-        newErrors[currentImageIndices[position.row * totalBubbles.cols + position.col]] = true;
+        newErrors[currentImageIndex || 0] = true;
         setImageLoadError(newErrors);
     };
 
@@ -487,7 +464,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
             title,
             isHovered,
             position,
-            currentImageIndices,
+            currentImageIndex,
             containerSpring: {
                 width: containerSpring.width.get(),
                 height: containerSpring.height.get(),
@@ -512,7 +489,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                             <ImageContainer>
                                 <GlassImageWrapper>
                                     <FeatureImage
-                                        src={images[currentImageIndices[position.row * totalBubbles.cols + position.col]]}
+                                        src={images[currentImageIndex || 0]}
                                         $isActive={!isHovered}
                                         $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
                                         onError={handleImageError}
