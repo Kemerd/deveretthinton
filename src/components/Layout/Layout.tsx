@@ -197,8 +197,8 @@ const ButtonIcon = styled.i`
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleDownload = () => {
-        // Add your resume download logic here
-        window.open('/resume.pdf', '_blank');
+        // Update the path to the new resume file
+        window.open('/doc/D Everett Hinton - S Engineer, Pilot - CV & Resume - 12-24-24.pdf', '_blank');
     };
 
     return (

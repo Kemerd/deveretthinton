@@ -41,54 +41,54 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
-const personalExperience = [
+const workExperience = [
     {
-        title: 'IFR Pilot',
-        description: 'Licensed instrument-rated pilot with 250+ hours in the logbook, and a passion for flying 3000lb machines through the clouds blind!',
-        years: '250 hrs',
-        images: ['/img/personal/pilot1.jpg', '/img/personal/pilot2.jpg', '/img/personal/pilot3.jpg'],
+        title: 'Skydance Interactive',
+        description: '(Apr 2023 - Present) Led UE5 & C++ VR development for Oculus Quest, contributing to Behemoth beta launch and an unannounced title. Implemented multiplayer VR systems, replication, and AWS backend services.',
+        years: 'Senior Software Engineer',
+        images: ['/img/work/skydance1.jpg', '/img/work/skydance2.jpg', '/img/work/skydance3.jpg'],
     },
     {
-        title: 'Building Planes',
-        description: 'Currently constructing a Glasair III. Because buying a plane is too easy, and who doesn\'t enjoy spending weekends covered in epoxy and aluminum shavings?',
-        years: 'Glasair III',
-        images: ['/img/personal/glasair1.jpg', '/img/personal/glasair2.jpg', '/img/personal/glasair3.jpg'],
+        title: 'Black Box VR',
+        description: '(Jul 2022 - Apr 2023) Developed Unity VR systems for location-based fitness centers, integrating hardware resistance machines. Migrated backend to AWS Lambda using JS/TS and implemented XR gameplay features.',
+        years: 'Senior Backend Engineer',
+        images: ['/img/work/blackbox1.jpg', '/img/work/blackbox2.jpg', '/img/work/blackbox3.jpg'],
     },
     {
-        title: 'Mechanical Engineering',
-        description: 'From CAD to fabrication, bringing ideas to life through design and implementation. Sometimes the best solution is the one that makes other engineers say "you did what?"',
-        years: 'Design & Build',
-        images: ['/img/personal/mech1.jpg', '/img/personal/mech2.jpg', '/img/personal/mech3.jpg'],
+        title: 'Netflix',
+        description: '(Feb 2021 - Jul 2022) Developed Unreal Engine tools for virtual production VFX pipeline at Scanline VFX. Created synthetic data generation systems for ML models and integrated complex cross-disciplinary systems.',
+        years: 'Senior VFX Pipeline Engineer',
+        images: ['/img/work/netflix1.jpg', '/img/work/netflix2.jpg', '/img/work/netflix3.jpg'],
     },
     {
-        title: 'Electrical Engineering',
-        description: 'Turning weird ideas into circuits since grade school. Specializing in embedded systems and trying not to let the magic smoke out of components.',
-        years: 'Circuit Wizard',
-        images: ['/img/personal/ee1.jpg', '/img/personal/ee2.jpg', '/img/personal/ee3.jpg'],
+        title: 'Nextech3D.AI',
+        description: '(Jan 2021 - Feb 2021) Built web-based virtual events using Unreal Engine with AWS pixel streaming. Developed UI/UX, Node.js servers, and created custom materials and levels for client specifications.',
+        years: 'Lead Unreal Architect',
+        images: ['/img/work/nextech1.jpg', '/img/work/nextech2.jpg', '/img/work/nextech3.jpg'],
     },
     {
-        title: 'AutoCAD',
-        description: 'Creating precision designs and technical drawings with the accuracy of a surgeon and the patience of a saint. Because sometimes, the 47th revision is the charm.',
-        years: '3D Design',
-        images: ['/img/personal/cad1.jpg', '/img/personal/cad2.jpg', '/img/personal/cad3.jpg'],
+        title: 'FCA Fiat Chrysler',
+        description: '(Nov 2020 - Jan 2021) Architected interactive features for CES 2021 car showcase using Unreal Engine. Created web-based immersive experience and AR companion apps for iOS/Android.',
+        years: 'Senior Game Developer',
+        images: ['/img/work/fca1.jpg', '/img/work/fca2.jpg', '/img/work/fca3.jpg'],
     },
     {
-        title: 'Mixed Martial Arts',
-        description: 'When you get out all of your violence in the morning, even if work is hectic, it seems easy by comparison. Muay Thai, Kickboxing, BJJ, powerlifting, and a passion for the beautiful art that is combat sports!',
-        years: 'MMA & Powerlifting',
-        images: ['/img/personal/mma1.jpg', '/img/personal/mma2.jpg', '/img/personal/mma3.jpg'],
+        title: 'DMG Entertainment',
+        description: '(Jul 2019 - Nov 2020) Spearheaded development of two Transformers VR attractions, managing global teams and hardware/software integration. Implemented multiplayer systems and mobile operator tools.',
+        years: 'Lead VR Engineer',
+        images: ['/img/work/dmg1.jpg', '/img/work/dmg2.jpg', '/img/work/dmg3.jpg'],
     },
     {
-        title: 'Live Music',
-        description: 'Multi-instrumentalist proficient in piano, guitar, bass, and vocals. Making beautiful noise across four different instruments (and occasionally all at once).',
-        years: 'Musician',
-        images: ['/img/personal/music1.jpg', '/img/personal/music2.jpg', '/img/personal/music3.jpg'],
+        title: 'Armstrong State University',
+        description: '(Aug 2017 - May 2018) Created cutting-edge primality-test algorithms using Python and SAGE. Constructed Elliptical curves over Finite Fields and implemented complex mathematical processes for prime number verification.',
+        years: 'Mathematics Researcher',
+        images: ['/img/work/armstrong1.jpg', '/img/work/armstrong2.jpg', '/img/work/armstrong3.jpg'],
     },
     {
-        title: 'Audio Engineering',
-        description: 'Taking sounds from "what was that?" to "how did you do that?" while making my CPU cry with effects chains that would make a supercomputer sweat.',
-        years: 'Producer',
-        images: ['/img/personal/audio1.jpg', '/img/personal/audio2.jpg', '/img/personal/audio3.jpg'],
+        title: 'Code Mercenary',
+        description: '(2009 - 2016) Led multiple game development projects across various companies including Novabox, UserCS, and Red-Skye. Developed game servers, implemented AI systems, and created custom features using C++, LUA, and various web technologies.',
+        years: 'Freelance Contractor',
+        images: ['/img/work/freelance1.jpg', '/img/work/freelance2.jpg', '/img/work/freelance3.jpg'],
     },
 ];
 
@@ -96,10 +96,10 @@ export const WorkGrid: React.FC = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [currentCycleIndex, setCurrentCycleIndex] = useState(0);
     const [activeImageIndices, setActiveImageIndices] = useState<number[]>(
-        new Array(personalExperience.length).fill(0)
+        new Array(workExperience.length).fill(0)
     );
-    const gridSize = { rows: Math.ceil(personalExperience.length / 4), cols: 4 };
-    const totalItems = personalExperience.length;
+    const gridSize = { rows: Math.ceil(workExperience.length / 4), cols: 4 };
+    const totalItems = workExperience.length;
 
     // Function to get the current image index for a specific grid position
     const getCurrentImageIndex = (itemIndex: number) => {
@@ -145,8 +145,8 @@ export const WorkGrid: React.FC = () => {
 
     // Create springs for all items at once
     const springs = useSprings(
-        personalExperience.length,
-        personalExperience.map((_, index) => {
+        workExperience.length,
+        workExperience.map((_, index) => {
             const currentRow = Math.floor(index / 4);
             const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
             const isSameRow = currentRow === hoveredRow;
@@ -182,7 +182,7 @@ export const WorkGrid: React.FC = () => {
     return (
         <>
             <QuipText>
-                These are but a few of the companies I've worked for. Please check out my LinkedIn for a full CV or download it above.
+                People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.
             </QuipText>
             <GridContainer>
                 {springs.map((springProps, index) => {
@@ -198,7 +198,7 @@ export const WorkGrid: React.FC = () => {
 
                     return (
                         <GridItem
-                            key={personalExperience[index].title}
+                            key={workExperience[index].title}
                             $isHidden={isHidden}
                             $isSameRow={isSameRow}
                             $isHovered={isHovered}
@@ -210,7 +210,7 @@ export const WorkGrid: React.FC = () => {
                             }}
                         >
                             <BaseBubble
-                                {...personalExperience[index]}
+                                {...workExperience[index]}
                                 position={{
                                     row: currentRow,
                                     col: index % 4,
