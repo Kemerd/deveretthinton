@@ -4,3 +4,6 @@
 /build
 /src/fonts/woff2-master
 /public/fonts/woff2-master
+node_modules
+build
+.DS_Store
