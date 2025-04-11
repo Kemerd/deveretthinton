@@ -267,7 +267,7 @@ const ButtonIcon = styled.i`
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleDownload = () => {
         // Update the path to the new resume file
-        window.open('/doc/D Everett Hinton - S Engineer, Pilot - CV & Resume - 12-24-24.pdf', '_blank');
+        window.open('/doc/D Everett Hinton - FS S Engineer, Pilot - 2-8-25.pdf', '_blank');
     };
 
     return (
