@@ -4,9 +4,13 @@ import { AppTheme } from '../../theme/theme';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 
 const BackgroundContainer = styled.div`
+    /* Allow page to grow with content instead of fixed viewport */
     min-height: 100vh;
-    background: url('/img/bg.jpg') no-repeat center center fixed;
+    /* Remove 'fixed' to allow whole page scrolling */
+    background: url('/img/bg.jpg') no-repeat center top;
     background-size: cover;
+    /* Use absolute positioning for background to extend with content */
+    background-attachment: scroll;
     position: relative;
     color: ${AppTheme.colors.light.textPrimary};
 

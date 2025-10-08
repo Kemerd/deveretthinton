@@ -140,6 +140,17 @@ const GlobalStyles = createGlobalStyle`
                      'Helvetica Neue', sans-serif;
     }
 
+    /* Ensure html and body allow natural page scrolling */
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        /* Remove any height constraints */
+        height: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
     /* Enhanced body styles with better font fallbacks */
     body {
         margin: 0;
@@ -151,17 +162,22 @@ const GlobalStyles = createGlobalStyle`
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
         font-synthesis: none;
+        /* Allow body to grow with content */
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    /* Ensure root div takes full height but grows with content */
+    #root {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
     }
 
     * {
         box-sizing: border-box;
-    }
-
-    /* Add font smoothing for better rendering */
-    html {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
     }
 `;
 

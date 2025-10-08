@@ -7,6 +7,7 @@ import { QuipText } from '../../styles/SharedStyles';
 
 const GridContainer = styled.div`
     display: grid;
+    /* Responsive grid - 4 columns on large screens, scales down on smaller screens */
     grid-template-columns: repeat(4, 280px);
     gap: ${AppTheme.spacing[24]};
     padding: ${AppTheme.spacing[24]} ${AppTheme.spacing[32]};
@@ -16,13 +17,23 @@ const GridContainer = styled.div`
     justify-content: center;
     width: 100%;
 
+    /* Tablet landscape - 3 columns */
     @media (max-width: 1268px) {
-        /* Force minimum width to fit all columns plus gaps */
-        min-width: calc(280px * 4 + ${AppTheme.spacing[24]} * 3);
-        margin: 0;
-        justify-content: flex-start;
-        padding-left: ${AppTheme.spacing[32]};
-        padding-right: ${AppTheme.spacing[32]};
+        grid-template-columns: repeat(3, 280px);
+        max-width: calc(280px * 3 + ${AppTheme.spacing[24]} * 2 + ${AppTheme.spacing[32]} * 2);
+    }
+
+    /* Tablet portrait - 2 columns */
+    @media (max-width: 980px) {
+        grid-template-columns: repeat(2, 280px);
+        max-width: calc(280px * 2 + ${AppTheme.spacing[24]} + ${AppTheme.spacing[32]} * 2);
+    }
+
+    /* Mobile - 1 column */
+    @media (max-width: 680px) {
+        grid-template-columns: 280px;
+        max-width: calc(280px + ${AppTheme.spacing[32]} * 2);
+        padding: ${AppTheme.spacing[24]} ${AppTheme.spacing[16]};
     }
 `;
 
@@ -41,40 +52,7 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
-const ScrollContainer = styled.div`
-    /* Default state - no scrolling */
-    width: 100%;
-    
-    /* Enable horizontal scrolling under 1268px */
-    @media (max-width: 1268px) {
-        width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        /* Show scrollbar above content */
-        position: relative;
-        z-index: 2;
-        
-        /* Customize scrollbar appearance */
-        &::-webkit-scrollbar {
-            height: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-        }
-        
-        &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            
-            &:hover {
-                background: rgba(255, 255, 255, 0.3);
-            }
-        }
-        
-        /* Firefox scrollbar styling */
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
-    }
-`;
+// Removed ScrollContainer - no longer need horizontal scrolling with responsive grid
 
 const personalExperience = [
     {
@@ -133,7 +111,32 @@ export const PersonalGrid: React.FC = () => {
     const [activeImageIndices, setActiveImageIndices] = useState<number[]>(
         new Array(personalExperience.length).fill(0)
     );
-    const gridSize = { rows: Math.ceil(personalExperience.length / 4), cols: 4 };
+
+    // Calculate responsive columns based on viewport width
+    const [cols, setCols] = useState(() => {
+        if (typeof window === 'undefined') return 4;
+        const width = window.innerWidth;
+        if (width <= 680) return 1;
+        if (width <= 980) return 2;
+        if (width <= 1268) return 3;
+        return 4;
+    });
+
+    // Update columns on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width <= 680) setCols(1);
+            else if (width <= 980) setCols(2);
+            else if (width <= 1268) setCols(3);
+            else setCols(4);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const gridSize = { rows: Math.ceil(personalExperience.length / cols), cols };
     const totalItems = personalExperience.length;
 
     // Function to get the current image index for a specific grid position
@@ -182,8 +185,8 @@ export const PersonalGrid: React.FC = () => {
     const springs = useSprings(
         personalExperience.length,
         personalExperience.map((_, index) => {
-            const currentRow = Math.floor(index / 4);
-            const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
+            const currentRow = Math.floor(index / cols);
+            const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / cols) : -1;
             const isSameRow = currentRow === hoveredRow;
             const isHovered = index === hoveredIndex;
             const isCurrentCycle = index === currentCycleIndex;
@@ -219,49 +222,47 @@ export const PersonalGrid: React.FC = () => {
             <QuipText>
                 People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.
             </QuipText>
-            <ScrollContainer>
-                <GridContainer>
-                    {springs.map((springProps, index) => {
-                        const currentRow = Math.floor(index / 4);
-                        const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / 4) : -1;
-                        const isSameRow = currentRow === hoveredRow;
-                        const isHovered = index === hoveredIndex;
+            <GridContainer>
+                {springs.map((springProps, index) => {
+                    const currentRow = Math.floor(index / cols);
+                    const hoveredRow = hoveredIndex !== null ? Math.floor(hoveredIndex / cols) : -1;
+                    const isSameRow = currentRow === hoveredRow;
+                    const isHovered = index === hoveredIndex;
 
-                        const isHidden = hoveredIndex !== null && (
-                            (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                            (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
-                        );
+                    const isHidden = hoveredIndex !== null && (
+                        (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                        (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                    );
 
-                        return (
-                            <GridItem
-                                key={personalExperience[index].title}
-                                $isHidden={isHidden}
-                                $isSameRow={isSameRow}
-                                $isHovered={isHovered}
-                                style={{
-                                    ...springProps,
-                                    transform: springProps.rotation.to(
-                                        r => `rotate(${r}deg)`
-                                    ),
+                    return (
+                        <GridItem
+                            key={personalExperience[index].title}
+                            $isHidden={isHidden}
+                            $isSameRow={isSameRow}
+                            $isHovered={isHovered}
+                            style={{
+                                ...springProps,
+                                transform: springProps.rotation.to(
+                                    r => `rotate(${r}deg)`
+                                ),
+                            }}
+                        >
+                            <BaseBubble
+                                {...personalExperience[index]}
+                                position={{
+                                    row: currentRow,
+                                    col: index % cols,
                                 }}
-                            >
-                                <BaseBubble
-                                    {...personalExperience[index]}
-                                    position={{
-                                        row: currentRow,
-                                        col: index % 4,
-                                    }}
-                                    totalBubbles={gridSize}
-                                    currentImageIndex={getCurrentImageIndex(index)}
-                                    onHoverChange={(isHovered) => {
-                                        setHoveredIndex(isHovered ? index : null);
-                                    }}
-                                />
-                            </GridItem>
-                        );
-                    })}
-                </GridContainer>
-            </ScrollContainer>
+                                totalBubbles={gridSize}
+                                currentImageIndex={getCurrentImageIndex(index)}
+                                onHoverChange={(isHovered) => {
+                                    setHoveredIndex(isHovered ? index : null);
+                                }}
+                            />
+                        </GridItem>
+                    );
+                })}
+            </GridContainer>
         </>
     );
 }; 

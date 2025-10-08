@@ -9,23 +9,19 @@ import { useTransition, animated } from 'react-spring';
 import styled from 'styled-components';
 
 const AnimatedContainer = styled(animated.div)`
-    position: absolute;
+    /* Remove absolute positioning to allow natural document flow */
     width: 100%;
     will-change: transform, opacity;
-    left: 0;
 `;
 
 const GridContainer = styled.div`
-    position: relative;
+    /* Remove relative positioning and fixed heights */
     width: 100%;
-    min-height: 800px;
-    overflow: hidden;
 `;
 
 const ContentWrapper = styled.div`
-    overflow: hidden;
+    /* Remove all overflow and positioning constraints */
     width: 100%;
-    position: relative;
 `;
 
 type View = 'skills' | 'personal' | 'work';
