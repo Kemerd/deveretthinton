@@ -193,12 +193,13 @@ export const SkillGrid: React.FC = () => {
             const isHovered = index === hoveredIndex;
             const isCurrentCycle = index === currentCycleIndex;
 
-            // On mobile (1 column), hide items below the hovered one
+            // On mobile (1 column), hide items below/above the hovered one
             // On desktop, use existing row-based logic
+            const isLastItem = hoveredIndex === professionalSkills.length - 1;
             const isHidden = hoveredIndex !== null && (
                 cols === 1 ? (
-                    // Mobile: hide only the next item below the hovered one (covering 2 tiles)
-                    index === hoveredIndex + 1
+                    // Mobile: for last item, hide the one above; otherwise hide the one below
+                    isLastItem ? index === hoveredIndex - 1 : index === hoveredIndex + 1
                 ) : (
                     // Desktop: existing logic
                     (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
@@ -239,12 +240,13 @@ export const SkillGrid: React.FC = () => {
                     const isSameRow = currentRow === hoveredRow;
                     const isHovered = index === hoveredIndex;
 
-                    // On mobile (1 column), hide items below the hovered one
+                    // On mobile (1 column), hide items below/above the hovered one
                     // On desktop, hide items in same row and others based on position
+                    const isLastItem = hoveredIndex === professionalSkills.length - 1;
                     const isHidden = hoveredIndex !== null && (
                         cols === 1 ? (
-                            // Mobile: hide only the next item below the hovered one (covering 2 tiles)
-                            index === hoveredIndex + 1
+                            // Mobile: for last item, hide the one above; otherwise hide the one below
+                            isLastItem ? index === hoveredIndex - 1 : index === hoveredIndex + 1
                         ) : (
                             // Desktop: existing logic
                             (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||

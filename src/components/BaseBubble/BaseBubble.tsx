@@ -608,6 +608,9 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Check if this is the last item (for mobile expansion direction)
+    const isLastItem = position.row === totalBubbles.rows - 1 && position.col === totalBubbles.cols - 1;
+
     // Main container animation - responsive based on screen size
     const containerSpring = useSpring({
         width: isHovered ? (isMobile ? 280 : 1200) : 280,
@@ -620,7 +623,8 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
             if (col === totalBubbles.cols - 1) return -920; // 1200 - 280
             return -((280 + 24) * col);
         })()) : 0,
-        y: isHovered && isMobile ? 0 : 0, // Could add vertical offset if needed
+        // On mobile, if it's the last item and hovered, move it up by one tile height + gap
+        y: isHovered && isMobile && isLastItem ? -(340 + 24) : 0,
         config: {
             mass: 1,
             tension: 380,
