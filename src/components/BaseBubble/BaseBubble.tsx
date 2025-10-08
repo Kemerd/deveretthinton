@@ -27,6 +27,7 @@ interface BaseBubbleProps {
     onHoverChange?: (isHovered: boolean) => void;
     currentImageIndex?: number;
     onNextImage?: () => void;
+    link?: string;
 }
 
 // Expansion animation
@@ -363,6 +364,34 @@ const ExpandedTitle = styled(animated.div)`
     }
 `;
 
+const TitleLink = styled.a`
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: ${AppTheme.colors.light.textPrimary};
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &:hover {
+        color: ${AppTheme.colors.light.textPrimary};
+        opacity: 0.8;
+
+        &::after {
+            width: 100%;
+        }
+    }
+`;
+
 const ExpandedDescription = styled(animated.div)`
     ${AppTheme.typography.body};
     color: ${AppTheme.colors.light.textPrimary};
@@ -664,6 +693,7 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     onHoverChange,
     currentImageIndex,
     onNextImage,
+    link,
 }) => {
     const [imageLoadError, setImageLoadError] = useState<boolean[]>(new Array(images.length).fill(false));
     const [isHovered, setIsHovered] = useState(false);
@@ -967,7 +997,15 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                             <ExpandedContentLayout>
                                 <InfoSection>
                                     <animated.div style={titleAnimation}>
-                                        <ExpandedTitle>{title}</ExpandedTitle>
+                                        <ExpandedTitle>
+                                            {link ? (
+                                                <TitleLink href={link} target="_blank" rel="noopener noreferrer">
+                                                    {title}
+                                                </TitleLink>
+                                            ) : (
+                                                title
+                                            )}
+                                        </ExpandedTitle>
                                         <YearText>
                                             {typeof years === 'number' ? `${years}+ years` : years}
                                         </YearText>

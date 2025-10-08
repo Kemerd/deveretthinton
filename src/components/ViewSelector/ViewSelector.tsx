@@ -19,7 +19,7 @@ const SelectorContainer = styled(FrostedGlass)`
     gap: ${AppTheme.spacing[4]};
     position: relative;
     border-radius: ${AppTheme.radius.pill};
-    min-width: 400px;
+    min-width: 520px;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -57,7 +57,7 @@ const Pill = styled(animated.div)`
     border: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
-type View = 'skills' | 'personal' | 'work';
+type View = 'skills' | 'personal' | 'work' | 'apps';
 
 interface ViewSelectorProps {
     currentView: View;
@@ -76,7 +76,9 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
             case 'personal':
                 return { x: 133 };
             case 'work':
-                return { x: 266 };
+                return { x: 262 };
+            case 'apps':
+                return { x: 391 };
             default:
                 return { x: 4 };
         }
@@ -119,6 +121,12 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
                     onClick={() => onViewChange('work')}
                 >
                     Work
+                </Option>
+                <Option
+                    $isActive={currentView === 'apps'}
+                    onClick={() => onViewChange('apps')}
+                >
+                    Apps
                 </Option>
             </SelectorContainer>
         </Container>

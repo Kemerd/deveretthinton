@@ -3,6 +3,7 @@ import { Layout } from './components/Layout/Layout';
 import { SkillGrid } from './components/SkillGrid/SkillGrid';
 import { PersonalGrid } from './components/PersonalGrid/PersonalGrid';
 import { WorkGrid } from './components/WorkGrid/WorkGrid';
+import { AppsGrid } from './components/AppsGrid/AppsGrid';
 import { ViewSelector } from './components/ViewSelector/ViewSelector';
 import GlobalStyles from './styles/GlobalStyles';
 import { useTransition, animated } from 'react-spring';
@@ -24,7 +25,7 @@ const ContentWrapper = styled.div`
     width: 100%;
 `;
 
-type View = 'skills' | 'personal' | 'work';
+type View = 'skills' | 'personal' | 'work' | 'apps';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('skills');
@@ -65,6 +66,7 @@ const App: React.FC = () => {
                 {item === 'skills' && <SkillGrid />}
                 {item === 'personal' && <PersonalGrid />}
                 {item === 'work' && <WorkGrid />}
+                {item === 'apps' && <AppsGrid />}
               </AnimatedContainer>
             ))}
           </GridContainer>
