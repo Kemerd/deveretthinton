@@ -279,16 +279,27 @@ const NonExpandedContent = styled.div`
 
 // Keep the existing container styles, but update ExpandedContentLayout
 const ExpandedContentLayout = styled.div`
-    display: grid;
-    grid-template-columns: 420px 1fr;
-    height: 100%;
+    display: flex;
     gap: ${AppTheme.spacing[24]};
-    padding: ${AppTheme.spacing[32]};
+    padding: ${AppTheme.spacing[24]};
+    height: 100%;
+    box-sizing: border-box;
+
+    /* Adjust layout for 3 columns */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        padding: ${AppTheme.spacing[24]};
+        gap: ${AppTheme.spacing[16]};
+    }
+
+    /* Adjust layout for 2 columns */
+    @media (max-width: 980px) and (min-width: 681px) {
+        padding: ${AppTheme.spacing[16]};
+        gap: ${AppTheme.spacing[12]};
+    }
 
     /* Stack vertically on mobile */
     @media (max-width: 680px) {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        flex-direction: column;
         padding: ${AppTheme.spacing[16]};
         gap: ${AppTheme.spacing[16]};
         height: 100%;
@@ -298,17 +309,32 @@ const ExpandedContentLayout = styled.div`
 const InfoSection = styled.div`
     display: flex;
     flex-direction: column;
-    gap: ${AppTheme.spacing[24]};
-    padding: ${AppTheme.spacing[32]};
+    gap: ${AppTheme.spacing[16]};
+    padding: ${AppTheme.spacing[24]};
     background: rgba(0, 0, 0, 0.4);
     border-radius: ${AppTheme.radius.large};
     border: 1px solid rgba(255, 255, 255, 0.1);
-    height: fit-content;
+    height: 100%;
+    box-sizing: border-box;
+    flex: 0 0 420px;  /* Fixed width for text section */
+    justify-content: center;  /* Center content vertically */
 
-    /* Adjust padding on mobile */
+    /* Adjust width for smaller layouts */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        flex: 0 0 350px;
+    }
+
+    @media (max-width: 980px) and (min-width: 681px) {
+        flex: 0 0 250px;
+    }
+
+    /* Full width on mobile */
     @media (max-width: 680px) {
         padding: ${AppTheme.spacing[16]};
         gap: ${AppTheme.spacing[16]};
+        flex: 1 1 auto;
+        width: 100%;
+        height: auto;
     }
 `;
 
@@ -320,6 +346,16 @@ const ExpandedTitle = styled(animated.div)`
     font-weight: 600;
     letter-spacing: -0.5px;
     line-height: 1.1;
+
+    /* Adjust for 3 column layout */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        font-size: 28px;
+    }
+
+    /* Adjust for 2 column layout */
+    @media (max-width: 980px) and (min-width: 681px) {
+        font-size: 24px;
+    }
 
     /* Smaller font size on mobile */
     @media (max-width: 680px) {
@@ -334,45 +370,92 @@ const ExpandedDescription = styled(animated.div)`
     line-height: 1.6;
     font-size: 15px;
     margin-top: ${AppTheme.spacing[16]};
+
+    /* Adjust for 3 column layout */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    /* Adjust for 2 column layout */
+    @media (max-width: 980px) and (min-width: 681px) {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    /* Mobile */
+    @media (max-width: 680px) {
+        font-size: 14px;
+    }
 `;
 
 const GallerySection = styled(animated.div)`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: ${AppTheme.spacing[24]};
-    align-items: start;
-    padding: ${AppTheme.spacing[32]};
+    display: flex;
+    gap: ${AppTheme.spacing[16]};
+    align-items: center;
+    justify-content: center;
+    padding: ${AppTheme.spacing[24]};
     background: rgba(255, 255, 255, 0.08);
     border-radius: ${AppTheme.radius.large};
     border: 1px solid rgba(255, 255, 255, 0.1);
-    height: fit-content;
+    height: 100%;
+    box-sizing: border-box;
+    flex: 1;  /* Take remaining space */
+
+    /* Adjust for 3 column layout */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        gap: ${AppTheme.spacing[16]};
+        padding: ${AppTheme.spacing[24]};
+    }
+
+    /* Adjust for 2 column layout - even thinner images */
+    @media (max-width: 980px) and (min-width: 681px) {
+        gap: ${AppTheme.spacing[12]};
+        padding: ${AppTheme.spacing[16]};
+    }
 
     /* Stack images vertically on mobile */
     @media (max-width: 680px) {
-        grid-template-columns: 1fr;  /* Single column layout */
-        grid-template-rows: repeat(3, 1fr);  /* 3 rows */
-        gap: ${AppTheme.spacing[12]};
+        display: flex;
+        flex-direction: column;  /* VERTICAL STACKING */
+        gap: ${AppTheme.spacing[8]};
         padding: ${AppTheme.spacing[16]};
-        /* Make the gallery section take remaining space */
         flex: 1;
-        align-items: stretch;
         width: 100%;
+        height: auto;
+        align-items: stretch;
     }
 `;
 
 const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
     position: relative;
-    aspect-ratio: 1/1;
     border-radius: ${AppTheme.radius.medium};
     overflow: hidden;
     background: rgba(0, 0, 0, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     cursor: zoom-in;
+    width: auto;  /* Let aspect ratio determine width */
+    height: 100%;  /* Full height of container */
+    max-height: 240px;  /* Limit max height */
+    aspect-ratio: 3/4;  /* Vertical aspect ratio */
 
-    /* Different aspect ratio on mobile for better vertical layout */
+    /* Even thinner for 3-column layout */
+    @media (max-width: 1268px) and (min-width: 981px) {
+        aspect-ratio: 3/4;  /* Slightly wider for 3 columns */
+    }
+
+    /* Thinnest for 2-column layout */
+    @media (max-width: 980px) and (min-width: 681px) {
+        aspect-ratio: 1/2;  /* Very thin for 2 columns */
+    }
+
+    /* 16:9 aspect ratio on mobile for horizontal layout */
     @media (max-width: 680px) {
         aspect-ratio: 16/9;  /* Wider aspect ratio for mobile */
-        width: 100%;
+        height: auto;
+        max-height: 120px;
+        width: auto;
+        flex: 1;
     }
 
     img {
@@ -598,10 +681,25 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
         return window.innerWidth <= 680;
     });
 
-    // Update mobile detection on window resize
+    // Detect the current column count for proper expansion width
+    const [columnCount, setColumnCount] = useState(() => {
+        if (typeof window === 'undefined') return 4;
+        const width = window.innerWidth;
+        if (width <= 680) return 1;
+        if (width <= 980) return 2;
+        if (width <= 1268) return 3;
+        return 4;
+    });
+
+    // Update mobile detection and column count on window resize
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 680);
+            const width = window.innerWidth;
+            setIsMobile(width <= 680);
+            if (width <= 680) setColumnCount(1);
+            else if (width <= 980) setColumnCount(2);
+            else if (width <= 1268) setColumnCount(3);
+            else setColumnCount(4);
         };
 
         window.addEventListener('resize', handleResize);
@@ -611,17 +709,33 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     // Check if this is the last item (for mobile expansion direction)
     const isLastItem = position.row === totalBubbles.rows - 1 && position.col === totalBubbles.cols - 1;
 
+    // Calculate expanded width based on column count
+    // 4 cols: 1200px (4 * 280 + 3 * 24 gaps + padding)
+    // 3 cols: 920px (3 * 280 + 2 * 24 gaps + padding)
+    // 2 cols: 584px (2 * 280 + 1 * 24 gap)
+    // 1 col: 280px (mobile vertical)
+    const getExpandedWidth = () => {
+        if (columnCount === 1) return 280;
+        if (columnCount === 2) return 584;  // 2 * 280 + 24
+        if (columnCount === 3) return 888;  // 3 * 280 + 2 * 24
+        return 1200; // 4 columns default
+    };
+
     // Main container animation - responsive based on screen size
     const containerSpring = useSpring({
-        width: isHovered ? (isMobile ? 280 : 1200) : 280,
+        width: isHovered ? getExpandedWidth() : 280,
         // Mobile height: 340 (base) + 24 (gap) + 340 = 704px to cover 2 tiles
         height: isHovered ? (isMobile ? 704 : 340) : 340,  // Cover 2 tiles vertically on mobile
         x: isHovered ? (isMobile ? 0 : (() => {
-            // Only apply horizontal positioning on desktop
+            // Calculate horizontal offset based on position and column count
             const col = position.col;
+            const expandedWidth = getExpandedWidth();
+            const offset = expandedWidth - 280;
+
             if (col === 0) return 0;
-            if (col === totalBubbles.cols - 1) return -920; // 1200 - 280
-            return -((280 + 24) * col);
+            if (col === totalBubbles.cols - 1) return -offset;
+            // For middle columns, center the expansion
+            return -(offset * col / (totalBubbles.cols - 1));
         })()) : 0,
         // On mobile, if it's the last item and hovered, move it up by one tile height + gap
         y: isHovered && isMobile && isLastItem ? -(340 + 24) : 0,
