@@ -193,9 +193,17 @@ export const SkillGrid: React.FC = () => {
             const isHovered = index === hoveredIndex;
             const isCurrentCycle = index === currentCycleIndex;
 
+            // On mobile (1 column), hide items below the hovered one
+            // On desktop, use existing row-based logic
             const isHidden = hoveredIndex !== null && (
-                (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                cols === 1 ? (
+                    // Mobile: hide only the next item below the hovered one (covering 2 tiles)
+                    index === hoveredIndex + 1
+                ) : (
+                    // Desktop: existing logic
+                    (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                    (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                )
             );
 
             return {
@@ -207,8 +215,8 @@ export const SkillGrid: React.FC = () => {
                 to: {
                     opacity: isHovered ? 1 : (isHidden || isSameRow) ? 0 : 1,
                     blur: isHovered ? 20 : 10,
-                    // Only apply rotation to the current cycling item
-                    rotation: isCurrentCycle ? 2 : 0,
+                    // Only apply rotation to the current cycling item when NOT hovered
+                    rotation: (isCurrentCycle && !isHovered) ? 2 : 0,
                 },
                 config: {
                     mass: 1,
@@ -231,9 +239,17 @@ export const SkillGrid: React.FC = () => {
                     const isSameRow = currentRow === hoveredRow;
                     const isHovered = index === hoveredIndex;
 
+                    // On mobile (1 column), hide items below the hovered one
+                    // On desktop, hide items in same row and others based on position
                     const isHidden = hoveredIndex !== null && (
-                        (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
-                        (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                        cols === 1 ? (
+                            // Mobile: hide only the next item below the hovered one (covering 2 tiles)
+                            index === hoveredIndex + 1
+                        ) : (
+                            // Desktop: existing logic
+                            (hoveredRow < gridSize.rows / 2 && currentRow < hoveredRow) ||
+                            (hoveredRow >= gridSize.rows / 2 && currentRow > hoveredRow)
+                        )
                     );
 
                     return (

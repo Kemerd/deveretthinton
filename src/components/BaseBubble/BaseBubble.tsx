@@ -53,7 +53,7 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     position: absolute;
     width: 100%;
     height: 100%;
-    
+
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
     display: flex;
@@ -66,6 +66,11 @@ const AnimatedContent = styled(animated.div) <{ $isExpanded: boolean }>`
     /* Smooth transition for backdrop-filter */
     transition: backdrop-filter 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                 -webkit-backdrop-filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Ensure content stays within bounds on mobile */
+    @media (max-width: 680px) {
+        max-width: calc(100vw - ${AppTheme.spacing[32]});
+    }
     
     /* Animated border style */
     &::after {
@@ -279,6 +284,15 @@ const ExpandedContentLayout = styled.div`
     height: 100%;
     gap: ${AppTheme.spacing[24]};
     padding: ${AppTheme.spacing[32]};
+
+    /* Stack vertically on mobile */
+    @media (max-width: 680px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        padding: ${AppTheme.spacing[16]};
+        gap: ${AppTheme.spacing[16]};
+        height: 100%;
+    }
 `;
 
 const InfoSection = styled.div`
@@ -290,6 +304,12 @@ const InfoSection = styled.div`
     border-radius: ${AppTheme.radius.large};
     border: 1px solid rgba(255, 255, 255, 0.1);
     height: fit-content;
+
+    /* Adjust padding on mobile */
+    @media (max-width: 680px) {
+        padding: ${AppTheme.spacing[16]};
+        gap: ${AppTheme.spacing[16]};
+    }
 `;
 
 const ExpandedTitle = styled(animated.div)`
@@ -300,6 +320,11 @@ const ExpandedTitle = styled(animated.div)`
     font-weight: 600;
     letter-spacing: -0.5px;
     line-height: 1.1;
+
+    /* Smaller font size on mobile */
+    @media (max-width: 680px) {
+        font-size: 24px;
+    }
 `;
 
 const ExpandedDescription = styled(animated.div)`
@@ -321,6 +346,18 @@ const GallerySection = styled(animated.div)`
     border-radius: ${AppTheme.radius.large};
     border: 1px solid rgba(255, 255, 255, 0.1);
     height: fit-content;
+
+    /* Stack images vertically on mobile */
+    @media (max-width: 680px) {
+        grid-template-columns: 1fr;  /* Single column layout */
+        grid-template-rows: repeat(3, 1fr);  /* 3 rows */
+        gap: ${AppTheme.spacing[12]};
+        padding: ${AppTheme.spacing[16]};
+        /* Make the gallery section take remaining space */
+        flex: 1;
+        align-items: stretch;
+        width: 100%;
+    }
 `;
 
 const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
@@ -331,7 +368,13 @@ const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
     background: rgba(0, 0, 0, 0.2);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     cursor: zoom-in;
-    
+
+    /* Different aspect ratio on mobile for better vertical layout */
+    @media (max-width: 680px) {
+        aspect-ratio: 16/9;  /* Wider aspect ratio for mobile */
+        width: 100%;
+    }
+
     img {
         width: 100%;
         height: 100%;
@@ -342,7 +385,7 @@ const GalleryItem = styled(animated.div) <{ $isHovering: boolean }>`
     }
 
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    
+
     &:hover {
         transform: translateY(-4px) scale(1.02);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
@@ -549,16 +592,35 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [currentMagnifiedIndex, setCurrentMagnifiedIndex] = useState<number>(0);
     const [isClosing, setIsClosing] = useState(false);
 
-    // Main container animation
+    // Detect if we're on mobile based on viewport width
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return window.innerWidth <= 680;
+    });
+
+    // Update mobile detection on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 680);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Main container animation - responsive based on screen size
     const containerSpring = useSpring({
-        width: isHovered ? 1200 : 280,
-        height: isHovered ? 340 : 340,
-        x: isHovered ? (() => {
+        width: isHovered ? (isMobile ? 280 : 1200) : 280,
+        // Mobile height: 340 (base) + 24 (gap) + 340 = 704px to cover 2 tiles
+        height: isHovered ? (isMobile ? 704 : 340) : 340,  // Cover 2 tiles vertically on mobile
+        x: isHovered ? (isMobile ? 0 : (() => {
+            // Only apply horizontal positioning on desktop
             const col = position.col;
             if (col === 0) return 0;
             if (col === totalBubbles.cols - 1) return -920; // 1200 - 280
             return -((280 + 24) * col);
-        })() : 0,
+        })()) : 0,
+        y: isHovered && isMobile ? 0 : 0, // Could add vertical offset if needed
         config: {
             mass: 1,
             tension: 380,
