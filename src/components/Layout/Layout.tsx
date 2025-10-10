@@ -288,29 +288,39 @@ const AnimatedName: React.FC = () => {
     const name = "D Everett Hinton";
     const chars = name.split('');
 
-    // Track the current "hot" character index (where the wave is centered)
+    // Track the current wave position (continuous float, not discrete index)
     const [waveCenter, setWaveCenter] = React.useState(-100); // Start far away so no chars are affected
 
-    // Start the wave animation after 500ms
+    // Smooth continuous animation using time-based calculation
     React.useEffect(() => {
         const startDelay = setTimeout(() => {
-            let currentIndex = 0;
+            const startTime = performance.now();
+            const animationDuration = chars.length * 45; // Total time to sweep through all chars
+            const totalDistance = chars.length + 6; // Include buffer for smooth exit
+            let animationFrame: number;
 
-            // Move the wave through each character
-            const interval = setInterval(() => {
-                setWaveCenter(currentIndex);
-                currentIndex++;
+            const animate = (currentTime: number) => {
+                const elapsed = currentTime - startTime;
 
-                // Stop when we've passed all characters (add buffer for smooth exit)
-                if (currentIndex > chars.length + 3) {
-                    clearInterval(interval);
+                // Calculate smooth wave position based on elapsed time
+                const progress = elapsed / animationDuration;
+                const position = progress * totalDistance;
+
+                setWaveCenter(position);
+
+                // Continue animation until we've passed all characters
+                if (position < totalDistance) {
+                    animationFrame = requestAnimationFrame(animate);
+                } else {
                     // Reset far away so all chars smoothly return to normal
                     setWaveCenter(-100);
                 }
-            }, 45); // 45ms between each character for smooth, visible sweep
+            };
 
-            return () => clearInterval(interval);
-        }, 500);
+            animationFrame = requestAnimationFrame(animate);
+
+            return () => cancelAnimationFrame(animationFrame);
+        }, 42);
 
         return () => clearTimeout(startDelay);
     }, []);
