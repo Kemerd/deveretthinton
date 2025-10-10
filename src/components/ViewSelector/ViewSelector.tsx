@@ -26,20 +26,17 @@ const SelectorContainer = styled(FrostedGlass)`
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     background: rgba(255, 255, 255, 0.05);
 
-    /* Scale down on mobile to fit within screen width */
+    /* Properly resize on mobile without scaling - prevents clipping */
     @media (max-width: 580px) {
         min-width: auto;
-        max-width: calc(100vw - ${AppTheme.spacing[32]});
-        transform: scale(0.85);
-        transform-origin: center;
+        width: calc(100vw - ${AppTheme.spacing[32]});
+        max-width: 100%;
     }
 
     @media (max-width: 480px) {
-        transform: scale(0.75);
-    }
-
-    @media (max-width: 380px) {
-        transform: scale(0.65);
+        width: calc(100vw - ${AppTheme.spacing[24]});
+        gap: ${AppTheme.spacing[2]};
+        padding: ${AppTheme.spacing[2]};
     }
 `;
 
@@ -56,9 +53,27 @@ const Option = styled.button<{ $isActive: boolean }>`
     transition: color 0.3s ease;
     font-size: 16px;
     min-width: 120px;
-    
+    white-space: nowrap;
+
     &:hover {
         color: ${AppTheme.colors.light.textPrimary};
+    }
+
+    /* Adjust padding and font size for smaller screens to prevent overflow */
+    @media (max-width: 580px) {
+        padding: ${AppTheme.spacing[12]} ${AppTheme.spacing[16]};
+        min-width: auto;
+        font-size: 15px;
+    }
+
+    @media (max-width: 480px) {
+        padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[12]};
+        font-size: 14px;
+    }
+
+    @media (max-width: 380px) {
+        padding: ${AppTheme.spacing[8]} ${AppTheme.spacing[8]};
+        font-size: 13px;
     }
 `;
 
@@ -84,25 +99,60 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
     currentView,
     onViewChange,
 }) => {
-    // Calculate the position based on the current view
-    const getPosition = (view: View) => {
-        switch (view) {
-            case 'skills':
-                return { x: 4 };
-            case 'personal':
-                return { x: 133 };
-            case 'work':
-                return { x: 262 };
-            case 'apps':
-                return { x: 391 };
-            default:
-                return { x: 4 };
-        }
-    };
+    // Create refs for each button to track their actual positions
+    const skillsRef = React.useRef<HTMLButtonElement>(null);
+    const personalRef = React.useRef<HTMLButtonElement>(null);
+    const workRef = React.useRef<HTMLButtonElement>(null);
+    const appsRef = React.useRef<HTMLButtonElement>(null);
+    const containerRef = React.useRef<HTMLDivElement>(null);
 
+    // State to track pill position and width
+    const [pillPosition, setPillPosition] = React.useState({ left: 0, width: 0 });
+
+    // Update pill position when current view changes or window resizes
+    React.useEffect(() => {
+        const updatePillPosition = () => {
+            const refs = {
+                skills: skillsRef,
+                personal: personalRef,
+                work: workRef,
+                apps: appsRef,
+            };
+
+            const activeRef = refs[currentView];
+            const containerElement = containerRef.current;
+
+            if (activeRef.current && containerElement) {
+                const buttonRect = activeRef.current.getBoundingClientRect();
+                const containerRect = containerElement.getBoundingClientRect();
+
+                // Calculate relative position within the container
+                const left = buttonRect.left - containerRect.left;
+                const width = buttonRect.width;
+
+                setPillPosition({ left, width });
+            }
+        };
+
+        // Update position on mount and when view changes
+        updatePillPosition();
+
+        // Update position on window resize for responsive behavior
+        window.addEventListener('resize', updatePillPosition);
+
+        // Small delay to ensure layout is complete
+        const timeoutId = setTimeout(updatePillPosition, 50);
+
+        return () => {
+            window.removeEventListener('resize', updatePillPosition);
+            clearTimeout(timeoutId);
+        };
+    }, [currentView]);
+
+    // Animate the pill position with spring physics
     const pillSpring = useSpring({
-        from: getPosition(currentView),
-        to: getPosition(currentView),
+        left: pillPosition.left,
+        width: pillPosition.width,
         config: {
             mass: 1,
             tension: 400,
@@ -112,33 +162,37 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
 
     // Transform the spring value into CSS properties
     const pillStyle = {
-        left: pillSpring.x.to(x => `${x}px`),
-        width: '125px',
+        left: pillSpring.left.to(x => `${x}px`),
+        width: pillSpring.width.to(w => `${w}px`),
     };
 
     return (
         <Container>
-            <SelectorContainer>
+            <SelectorContainer ref={containerRef}>
                 <Pill style={pillStyle} />
                 <Option
+                    ref={skillsRef}
                     $isActive={currentView === 'skills'}
                     onClick={() => onViewChange('skills')}
                 >
                     Skills
                 </Option>
                 <Option
+                    ref={personalRef}
                     $isActive={currentView === 'personal'}
                     onClick={() => onViewChange('personal')}
                 >
                     Personal
                 </Option>
                 <Option
+                    ref={workRef}
                     $isActive={currentView === 'work'}
                     onClick={() => onViewChange('work')}
                 >
                     Work
                 </Option>
                 <Option
+                    ref={appsRef}
                     $isActive={currentView === 'apps'}
                     onClick={() => onViewChange('apps')}
                 >

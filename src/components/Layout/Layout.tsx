@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { animated } from 'react-spring';
+import { animated, useSpring } from 'react-spring';
 import { AppTheme } from '../../theme/theme';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { useImagePreload } from '../../hooks/useImagePreloader';
@@ -131,6 +131,12 @@ const Name = styled.h1`
     ${AppTheme.typography.heroDisplay};
     color: ${AppTheme.colors.light.textPrimary};
     margin: 0 0 ${AppTheme.spacing[8]};
+`;
+
+// Animated character wrapper for the wave effect
+const AnimatedChar = styled(animated.span)`
+    display: inline-block;
+    transform-origin: center bottom;
 `;
 
 const Title = styled.h2`
@@ -276,6 +282,83 @@ const ButtonIcon = styled.i`
     color: ${AppTheme.colors.light.textPrimary};
 `;
 
+// Component for rendering the animated name with wave effect
+// Only ~5 characters are magnified at any given time (like macOS Dock)
+const AnimatedName: React.FC = () => {
+    const name = "D Everett Hinton";
+    const chars = name.split('');
+
+    // Track the current "hot" character index (where the wave is centered)
+    const [waveCenter, setWaveCenter] = React.useState(-100); // Start far away so no chars are affected
+
+    // Start the wave animation after 500ms
+    React.useEffect(() => {
+        const startDelay = setTimeout(() => {
+            let currentIndex = 0;
+
+            // Move the wave through each character
+            const interval = setInterval(() => {
+                setWaveCenter(currentIndex);
+                currentIndex++;
+
+                // Stop when we've passed all characters (add buffer for smooth exit)
+                if (currentIndex > chars.length + 3) {
+                    clearInterval(interval);
+                    // Reset far away so all chars smoothly return to normal
+                    setWaveCenter(-100);
+                }
+            }, 45); // 45ms between each character for smooth, visible sweep
+
+            return () => clearInterval(interval);
+        }, 500);
+
+        return () => clearTimeout(startDelay);
+    }, []);
+
+    return (
+        <Name>
+            {chars.map((char, index) => {
+                // Calculate distance from wave center
+                const distance = Math.abs(index - waveCenter);
+
+                // Smooth exponential falloff - affects all chars but with gradual decrease
+                // Max scale is 1.5x at center, smoothly falls off to 1x over distance
+                // Tight magnification zone (~5-6 chars noticeably affected)
+                const maxScale = 1.5;
+                const falloffDistance = 3;
+
+                // Exponential falloff formula creates buttery smooth gradient
+                // scale = 1 + (maxScale - 1) * e^(-distance²/falloffDistance²)
+                const scaleDelta = (maxScale - 1) * Math.exp(-(distance * distance) / (falloffDistance * falloffDistance));
+                const targetScale = 1 + scaleDelta;
+
+                const CharComponent = () => {
+                    const spring = useSpring({
+                        scale: targetScale,
+                        config: {
+                            mass: 0.1,
+                            tension: 200,
+                            friction: 26,
+                        },
+                    });
+
+                    return (
+                        <AnimatedChar
+                            style={{
+                                transform: spring.scale.to(s => `scale(${s})`),
+                            }}
+                        >
+                            {char === ' ' ? '\u00A0' : char}
+                        </AnimatedChar>
+                    );
+                };
+
+                return <CharComponent key={index} />;
+            })}
+        </Name>
+    );
+};
+
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleDownload = () => {
         // Update the path to the new resume file
@@ -329,7 +412,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         <ContentWrapper>
                             <TextContainer>
                                 <HeaderText>
-                                    <Name>D Everett Hinton</Name>
+                                    <AnimatedName />
                                     <Title>Senior Software Engineer & Pilot</Title>
                                     <Bio>
                                         I'm Everett, a results-driven professional and a software expert.
