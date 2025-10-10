@@ -35,6 +35,13 @@
             margin: 0;
             padding: 0;
             background-color: #2E4664;
+            /* Subtle fade to transparent - just a few frames for polish */
+            transition: background-color 0.15s ease-out;
+        }
+
+        /* Fade out blue background when loaded */
+        body.loaded {
+            background-color: transparent;
         }
 
         /* Root element starts slightly blurred, shows content immediately */
@@ -60,9 +67,10 @@
         // Content shows immediately (blurred), then unblurs when images are ready
         window.addEventListener('load', function() {
             const root = document.getElementById('root');
-            if (root) {
-                root.classList.add('loaded');
-            }
+            const body = document.body;
+
+            if (root) root.classList.add('loaded');
+            if (body) body.classList.add('loaded');
         });
     </script>
 </body>
