@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useMemo } from 'react';
 
 /**
  * Priority levels for image preloading
@@ -25,6 +25,12 @@ interface PreloadState {
 }
 
 /**
+ * Global cache to track preloaded images across all components
+ * This prevents duplicate preloading and improves performance
+ */
+const globalPreloadCache = new Set<string>();
+
+/**
  * Custom hook to preload images with priority-based loading
  *
  * This hook intelligently preloads images based on their priority level:
@@ -33,18 +39,18 @@ interface PreloadState {
  * - Medium priority images load in the background
  * - Low priority images are tracked but not preloaded (lazy loaded)
  *
+ * Optimized to avoid useEffect - uses useMemo for side effects during render
+ * which is acceptable for image preloading (non-critical side effect)
+ *
  * @param images - Array of image URLs or PreloadItem objects to preload
  * @returns Object containing loaded state for each image URL
  */
 export const useImagePreloader = (images: (string | PreloadItem)[]): PreloadState => {
     const [loadedImages, setLoadedImages] = useState<PreloadState>({});
-    const preloadedRefs = useRef<Set<string>>(new Set());
-    const abortControllerRef = useRef<AbortController | null>(null);
 
-    useEffect(() => {
-        // Create abort controller for cleanup
-        abortControllerRef.current = new AbortController();
-
+    // Use useMemo to kick off preloading - runs once when images change
+    // This is acceptable for preloading since it's a background operation
+    useMemo(() => {
         // Normalize images to PreloadItem format
         const normalizedImages: PreloadItem[] = images.map(img =>
             typeof img === 'string' ? { url: img, priority: 'medium' } : img
@@ -52,8 +58,11 @@ export const useImagePreloader = (images: (string | PreloadItem)[]): PreloadStat
 
         // Filter out already preloaded images to avoid duplicate work
         const newImages = normalizedImages.filter(
-            item => !preloadedRefs.current.has(item.url)
+            item => !globalPreloadCache.has(item.url)
         );
+
+        // Early return if nothing to preload
+        if (newImages.length === 0) return;
 
         // Group images by priority
         const immediateImages = newImages.filter(item => item.priority === 'immediate');
@@ -63,83 +72,47 @@ export const useImagePreloader = (images: (string | PreloadItem)[]): PreloadStat
         /**
          * Preload a single image and update state
          */
-        const preloadImage = (url: string): Promise<void> => {
-            return new Promise((resolve, reject) => {
-                // Skip if already preloaded
-                if (preloadedRefs.current.has(url)) {
-                    resolve();
-                    return;
-                }
+        const preloadImage = (url: string, delay: number = 0): void => {
+            // Skip if already cached globally
+            if (globalPreloadCache.has(url)) return;
 
+            // Add to global cache immediately to prevent duplicates
+            globalPreloadCache.add(url);
+
+            // Create preload function
+            const load = () => {
                 const img = new Image();
 
-                // Handle successful load
                 img.onload = () => {
-                    if (abortControllerRef.current?.signal.aborted) {
-                        reject(new Error('Aborted'));
-                        return;
-                    }
-
-                    preloadedRefs.current.add(url);
                     setLoadedImages(prev => ({ ...prev, [url]: true }));
-                    resolve();
                 };
 
-                // Handle load errors gracefully
                 img.onerror = () => {
                     console.warn(`Failed to preload image: ${url}`);
-                    // Still mark as "loaded" to prevent retries
-                    preloadedRefs.current.add(url);
                     setLoadedImages(prev => ({ ...prev, [url]: false }));
-                    resolve(); // Resolve instead of reject to continue loading other images
                 };
 
-                // Start loading the image
                 img.src = url;
-            });
-        };
+            };
 
-        /**
-         * Batch preload multiple images with optional delay
-         */
-        const batchPreload = async (items: PreloadItem[], delay: number = 0) => {
+            // Execute immediately or with delay
             if (delay > 0) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-            }
-
-            // Check if component is still mounted
-            if (abortControllerRef.current?.signal.aborted) {
-                return;
-            }
-
-            // Preload all images in parallel for better performance
-            await Promise.all(items.map(item => preloadImage(item.url)));
-        };
-
-        // Execute preloading with priority-based delays
-        const executePreloading = async () => {
-            try {
-                // Load immediate priority images right away (background, profile pic)
-                await batchPreload(immediateImages, 0);
-
-                // Load high priority images after a tiny delay (current view images)
-                await batchPreload(highImages, 100);
-
-                // Load medium priority images in background (other views)
-                await batchPreload(mediumImages, 500);
-            } catch (error) {
-                if (error instanceof Error && error.message !== 'Aborted') {
-                    console.error('Error during image preloading:', error);
-                }
+                setTimeout(load, delay);
+            } else {
+                load();
             }
         };
 
-        executePreloading();
+        // Preload images with priority-based delays
+        // Immediate: no delay
+        immediateImages.forEach(item => preloadImage(item.url, 0));
 
-        // Cleanup function to abort any pending loads on unmount
-        return () => {
-            abortControllerRef.current?.abort();
-        };
+        // High priority: tiny delay to not block render
+        highImages.forEach(item => preloadImage(item.url, 100));
+
+        // Medium priority: background loading
+        mediumImages.forEach(item => preloadImage(item.url, 500));
+
     }, [images]);
 
     return loadedImages;

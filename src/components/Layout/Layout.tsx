@@ -294,8 +294,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     });
 
     // Preload background image and trigger fade-in when loaded
-    // Since it's a CSS background, we need to manually preload and trigger the animation
-    React.useEffect(() => {
+    // Since it's a CSS background, we need to manually preload
+    // Using useMemo for this side effect is acceptable for non-critical operations like image preloading
+    React.useMemo(() => {
         const bgImage = new Image();
         bgImage.onload = () => bgFadeIn.handleLoad();
         bgImage.onerror = () => bgFadeIn.handleError();

@@ -153,9 +153,7 @@ const GlobalStyles = createGlobalStyle`
 
     /* Enhanced body styles with better font fallbacks */
     body {
-        margin: 0;
-        padding: 0;
-        background: ${AppTheme.colors.dark.background};
+        /* Don't override margin/padding/background - set in index.html for loading state */
         color: ${AppTheme.colors.dark.textPrimary};
         font-family: 'SF Pro Text', var(--system-ui);
         -webkit-font-smoothing: antialiased;
@@ -165,11 +163,11 @@ const GlobalStyles = createGlobalStyle`
         /* Allow body to grow with content */
         height: auto;
         min-height: 100vh;
-        overflow-y: auto;
-        overflow-x: hidden;
+        /* Overflow controlled by loading state in index.html */
     }
 
     /* Ensure root div takes full height but grows with content */
+    /* Don't override filter/opacity - controlled by loading state in index.html */
     #root {
         height: auto;
         min-height: 100vh;

@@ -707,23 +707,12 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [isClosing, setIsClosing] = useState(false);
 
     // Setup fade-in animation for feature image
+    // The onLoad handler will automatically trigger when images load/change
+    // No need for manual tracking - the browser handles this for us
     const featureImageFadeIn = useFadeInImage({
         delay: 50,
         springConfig: { mass: 0.8, tension: 300, friction: 26 }
     });
-
-    // Track previous image index to detect changes
-    const prevImageIndex = useRef(currentImageIndex || 0);
-
-    // Reset fade-in when image changes (during cycling animation)
-    useEffect(() => {
-        const newIndex = currentImageIndex || 0;
-        if (newIndex !== prevImageIndex.current && !isHovered) {
-            // Image changed, trigger fade-in for new image
-            // The browser will call onLoad when the (potentially cached) image loads
-            prevImageIndex.current = newIndex;
-        }
-    }, [currentImageIndex, isHovered]);
 
     // Detect if we're on mobile based on viewport width
     const [isMobile, setIsMobile] = useState(() => {
