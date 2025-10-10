@@ -1,9 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { animated } from 'react-spring';
 import { AppTheme } from '../../theme/theme';
 import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
+import { useImagePreload } from '../../hooks/useImagePreloader';
+import { useFadeInImage } from '../../hooks/useFadeInImage';
 
-const BackgroundContainer = styled.div`
+// Animated background container with smooth fade-in
+const BackgroundContainer = styled(animated.div)`
     /* Allow page to grow with content instead of fixed viewport */
     min-height: 100vh;
     /* Remove 'fixed' to allow whole page scrolling */
@@ -94,28 +98,29 @@ const ProfilePicture = styled(FrostedGlass)`
     border-radius: ${AppTheme.radius.large};
     overflow: hidden;
     padding: 0;
-    
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        border-radius: inherit;
-        margin: 0;
-        display: block;
-        transform: translate3d(0, 0, 0);
-        will-change: transform;
-        image-rendering: auto;
-        
-        filter: brightness(1.0) contrast(1.0);
-        
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        -moz-backface-visibility: hidden;
-        
-        -webkit-transform-style: preserve-3d;
-        transform-style: preserve-3d;
-    }
+`;
+
+// Animated profile image with smooth fade-in
+const ProfileImage = styled(animated.img)`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+    margin: 0;
+    display: block;
+    transform: translate3d(0, 0, 0);
+    will-change: opacity;
+    image-rendering: auto;
+
+    filter: brightness(1.0) contrast(1.0);
+
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 `;
 
 const HeaderText = styled.div`
@@ -225,6 +230,9 @@ const DownloadButton = styled(FrostedGlass)`
         bottom: auto;
         right: auto;
         margin-top: ${AppTheme.spacing[24]};
+        /* Center the button on tablet and mobile */
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Add styles for very small screens */
@@ -274,8 +282,28 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         window.open('/doc/D Everett Hinton - FS S Engineer, Pilot - 2-8-25.pdf', '_blank');
     };
 
+    // Setup smooth fade-in animations for background and profile
+    const bgFadeIn = useFadeInImage({
+        delay: 0,
+        springConfig: { mass: 1, tension: 280, friction: 30 }
+    });
+
+    const profileFadeIn = useFadeInImage({
+        delay: 100, // Slight delay after background for layered effect
+        springConfig: { mass: 0.8, tension: 300, friction: 26 }
+    });
+
+    // Preload background image and trigger fade-in when loaded
+    // Since it's a CSS background, we need to manually preload and trigger the animation
+    React.useEffect(() => {
+        const bgImage = new Image();
+        bgImage.onload = () => bgFadeIn.handleLoad();
+        bgImage.onerror = () => bgFadeIn.handleError();
+        bgImage.src = '/img/bg.jpg';
+    }, []);
+
     return (
-        <BackgroundContainer>
+        <BackgroundContainer style={{ opacity: bgFadeIn.opacity }}>
             <ContentContainer>
                 <Header>
                     <HeaderContent>
@@ -286,12 +314,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             $enableAnimatedGradient={true}
                             $padding={AppTheme.spacing[16]}
                         >
-                            <img
+                            <ProfileImage
                                 src="/img/pfp_16_9.png"
                                 alt="D Everett Hinton"
                                 loading="eager"
                                 decoding="sync"
                                 draggable="false"
+                                style={{ opacity: profileFadeIn.opacity }}
+                                onLoad={profileFadeIn.handleLoad}
+                                onError={profileFadeIn.handleError}
                             />
                         </ProfilePicture>
                         <ContentWrapper>

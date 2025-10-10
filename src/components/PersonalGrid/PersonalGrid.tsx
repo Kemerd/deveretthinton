@@ -54,7 +54,8 @@ const GridItem = styled(animated.div) <{
 
 // Removed ScrollContainer - no longer need horizontal scrolling with responsive grid
 
-const personalExperience = [
+// Export for preloading in App.tsx
+export const personalExperience = [
     {
         title: 'IFR Pilot',
         description: 'Licensed instrument-rated pilot with 250+ hours in the logbook, and a passion for flying 3000lb machines through the clouds blind!',

@@ -4,6 +4,7 @@ import { FrostedGlass } from '../FrostedGlass/FrostedGlass';
 import { AppTheme } from '../../theme/theme';
 import { useSpring, animated, config, useSprings } from 'react-spring';
 import { createPortal } from 'react-dom';
+import { useFadeInImage } from '../../hooks/useFadeInImage';
 
 const FALLBACK_COLORS = [
     '#FF6B6B', // Coral Red
@@ -171,7 +172,8 @@ const GlassImageWrapper = styled(FrostedGlass)`
     border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
-const FeatureImage = styled.img<{ $isActive: boolean; $fallbackColor: string }>`
+// Animated feature image with smooth fade-in
+const FeatureImage = styled(animated.img)<{ $isActive: boolean; $fallbackColor: string }>`
     position: absolute;
     top: 0;
     left: 0;
@@ -179,9 +181,8 @@ const FeatureImage = styled.img<{ $isActive: boolean; $fallbackColor: string }>`
     height: 100%;
     object-fit: cover;
     border-radius: ${AppTheme.radius.large};
-    transition: opacity 0.3s ease;
-    opacity: ${props => props.$isActive ? 1 : 0.8};
     background-color: ${props => props.$fallbackColor};
+    will-change: opacity;
 `;
 
 const YearText = styled.span`
@@ -705,6 +706,25 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
     const [currentMagnifiedIndex, setCurrentMagnifiedIndex] = useState<number>(0);
     const [isClosing, setIsClosing] = useState(false);
 
+    // Setup fade-in animation for feature image
+    const featureImageFadeIn = useFadeInImage({
+        delay: 50,
+        springConfig: { mass: 0.8, tension: 300, friction: 26 }
+    });
+
+    // Track previous image index to detect changes
+    const prevImageIndex = useRef(currentImageIndex || 0);
+
+    // Reset fade-in when image changes (during cycling animation)
+    useEffect(() => {
+        const newIndex = currentImageIndex || 0;
+        if (newIndex !== prevImageIndex.current && !isHovered) {
+            // Image changed, trigger fade-in for new image
+            // The browser will call onLoad when the (potentially cached) image loads
+            prevImageIndex.current = newIndex;
+        }
+    }, [currentImageIndex, isHovered]);
+
     // Detect if we're on mobile based on viewport width
     const [isMobile, setIsMobile] = useState(() => {
         if (typeof window === 'undefined') return false;
@@ -979,8 +999,14 @@ export const BaseBubble: React.FC<BaseBubbleProps> = ({
                                             src={images[currentImageIndex || 0]}
                                             $isActive={!isHovered}
                                             $fallbackColor={FALLBACK_COLORS[Math.floor(position.row * totalBubbles.cols + position.col) % FALLBACK_COLORS.length]}
-                                            onError={handleImageError}
+                                            style={{ opacity: featureImageFadeIn.opacity }}
+                                            onLoad={featureImageFadeIn.handleLoad}
+                                            onError={(e) => {
+                                                handleImageError();
+                                                featureImageFadeIn.handleError();
+                                            }}
                                             alt={`${title} preview`}
+                                            loading="lazy"
                                         />
                                     </GlassImageWrapper>
                                 </ImageContainer>

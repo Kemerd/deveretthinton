@@ -52,7 +52,8 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
-const apps = [
+// Export for preloading in App.tsx
+export const apps = [
     {
         title: 'NihonDojo.ai',
         description: 'Master Japanese in two years. Guaranteed. AI-powered sentence generation, FSRS spaced repetition, and real formality switching. No cartoon mascots, just results.',

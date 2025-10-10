@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Layout } from './components/Layout/Layout';
-import { SkillGrid } from './components/SkillGrid/SkillGrid';
-import { PersonalGrid } from './components/PersonalGrid/PersonalGrid';
-import { WorkGrid } from './components/WorkGrid/WorkGrid';
-import { AppsGrid } from './components/AppsGrid/AppsGrid';
+import { SkillGrid, professionalSkills } from './components/SkillGrid/SkillGrid';
+import { PersonalGrid, personalExperience } from './components/PersonalGrid/PersonalGrid';
+import { WorkGrid, workExperience } from './components/WorkGrid/WorkGrid';
+import { AppsGrid, apps } from './components/AppsGrid/AppsGrid';
 import { ViewSelector } from './components/ViewSelector/ViewSelector';
 import GlobalStyles from './styles/GlobalStyles';
 import { useTransition, animated } from 'react-spring';
 import styled from 'styled-components';
+import { useImagePreloader } from './hooks/useImagePreloader';
+import { extractFirstImagesFromGridItems } from './utils/imageCache';
 
 const AnimatedContainer = styled(animated.div)`
     /* Remove absolute positioning to allow natural document flow */
@@ -29,6 +31,28 @@ type View = 'skills' | 'personal' | 'work' | 'apps';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('skills');
+
+  // Build intelligent preloading strategy based on view priority
+  const imagesToPreload = useMemo(() => {
+    // Extract first image from each item for faster initial load
+    const skillsFirstImages = extractFirstImagesFromGridItems(professionalSkills);
+    const personalFirstImages = extractFirstImagesFromGridItems(personalExperience);
+    const workFirstImages = extractFirstImagesFromGridItems(workExperience);
+    const appsFirstImages = extractFirstImagesFromGridItems(apps);
+
+    return [
+      // Priority 1: Current view (skills) - load immediately
+      ...skillsFirstImages.map(url => ({ url, priority: 'high' as const })),
+
+      // Priority 2: Other views - load in background
+      ...personalFirstImages.map(url => ({ url, priority: 'medium' as const })),
+      ...workFirstImages.map(url => ({ url, priority: 'medium' as const })),
+      ...appsFirstImages.map(url => ({ url, priority: 'medium' as const })),
+    ];
+  }, []);
+
+  // Start preloading images with intelligent priority
+  const preloadedImages = useImagePreloader(imagesToPreload);
 
   const transitions = useTransition(currentView, {
     from: {

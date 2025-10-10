@@ -25,6 +25,22 @@ const SelectorContainer = styled(FrostedGlass)`
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     background: rgba(255, 255, 255, 0.05);
+
+    /* Scale down on mobile to fit within screen width */
+    @media (max-width: 580px) {
+        min-width: auto;
+        max-width: calc(100vw - ${AppTheme.spacing[32]});
+        transform: scale(0.85);
+        transform-origin: center;
+    }
+
+    @media (max-width: 480px) {
+        transform: scale(0.75);
+    }
+
+    @media (max-width: 380px) {
+        transform: scale(0.65);
+    }
 `;
 
 const Option = styled.button<{ $isActive: boolean }>`

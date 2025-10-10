@@ -54,7 +54,8 @@ const GridItem = styled(animated.div) <{
             props.$isSameRow ? 2 : 1};
 `;
 
-const workExperience = [
+// Export for preloading in App.tsx
+export const workExperience = [
     {
         title: 'Skydance Interactive',
         description: 'Driving force in UE5 & C++ VR development for Oculus Quest, contributing to Behemoth beta launch and an unannounced title. Implemented multiplayer VR systems, replication, and AWS backend services.',

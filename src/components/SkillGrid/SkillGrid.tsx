@@ -54,7 +54,8 @@ const GridItem = styled(animated.div) <{
 
 // Removed ScrollContainer - no longer need horizontal scrolling with responsive grid
 
-const professionalSkills = [
+// Export for preloading in App.tsx
+export const professionalSkills = [
     {
         title: 'Full-Stack Development',
         description: 'From pixel-perfect, beautifully animated frontends— to scalable backends, I\'ve built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.',
