@@ -131,6 +131,15 @@ const Name = styled.h1`
     ${AppTheme.typography.heroDisplay};
     color: ${AppTheme.colors.light.textPrimary};
     margin: 0 0 ${AppTheme.spacing[8]};
+
+    /* Make text slightly smaller on mobile to keep name on one line */
+    @media (max-width: 768px) {
+        font-size: 2.5rem; /* Slightly smaller than default heroDisplay */
+    }
+
+    @media (max-width: 480px) {
+        font-size: 2rem; /* Even smaller for very small screens */
+    }
 `;
 
 // Animated character wrapper for the wave effect
