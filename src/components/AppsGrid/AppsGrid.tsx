@@ -55,7 +55,7 @@ const GridItem = styled(animated.div) <{
 // Export for preloading in App.tsx
 export const apps = [
     {
-        description: 'Mobile app built with Flutter. Cloud based AI integrations for sentence generation. Bleeding edge on-device Japanese TTS with Kokro and ONNX',
+        description: 'Mobile app built with Flutter and Supabase. Typescript edge-function based AI integrations for sentence generation. Bleeding edge on-device Japanese TTS with Kokro and ONNX, plus custom FSRS algorithms.',
         title: 'NihonDojo.ai',
         years: 'Language Learning App',
         images: ['/img/apps/nihondojo1.png', '/img/apps/nihondojo2.png', '/img/apps/nihondojo3.png'],
@@ -63,7 +63,7 @@ export const apps = [
     },
     {
         title: 'MixMate.ai',
-        description: 'AI production assistant for Ableton with AI cloud analysis. Cutting edge custom on-device C++ libTorch models for audio processing & classification.',
+        description: 'AI production assistant for Ableton via MPC Python bridge with AI cloud analysis through TS edge-functions. Cutting edge, custom, high performance on-device C++ libTorch models for audio processing & classification in realtime.',
         years: 'Music Production Tool',
         images: ['/img/apps/mixmate1.png', '/img/apps/mixmate2.png', '/img/apps/mixmate3.png'],
         link: 'https://mixmate.ai',
@@ -76,7 +76,7 @@ export const apps = [
     },
     {
         title: 'BreathRep',
-        description: 'AI-powered fitness app that counts reps by analyzing your breathing patterns. Hands-free tracking with real-time audio processing and voice feedback through earphones.',
+        description: 'AI-powered fitness app that counts reps by analyzing your breathing patterns. Hands-free tracking with real-time audio processing and voice feedback through earphones. Uses a completely custom model with my own dataset to classify breathing.',
         years: 'Fitness Tracking (WIP)',
         images: ['/img/apps/breathrep1.png', '/img/apps/breathrep2.png', '/img/apps/breathrep3.png'],
     },
