@@ -55,15 +55,15 @@ const GridItem = styled(animated.div) <{
 // Export for preloading in App.tsx
 export const apps = [
     {
+        description: 'Mobile app built with Flutter. Cloud based AI integrations for sentence generation. Bleeding edge on-device Japanese TTS with Kokro and ONNX',
         title: 'NihonDojo.ai',
-        description: 'Master Japanese in two years. Guaranteed. AI-powered sentence generation, FSRS spaced repetition, and real formality switching. No cartoon mascots, just results.',
         years: 'Language Learning App',
         images: ['/img/apps/nihondojo1.png', '/img/apps/nihondojo2.png', '/img/apps/nihondojo3.png'],
         link: 'https://nihondojo.ai',
     },
     {
         title: 'MixMate.ai',
-        description: 'The AI production assistant you\'ve always wanted. Complete DAW integration with AI-powered mixing suggestions and real-time audio analysis. Because someone had to make it.',
+        description: 'AI production assistant for Ableton with AI cloud analysis. Cutting edge custom on-device C++ libTorch models for audio processing & classification.',
         years: 'Music Production Tool',
         images: ['/img/apps/mixmate1.png', '/img/apps/mixmate2.png', '/img/apps/mixmate3.png'],
         link: 'https://mixmate.ai',
