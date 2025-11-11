@@ -432,7 +432,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             <TextContainer>
                                 <HeaderText>
                                     <AnimatedName />
-                                    <Title>Senior Software Engineer & Pilot</Title>
+                                    <Title>Principal Engineer & Pilot</Title>
                                     <Bio>
                                         I'm Everett, a results-driven professional and a software expert.
                                         With over 12+ years of experience across full-stack development, enterprise,
