@@ -453,7 +453,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                     <SocialIcon href="https://github.com/Kemerd" target="_blank">
                                         <i className="fab fa-github" />
                                     </SocialIcon>
-                                    <SocialIcon href="https://www.linkedin.com/" target="_blank">
+                                    <SocialIcon href="https://www.linkedin.com/in/deveretthinton/" target="_blank">
                                         <i className="fab fa-linkedin" />
                                     </SocialIcon>
                                 </SocialLinks>
