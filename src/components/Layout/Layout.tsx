@@ -381,7 +381,7 @@ const AnimatedName: React.FC = () => {
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleDownload = () => {
         // Update the path to the new resume file
-        window.open('/doc/D Everett Hinton - FS S Engineer, Pilot - 2-8-25.pdf', '_blank');
+        window.open('/doc/D Everett Hinton - Principal Engineer, Pilot - 11-11-25.pdf', '_blank');
     };
 
     // Setup smooth fade-in animations for background and profile
@@ -435,7 +435,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                     <Title>Senior Software Engineer & Pilot</Title>
                                     <Bio>
                                         I'm Everett, a results-driven professional and a software expert.
-                                        With over 10+ years of experience across full-stack development, enterprise,
+                                        With over 12+ years of experience across full-stack development, enterprise,
                                         film & VFX, & games— I excel at turning cross-disciplinary, ambitious
                                         ideas into reality and ensuring projects cross the finish line. Once
                                         described as 'a one man wrecking crew' by an EP, when I'm not shipping
