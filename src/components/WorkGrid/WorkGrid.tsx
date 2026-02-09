@@ -57,6 +57,12 @@ const GridItem = styled(animated.div) <{
 // Export for preloading in App.tsx
 export const workExperience = [
     {
+        title: 'Keeper Security',
+        description: 'Building and maintaining Keeper\'s zero-knowledge encrypted vault — the core of the platform\'s password management, secrets storage, and privileged access management suite used by millions worldwide.',
+        years: 'Vault Team',
+        images: ['/img/work/keeper1.jpg', '/img/work/keeper2.jpg', '/img/work/keeper3.jpg'],
+    },
+    {
         title: 'Skydance Interactive',
         description: 'Driving force in UE5 & C++ VR development for Oculus Quest, contributing to Behemoth beta launch and an unannounced title. Implemented multiplayer VR systems, replication, and AWS backend services.',
         years: 'Senior Software Engineer',
@@ -97,12 +103,6 @@ export const workExperience = [
         description: 'With the power of "elliptical curves over finite fields," we created cutting-edge primality-test algorithms using Python and SAGE.',
         years: 'Mathematics Researcher',
         images: ['/img/work/armstrong1.jpg', '/img/work/armstrong2.jpg', '/img/work/armstrong3.jpg'],
-    },
-    {
-        title: 'Code Mercenary',
-        description: 'Led multiple software projects across various companies including Novabox, UserCS, and more. Developed game servers, AI systems, and created custom features using C++, C#, LUA, and various web technologies.',
-        years: 'Freelance Contractor',
-        images: ['/img/work/freelance1.jpg', '/img/work/freelance2.jpg', '/img/work/freelance3.jpg'],
     },
 ];
 
