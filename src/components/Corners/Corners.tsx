@@ -3,23 +3,30 @@ import styled from 'styled-components';
 
 /**
  * ============================================================================
- * Corners — the recurring blueprint-style "+" registration marks that sit
- * just outside the four corners of panels, cards, and buttons.
+ * Corners — the recurring blueprint-style "+" registration marks pinned to
+ * the four corners of panels, cards, and buttons.
  *
- * Each mark is a small square straddling a corner, drawn as a crosshair via
- * its ::before (vertical stroke) and ::after (horizontal stroke). The mark
- * hangs half outside its parent, so the parent must be position:relative
- * and must NOT clip overflow.
+ * Each mark sits fully OUTSIDE the parent's border but flush against it:
+ * the crosshair's 1px strokes occupy the pixel column/row immediately
+ * adjacent to the border's outer edge (1px stroke | 1px border, touching,
+ * no gap, no overlap). The parent must be position:relative, own a border
+ * of `borderWidth` px, and must NOT clip overflow.
+ *
+ * The square is normalised to an odd size (arm + 1px stroke + arm) so every
+ * mark is perfectly symmetric — identical width and height, equal arms.
  * ============================================================================
  */
 
 interface CornersProps {
-    /** Square size of each mark in px — panels use 11, small buttons use 9. */
+    /** Square size of each mark in px — panels use 11, small buttons use 9.
+        Even values are rounded down to the nearest odd so the + stays symmetric. */
     size?: number;
     /** Stroke colour of the crosshair lines. */
     color?: string;
     /** Opacity applied to the whole overlay (cards dim theirs to 0.55). */
     opacity?: number;
+    /** Parent's border width in px — the marks butt up against its outer edge. */
+    borderWidth?: number;
 }
 
 /* Full-bleed overlay that never intercepts pointer events. */
@@ -30,16 +37,18 @@ const Overlay = styled.span<{ $opacity: number }>`
     opacity: ${({ $opacity }) => $opacity};
 `;
 
-/* A single crosshair mark. Which corner it sits on comes via $corner;
-   the negative offset centres the mark on the parent's border line. */
-const Mark = styled.span<{ $size: number; $color: string; $corner: 'tl' | 'tr' | 'bl' | 'br' }>`
+/* A single crosshair mark. Which corner it sits on comes via $corner; $off
+   pushes the mark outward so its centre strokes hug the border's outside. */
+const Mark = styled.span<{ $span: number; $arm: number; $off: number; $color: string; $corner: 'tl' | 'tr' | 'bl' | 'br' }>`
     position: absolute;
-    width: ${({ $size }) => $size}px;
-    height: ${({ $size }) => $size}px;
+    width: ${({ $span }) => $span}px;
+    height: ${({ $span }) => $span}px;
 
-    /* Anchor to the requested corner, hanging halfway outside the box */
-    ${({ $size, $corner }) => {
-        const off = `-${($size - 1) / 2}px`;
+    /* Anchor to the requested corner. Absolute offsets measure from the
+       parent's padding box (inside the border), so $off already accounts
+       for hopping over the border itself. */
+    ${({ $off, $corner }) => {
+        const off = `${$off}px`;
         switch ($corner) {
             case 'tl': return `top:${off}; left:${off};`;
             case 'tr': return `top:${off}; right:${off};`;
@@ -52,10 +61,10 @@ const Mark = styled.span<{ $size: number; $color: string; $corner: 'tl' | 'tr' |
     &::before {
         content: '';
         position: absolute;
-        left: ${({ $size }) => ($size - 1) / 2}px;
+        left: ${({ $arm }) => $arm}px;
         top: 0;
         width: 1px;
-        height: ${({ $size }) => $size}px;
+        height: ${({ $span }) => $span}px;
         background: ${({ $color }) => $color};
     }
 
@@ -63,9 +72,9 @@ const Mark = styled.span<{ $size: number; $color: string; $corner: 'tl' | 'tr' |
     &::after {
         content: '';
         position: absolute;
-        top: ${({ $size }) => ($size - 1) / 2}px;
+        top: ${({ $arm }) => $arm}px;
         left: 0;
-        width: ${({ $size }) => $size}px;
+        width: ${({ $span }) => $span}px;
         height: 1px;
         background: ${({ $color }) => $color};
     }
@@ -79,11 +88,25 @@ export const Corners: React.FC<CornersProps> = ({
     size = 11,
     color = '#BCCBD8',
     opacity = 1,
-}) => (
-    <Overlay $opacity={opacity} aria-hidden="true">
-        <Mark $size={size} $color={color} $corner="tl" />
-        <Mark $size={size} $color={color} $corner="tr" />
-        <Mark $size={size} $color={color} $corner="bl" />
-        <Mark $size={size} $color={color} $corner="br" />
-    </Overlay>
-);
+    borderWidth = 1,
+}) => {
+    /* Arm length either side of the 1px stroke; forces an odd, symmetric
+       square (span × span) regardless of the size passed in. */
+    const arm = Math.floor((size - 1) / 2);
+    const span = arm * 2 + 1;
+
+    /* Offset from the anchored sides. Walks the centre stroke past the
+       padding-box edge (arm), past the stroke's own width (1), and past the
+       parent's border (borderWidth), landing it flush against the border's
+       outer edge — outside the box, touching, never overlapping. */
+    const off = -(arm + 1 + borderWidth);
+
+    return (
+        <Overlay $opacity={opacity} aria-hidden="true">
+            <Mark $span={span} $arm={arm} $off={off} $color={color} $corner="tl" />
+            <Mark $span={span} $arm={arm} $off={off} $color={color} $corner="tr" />
+            <Mark $span={span} $arm={arm} $off={off} $color={color} $corner="bl" />
+            <Mark $span={span} $arm={arm} $off={off} $color={color} $corner="br" />
+        </Overlay>
+    );
+};

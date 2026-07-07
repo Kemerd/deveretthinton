@@ -81,8 +81,8 @@ export const personalExperience = [
         images: ['/img/personal/ee1.jpg', '/img/personal/ee2.jpg', '/img/personal/ee3.jpg'],
     },
     {
-        title: 'AutoCAD',
-        description: 'Creating precision designs and technical drawings with the accuracy of a surgeon and the patience of a saint. Because sometimes, the 47th revision is the charm.',
+        title: 'AutoCAD & F360',
+        description: 'Creating precision designs and technical drawings with the accuracy of a surgeon and the patience of a saint. I even build my own Fusion 360 plugins to bend the software to my will. Because sometimes, the 47th revision is the charm.',
         years: '3D Design',
         images: ['/img/personal/cad1.jpg', '/img/personal/cad2.jpg', '/img/personal/cad3.jpg'],
     },
