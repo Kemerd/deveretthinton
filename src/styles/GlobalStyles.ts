@@ -173,9 +173,12 @@ const GlobalStyles = createGlobalStyle`
         overflow: visible;
     }
 
-    * {
-        box-sizing: border-box;
-    }
+    /* NOTE: no global box-sizing reset — the design's dimensions were
+       authored against the browser default (content-box), and the few
+       places that need border-box (cards, pill, detail panel) declare it
+       themselves. A universal border-box here would shrink every element
+       that combines an explicit width with padding or borders (content
+       column, photo frame, panel text column, arrow buttons). */
 
     /* Link treatment: muted steel that brightens to white on hover */
     a {
