@@ -1,6 +1,6 @@
 {
     "short_name": "D Everett Hinton",
-    "name": "D Everett Hinton - Senior Software Engineer & Pilot",
+    "name": "D Everett Hinton - Engineer & Pilot",
     "icons": [
         {
             "src": "favicon.ico",
@@ -40,8 +40,8 @@
     ],
     "start_url": ".",
     "display": "standalone",
-    "theme_color": "#000000",
-    "background_color": "#121212",
+    "theme_color": "#0C1014",
+    "background_color": "#0C1014",
     "prefer_related_applications": false,
     "categories": [
         "productivity",

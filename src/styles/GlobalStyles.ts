@@ -1,5 +1,4 @@
 import { createGlobalStyle } from 'styled-components';
-import { AppTheme } from '../theme/theme';
 
 const GlobalStyles = createGlobalStyle`
     /* Artico Font Family - Display Typography */
@@ -154,7 +153,7 @@ const GlobalStyles = createGlobalStyle`
     /* Enhanced body styles with better font fallbacks */
     body {
         /* Don't override margin/padding/background - set in index.html for loading state */
-        color: ${AppTheme.colors.dark.textPrimary};
+        color: #E6ECF1;
         font-family: 'SF Pro Text', var(--system-ui);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -176,6 +175,21 @@ const GlobalStyles = createGlobalStyle`
 
     * {
         box-sizing: border-box;
+    }
+
+    /* Link treatment: muted steel that brightens to white on hover */
+    a {
+        color: #C7D3DD;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #FFFFFF;
+    }
+
+    /* Text selection tint matching the steel-blue accent */
+    ::selection {
+        background: rgba(143, 168, 188, 0.35);
     }
 `;
 
