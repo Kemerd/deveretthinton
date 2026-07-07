@@ -162,18 +162,29 @@ const Bio = styled.p`
     padding-bottom: ${AppTheme.spacing[32]};
 `;
 
-const SocialLinks = styled.div`
+/* Anchors the Novabox badge + social icons as one column in the top-right corner.
+   Owns the absolute positioning that previously lived on SocialLinks so the
+   badge can stack directly above the icon row without extra offset math. */
+const SocialColumn = styled.div`
     display: flex;
-    gap: ${AppTheme.spacing[16]};
+    flex-direction: column;
+    align-items: flex-end;
+    gap: ${AppTheme.spacing[12]};
     position: absolute;
     top: 0;
     right: 0;
 
+    /* On tablet/mobile the column drops into normal flow and centers itself */
     @media (max-width: 1268px) {
         position: relative;
-        justify-content: center;
+        align-items: center;
         margin-top: ${AppTheme.spacing[24]};
     }
+`;
+
+const SocialLinks = styled.div`
+    display: flex;
+    gap: ${AppTheme.spacing[16]};
 
     /* Add new breakpoint for very small screens */
     @media (max-width: 480px) {
@@ -181,6 +192,50 @@ const SocialLinks = styled.div`
         align-items: center;
         gap: ${AppTheme.spacing[12]};
     }
+`;
+
+/* Clickable Novabox attribution badge — small logo beside a two-line label.
+   Mirrors the social icons' hover lift so the corner feels like one family. */
+const NovaboxBadge = styled.a`
+    display: flex;
+    align-items: center;
+    gap: ${AppTheme.spacing[8]};
+    text-decoration: none;
+    opacity: 0.85;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        opacity: 1;
+    }
+`;
+
+/* The little Novabox hex gem, with a faint blue glow to match its branding */
+const NovaboxLogo = styled.img`
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(64, 156, 255, 0.35));
+`;
+
+/* Stacks the ownership line over the tagline */
+const NovaboxText = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const NovaboxTitle = styled.span`
+    ${AppTheme.typography.caption};
+    font-weight: 600;
+    color: ${AppTheme.colors.light.textPrimary};
+`;
+
+const NovaboxSubtitle = styled.span`
+    ${AppTheme.typography.caption};
+    font-size: 11px;
+    font-style: italic;
+    color: ${AppTheme.colors.light.textSecondary};
 `;
 
 const SocialIcon = styled.a`
@@ -443,20 +498,30 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                        make your goals a reality as soon as (but no earlier than) tomorrow!
                                     </Bio>
                                 </HeaderText>
-                                <SocialLinks>
-                                    <SocialIcon href="https://www.instagram.com/" target="_blank">
-                                        <i className="fab fa-instagram" />
-                                    </SocialIcon>
-                                    <SocialIcon href="https://www.youtube.com/@everettengineers/videos" target="_blank">
-                                        <i className="fab fa-youtube" />
-                                    </SocialIcon>
-                                    <SocialIcon href="https://github.com/Kemerd" target="_blank">
-                                        <i className="fab fa-github" />
-                                    </SocialIcon>
-                                    <SocialIcon href="https://www.linkedin.com/in/deveretthinton/" target="_blank">
-                                        <i className="fab fa-linkedin" />
-                                    </SocialIcon>
-                                </SocialLinks>
+                                <SocialColumn>
+                                    {/* Novabox ownership badge sits directly above the social row */}
+                                    <NovaboxBadge href="https://novabox.works/" target="_blank" rel="noopener noreferrer">
+                                        <NovaboxLogo src="/img/novabox_logo.png" alt="Novabox" draggable="false" />
+                                        <NovaboxText>
+                                            <NovaboxTitle>Owner of Novabox.Works</NovaboxTitle>
+                                            <NovaboxSubtitle>Open-Source Aerospace Engineering</NovaboxSubtitle>
+                                        </NovaboxText>
+                                    </NovaboxBadge>
+                                    <SocialLinks>
+                                        <SocialIcon href="https://www.instagram.com/ev.hinton/" target="_blank">
+                                            <i className="fab fa-instagram" />
+                                        </SocialIcon>
+                                        <SocialIcon href="https://www.youtube.com/@everettengineers/videos" target="_blank">
+                                            <i className="fab fa-youtube" />
+                                        </SocialIcon>
+                                        <SocialIcon href="https://github.com/Kemerd" target="_blank">
+                                            <i className="fab fa-github" />
+                                        </SocialIcon>
+                                        <SocialIcon href="https://www.linkedin.com/in/deveretthinton/" target="_blank">
+                                            <i className="fab fa-linkedin" />
+                                        </SocialIcon>
+                                    </SocialLinks>
+                                </SocialColumn>
                                 <DownloadButton
                                     $blurIntensity={10}
                                     $borderRadius={AppTheme.radius.medium}
