@@ -29,10 +29,8 @@
         crossorigin="anonymous">
     <link rel="preload" href="/fonts/woff2/SF-Pro-Display-ThinItalic.woff2" as="font" type="font/woff2"
         crossorigin="anonymous">
-    <link rel="preload" href="/fonts/SF-Pro-Display-ThinItalic.woff2" as="font" type="font/woff2"
-        crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/SF-Pro-Text-Medium.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/SF-Pro-Text-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/fonts/woff2/SF-Pro-Text-Medium.woff2" as="font" type="font/woff2"
+        crossorigin="anonymous">
     <title>D Everett Hinton - Portfolio</title>
 
     <style>
@@ -69,15 +67,41 @@
     <div id="root"></div>
 
     <script>
-        // Unblur content when critical images have loaded
-        // Content shows immediately (blurred), then unblurs when images are ready
-        window.addEventListener('load', function() {
-            const root = document.getElementById('root');
-            const body = document.body;
+        // Unblur as soon as the handful of above-the-fold images are ready,
+        // instead of window 'load' — that event waits on EVERY resource
+        // (the background video, all carousel photos, fonts...), which was
+        // stalling the reveal for 5-10 seconds on cold caches.
+        (function () {
+            // The only pixels visible through the blur at first paint:
+            // the page background photo and the first two skills-card images.
+            const CRITICAL_IMAGES = [
+                '/img/bg.jpg',
+                '/img/skills/fullstack1.jpg',
+                '/img/skills/ml1.jpg',
+            ];
 
-            if (root) root.classList.add('loaded');
-            if (body) body.classList.add('loaded');
-        });
+            // Hard ceiling — if the network is slow (or a path 404s), reveal
+            // anyway after half a second rather than leaving the page frosted.
+            const MAX_WAIT_MS = 500;
+
+            let revealed = false;
+            function reveal() {
+                if (revealed) return; // run once, whichever trigger fires first
+                revealed = true;
+                document.getElementById('root')?.classList.add('loaded');
+                document.body.classList.add('loaded');
+            }
+
+            // Resolve on load OR error — a broken image must not hold the page
+            const settle = (src) => new Promise((resolve) => {
+                const img = new Image();
+                img.onload = img.onerror = resolve;
+                img.src = src;
+            });
+
+            Promise.all(CRITICAL_IMAGES.map(settle)).then(reveal);
+            setTimeout(reveal, MAX_WAIT_MS);
+        })();
     </script>
 </body>
 

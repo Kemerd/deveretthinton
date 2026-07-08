@@ -17,11 +17,16 @@
  *   Each blob: BITMAPINFOHEADER (40 bytes, height doubled for the AND mask)
  *              + bottom-up BGRA pixel rows + all-zero 1bpp AND mask (opaque)
  *
+ * Also emits the PWA/manifest logo PNGs (logo16/32/64/192/512.png) using a
+ * hand-rolled PNG encoder — Node's built-in zlib supplies the deflate stream,
+ * so it stays dependency-free.
+ *
  * Usage: node scripts/generate-flag-favicon.js
  */
 
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 
 // ---------------------------------------------------------------------------
 // Design constants — everything is expressed in a 32x32 "design space" so the
@@ -215,10 +220,89 @@ function buildIco(sizes) {
 }
 
 // ---------------------------------------------------------------------------
-// Main — write public/favicon.ico
+// PNG encoding — minimal encoder for the manifest logo files
 // ---------------------------------------------------------------------------
 
-const outPath = path.join(__dirname, '..', 'public', 'favicon.ico');
+/**
+ * CRC-32 over a buffer (polynomial 0xEDB88320) — every PNG chunk carries one
+ * covering its type tag + payload. Table built lazily on first use.
+ */
+let crcTable = null;
+function crc32(buf) {
+    if (!crcTable) {
+        crcTable = new Uint32Array(256);
+        for (let n = 0; n < 256; n++) {
+            let c = n;
+            for (let k = 0; k < 8; k++) {
+                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            }
+            crcTable[n] = c;
+        }
+    }
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < buf.length; i++) {
+        crc = crcTable[(crc ^ buf[i]) & 0xFF] ^ (crc >>> 8);
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+/**
+ * Frame a single PNG chunk: 4-byte length + type tag + payload + CRC.
+ */
+function pngChunk(type, payload) {
+    const len = Buffer.alloc(4);
+    len.writeUInt32BE(payload.length, 0);
+    const body = Buffer.concat([Buffer.from(type, 'ascii'), payload]);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(body), 0);
+    return Buffer.concat([len, body, crc]);
+}
+
+/**
+ * Encode a top-down RGBA buffer as a complete PNG file:
+ * signature -> IHDR -> IDAT (deflated, filter-0 scanlines) -> IEND.
+ */
+function encodePng(size, rgba) {
+    // --- IHDR: dimensions, 8-bit depth, color type 6 (truecolor + alpha) ---
+    const ihdr = Buffer.alloc(13);
+    ihdr.writeUInt32BE(size, 0);  // width
+    ihdr.writeUInt32BE(size, 4);  // height
+    ihdr.writeUInt8(8, 8);        // bit depth
+    ihdr.writeUInt8(6, 9);        // color type: RGBA
+    // compression / filter / interlace stay 0
+
+    // --- IDAT: each scanline prefixed with filter byte 0 (None), deflated ---
+    const stride = size * 4;
+    const raw = Buffer.alloc((stride + 1) * size);
+    for (let y = 0; y < size; y++) {
+        raw[y * (stride + 1)] = 0; // filter type: None
+        rgba.copy(raw, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
+    }
+    const idat = zlib.deflateSync(raw, { level: 9 });
+
+    return Buffer.concat([
+        Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), // signature
+        pngChunk('IHDR', ihdr),
+        pngChunk('IDAT', idat),
+        pngChunk('IEND', Buffer.alloc(0)),
+    ]);
+}
+
+// ---------------------------------------------------------------------------
+// Main — write public/favicon.ico and the manifest logo PNGs
+// ---------------------------------------------------------------------------
+
+const publicDir = path.join(__dirname, '..', 'public');
+
+const outPath = path.join(publicDir, 'favicon.ico');
 const ico = buildIco([16, 32, 48]);
 fs.writeFileSync(outPath, ico);
 console.log(`Wrote ${outPath} (${ico.length} bytes, sizes: 16/32/48)`);
+
+// Manifest / PWA / apple-touch-icon sizes, matching public/manifest.json
+for (const size of [16, 32, 64, 192, 512]) {
+    const pngPath = path.join(publicDir, `logo${size}.png`);
+    const png = encodePng(size, renderFlag(size));
+    fs.writeFileSync(pngPath, png);
+    console.log(`Wrote ${pngPath} (${png.length} bytes)`);
+}
