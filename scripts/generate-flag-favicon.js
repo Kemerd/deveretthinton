@@ -7,8 +7,10 @@
  *
  * The design mirrors public/favicon.svg exactly:
  *   - 7 stripes (4 red, 3 white) — 13 stripes alias into mush at tab size
- *   - Blue canton over the top 4 stripes, ~47% of the width
+ *   - Blue canton over the top 4 stripes, 40% of the flag length
  *   - 3-2-3 staggered white dots standing in for the star field
+ *   - Official 19:10 flag aspect ratio, centered vertically in the square
+ *     canvas with transparent letterbox bands above and below
  *
  * ICO container layout (classic BMP-style entries, readable everywhere):
  *   ICONDIR (6 bytes) -> ICONDIRENTRY[n] (16 bytes each) -> image blobs
@@ -31,20 +33,29 @@ const RED = [0xB2, 0x22, 0x34];
 const WHITE = [0xFF, 0xFF, 0xFF];
 const BLUE = [0x3C, 0x3B, 0x6E];
 
-// Canton (blue star field) dimensions in design units
-const CANTON_W = 15;        // ~47% of the 32-unit width
-const CANTON_H = 18.286;    // exactly the top 4 of 7 stripes
-
-// Star-dot centers (3-2-3 stagger) and radius, in design units
-const DOTS = [
-    [3, 3.6], [7.5, 3.6], [12, 3.6],
-    [5.25, 9.14], [9.75, 9.14],
-    [3, 14.7], [7.5, 14.7], [12, 14.7],
-];
-const DOT_R = 1.5;
-
-// Number of stripes and supersampling factor for anti-aliasing
+// Number of stripes in the simplified design
 const STRIPES = 7;
+
+// Flag geometry: official US flag ratio is 10:19 (hoist:fly).
+// Full canvas width, letterboxed vertically with transparent bands.
+const FLAG_H = 32 * (10 / 19);          // ≈ 16.842 design units tall
+const FLAG_Y0 = (32 - FLAG_H) / 2;      // ≈ 7.579 — top edge of the flag
+const STRIPE_H = FLAG_H / STRIPES;      // ≈ 2.406 per stripe
+
+// Canton (blue star field) dimensions in design units
+const CANTON_W = 12.8;                  // 40% of the flag length
+const CANTON_H = STRIPE_H * 4;          // exactly the top 4 of 7 stripes
+
+// Star-dot centers (3-2-3 stagger) and radius, in design units.
+// Rows sit at 1/4, 1/2, 3/4 of the canton height below the flag's top edge.
+const DOTS = [
+    [2.18, FLAG_Y0 + CANTON_H * 0.25], [6.4, FLAG_Y0 + CANTON_H * 0.25], [10.62, FLAG_Y0 + CANTON_H * 0.25],
+    [4.29, FLAG_Y0 + CANTON_H * 0.5], [8.51, FLAG_Y0 + CANTON_H * 0.5],
+    [2.18, FLAG_Y0 + CANTON_H * 0.75], [6.4, FLAG_Y0 + CANTON_H * 0.75], [10.62, FLAG_Y0 + CANTON_H * 0.75],
+];
+const DOT_R = 1.0;
+
+// Supersampling factor for anti-aliasing
 const SUPERSAMPLE = 4; // 4x4 = 16 samples per pixel, plenty for flat shapes
 
 // ---------------------------------------------------------------------------
@@ -53,9 +64,13 @@ const SUPERSAMPLE = 4; // 4x4 = 16 samples per pixel, plenty for flat shapes
 
 /**
  * Sample the flag design at design-space coordinates (u, v), both in [0, 32).
- * Order of tests matters: dots sit on top of the canton, canton on stripes.
+ * Returns an [r, g, b] color inside the flag, or null in the transparent
+ * letterbox bands. Order of tests matters: dots over canton over stripes.
  */
 function sampleFlag(u, v) {
+    // Outside the 19:10 flag band -> transparent letterbox
+    if (v < FLAG_Y0 || v >= FLAG_Y0 + FLAG_H) return null;
+
     // Star dots win over everything (they only exist inside the canton anyway)
     for (const [dx, dy] of DOTS) {
         const ddx = u - dx;
@@ -63,11 +78,11 @@ function sampleFlag(u, v) {
         if (ddx * ddx + ddy * ddy <= DOT_R * DOT_R) return WHITE;
     }
 
-    // Blue canton covers the top-left corner
-    if (u < CANTON_W && v < CANTON_H) return BLUE;
+    // Blue canton covers the top-left corner of the flag
+    if (u < CANTON_W && v < FLAG_Y0 + CANTON_H) return BLUE;
 
     // Stripes: even rows red, odd rows white (top stripe is red)
-    const stripe = Math.min(STRIPES - 1, Math.floor((v * STRIPES) / 32));
+    const stripe = Math.min(STRIPES - 1, Math.floor((v - FLAG_Y0) / STRIPE_H));
     return (stripe % 2 === 0) ? RED : WHITE;
 }
 
@@ -81,26 +96,33 @@ function renderFlag(size) {
 
     for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
-            let r = 0, g = 0, b = 0;
+            let r = 0, g = 0, b = 0, hits = 0;
 
-            // Average a SUPERSAMPLE x SUPERSAMPLE grid of design-space samples
+            // Average a SUPERSAMPLE x SUPERSAMPLE grid of design-space samples.
+            // Samples in the transparent letterbox return null and only lower
+            // the pixel's coverage (alpha) rather than its color.
             for (let sy = 0; sy < SUPERSAMPLE; sy++) {
                 for (let sx = 0; sx < SUPERSAMPLE; sx++) {
                     const u = ((x + (sx + 0.5) * step) / size) * 32;
                     const v = ((y + (sy + 0.5) * step) / size) * 32;
                     const c = sampleFlag(u, v);
-                    r += c[0];
-                    g += c[1];
-                    b += c[2];
+                    if (c) {
+                        r += c[0];
+                        g += c[1];
+                        b += c[2];
+                        hits++;
+                    }
                 }
             }
 
             const n = SUPERSAMPLE * SUPERSAMPLE;
             const i = (y * size + x) * 4;
-            rgba[i] = Math.round(r / n);
-            rgba[i + 1] = Math.round(g / n);
-            rgba[i + 2] = Math.round(b / n);
-            rgba[i + 3] = 255; // fully opaque — flags don't do transparency
+            // Straight (non-premultiplied) alpha: color is the average of the
+            // covered samples, alpha is the fraction of samples covered.
+            rgba[i] = hits ? Math.round(r / hits) : 0;
+            rgba[i + 1] = hits ? Math.round(g / hits) : 0;
+            rgba[i + 2] = hits ? Math.round(b / hits) : 0;
+            rgba[i + 3] = Math.round((hits / n) * 255);
         }
     }
 
@@ -139,9 +161,19 @@ function encodeIcoImage(size, rgba) {
     }
 
     // --- AND plane: 1bpp mask, rows padded to 32-bit boundaries ---
-    // All zeros = every pixel opaque, which is exactly what we want.
+    // Modern decoders use the alpha channel, but legacy ones honor this mask:
+    // bit set = transparent. Mark the letterbox pixels (alpha < 128), and keep
+    // the same bottom-up row order as the XOR plane.
     const andStride = Math.ceil(size / 32) * 4;
     const and = Buffer.alloc(andStride * size);
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const alpha = rgba[((size - 1 - y) * size + x) * 4 + 3];
+            if (alpha < 128) {
+                and[y * andStride + (x >> 3)] |= 0x80 >> (x & 7);
+            }
+        }
+    }
 
     return Buffer.concat([header, xor, and]);
 }
