@@ -7,7 +7,7 @@ import { ViewTabs } from './components/ViewTabs/ViewTabs';
 import { Carousel } from './components/Carousel/Carousel';
 import { Lightbox } from './components/Lightbox/Lightbox';
 import { riseIn, EASE_OUT, SCRAMBLE_CHARSET } from './styles/animations';
-import { ViewId, QUIPS, getItems, SKILLS, PERSONAL, WORK, APPS } from './data/portfolio';
+import { ViewId, QUIPS, getItems, SKILLS, PASSIONS, VITAE, APPS } from './data/portfolio';
 
 /**
  * ============================================================================
@@ -172,7 +172,7 @@ class App extends React.Component<{}, AppState> {
            the site so tab switches and photo cycles never pop in blank */
         this.preloadT = window.setTimeout(() => {
             const all = Array.from(
-                new Set([...SKILLS, ...PERSONAL, ...WORK, ...APPS].flatMap((it) => it.images))
+                new Set([...SKILLS, ...PASSIONS, ...VITAE, ...APPS].flatMap((it) => it.images))
             );
             all.forEach((url, i) => {
                 window.setTimeout(() => {

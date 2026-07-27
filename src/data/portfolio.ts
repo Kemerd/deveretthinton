@@ -9,10 +9,37 @@
  */
 
 /** The four switchable sections of the site, in display order. */
-export type ViewId = 'skills' | 'personal' | 'work' | 'apps';
+export type ViewId = 'skills' | 'passions' | 'vitae' | 'apps';
 
 /** Display order for the tab bar and the sliding selection pill. */
-export const VIEW_ORDER: ViewId[] = ['skills', 'personal', 'work', 'apps'];
+export const VIEW_ORDER: ViewId[] = ['skills', 'passions', 'vitae', 'apps'];
+
+/* ----------------------------------------------------------------------------
+ * Experience math — every "N+ years" label on the site is derived at runtime
+ * from the year the work actually started, so the numbers age themselves and
+ * never need a manual bump. Change a START_YEAR only if the history changes.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Years elapsed since a given starting year, floored at 0.
+ * Uses the live clock, so the site self-updates every January 1st.
+ */
+export const yearsSince = (startYear: number): number =>
+    Math.max(0, new Date().getFullYear() - startYear);
+
+/** Formats a start year as the "13+ years" subtitle used on the cards. */
+export const yearsLabel = (startYear: number): string => `${yearsSince(startYear)}+ years`;
+
+/** The year each long-running discipline began — the single source of truth. */
+export const START_YEAR = {
+    /** Overall professional software career — drives the hero bio number. */
+    career: 2013,
+    fullStack: 2015,
+    machineLearning: 2018,
+    gameEngines: 2015,
+    cpp: 2013,
+    typeScript: 2019,
+} as const;
 
 /** One card in the carousel — title, subtitle line, blurb, and 3 photos. */
 export interface PortfolioItem {
@@ -32,7 +59,7 @@ export interface PortfolioItem {
 export const HERO_NAME = 'D Everett Hinton';
 export const HERO_TAGLINE = 'Engineer & Pilot';
 export const HERO_BIO =
-    "I'm Everett, a results-driven professional and a software expert. With over 12+ years of experience across full-stack development, enterprise, film & VFX, & games— I excel at turning cross-disciplinary, ambitious ideas into reality and ensuring projects cross the finish line and actually launch. Once described as 'a one man wrecking crew', when I'm not shipping, I'm in the hangar building planes or in the cockpit flying. Let's talk how I can make your goals a reality as soon as (but no earlier than) tomorrow!";
+    `I'm Everett, a results-driven professional and a software expert. With over ${yearsSince(START_YEAR.career)}+ years of experience across full-stack development, enterprise, film & VFX, & games— I excel at turning cross-disciplinary, ambitious ideas into reality and ensuring projects cross the finish line and actually launch. Once described as 'a one man wrecking crew', when I'm not shipping, I'm in the hangar building planes or in the cockpit flying. Let's talk how I can make your goals a reality as soon as (but no earlier than) tomorrow!`;
 
 /** Resume download target — hosted alongside the site under /doc. */
 export const RESUME_URL =
@@ -44,8 +71,8 @@ export const RESUME_URL =
  * ------------------------------------------------------------------------- */
 export const QUIPS: Record<ViewId, string> = {
     skills: 'They say a jack of all trades is a master of none... but better than a master of one. Good thing I mastered quite a few!',
-    personal: 'People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.',
-    work: 'Just a few highlights from my journey. For the full saga (and my caffeine consumption stats), check my CV or LinkedIn.',
+    passions: 'People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.',
+    vitae: 'Just a few highlights from my journey. For the full saga (and my caffeine consumption stats), check my CV or LinkedIn.',
     apps: 'Side projects that actually shipped. Some making money, others making progress. Built with Flutter and/or React.',
 };
 
@@ -55,31 +82,31 @@ export const QUIPS: Record<ViewId, string> = {
 export const SKILLS: PortfolioItem[] = [
     {
         title: 'Full-Stack Development',
-        years: '10+ years',
+        years: yearsLabel(START_YEAR.fullStack),
         desc: "From pixel-perfect, beautifully animated frontends— to scalable backends, I've built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.",
         images: ['/img/skills/fullstack1.jpg', '/img/skills/fullstack2.jpg', '/img/skills/fullstack3.jpg'],
     },
     {
         title: 'Machine Learning & Python',
-        years: '7+ years',
+        years: yearsLabel(START_YEAR.machineLearning),
         desc: "Turning caffeine into weights & biases since before it was cool. I've used linear algebra + statistics to train models since 2016— when it was just a niche class in college, we didn't have PyTorch or TensorFlow!",
         images: ['/img/skills/ml1.jpg', '/img/skills/ml2.jpg', '/img/skills/ml3.jpg'],
     },
     {
         title: 'Unreal & Unity',
-        years: '10+ years',
+        years: yearsLabel(START_YEAR.gameEngines),
         desc: "As a passionate gamer, I've been using Unreal since UE3, and Unity just as long. From multiplayer VR experiences to Netflix VP pipeline tooling, I've probably broken & fixed every subsystem in both engines at least twice. Yes, even that one.",
         images: ['/img/skills/unreal1.jpg', '/img/skills/unreal2.jpg', '/img/skills/unreal3.jpg'],
     },
     {
         title: 'C++ & C#',
-        years: '12+ years',
+        years: yearsLabel(START_YEAR.cpp),
         desc: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit.. even if it takes 200 extra lines, the performance can be very worth it! C# is easy by comparison!',
         images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
     {
         title: 'TypeScript & JavaScript',
-        years: '6+ years',
+        years: yearsLabel(START_YEAR.typeScript),
         desc: "After years of using PHP, using modern libraries is easy by comparison. From using TypeScript to build scalable backends, to using JavaScript to build pixel-perfect frontends, I've got you covered. I mean, this website is proof, isn't it pretty?!",
         images: ['/img/skills/ts1.jpg', '/img/skills/ts2.jpg', '/img/skills/ts3.jpg'],
     },
@@ -104,9 +131,9 @@ export const SKILLS: PortfolioItem[] = [
 ];
 
 /* ----------------------------------------------------------------------------
- * Personal pursuits — planes, engineering, martial arts, and music.
+ * Passions — planes, engineering, martial arts, and music.
  * ------------------------------------------------------------------------- */
-export const PERSONAL: PortfolioItem[] = [
+export const PASSIONS: PortfolioItem[] = [
     {
         title: 'IFR Pilot',
         years: '250 hrs',
@@ -158,9 +185,9 @@ export const PERSONAL: PortfolioItem[] = [
 ];
 
 /* ----------------------------------------------------------------------------
- * Work history — most recent first.
+ * Vitae — professional history, most recent first.
  * ------------------------------------------------------------------------- */
-export const WORK: PortfolioItem[] = [
+export const VITAE: PortfolioItem[] = [
     {
         title: 'Keeper Security',
         years: 'Vault Team',
@@ -246,10 +273,10 @@ export const APPS: PortfolioItem[] = [
 /** Resolve the item list for a given view — skills is the default/fallback. */
 export const getItems = (view: ViewId): PortfolioItem[] => {
     switch (view) {
-        case 'personal':
-            return PERSONAL;
-        case 'work':
-            return WORK;
+        case 'passions':
+            return PASSIONS;
+        case 'vitae':
+            return VITAE;
         case 'apps':
             return APPS;
         default:
