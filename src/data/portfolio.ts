@@ -107,9 +107,9 @@ export const SKILLS: PortfolioItem[] = [
         images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
     {
-        title: 'TypeScript & JavaScript',
+        title: 'TypeScript, JS & React',
         years: yearsLabel(START_YEAR.typeScript),
-        desc: "After years of using PHP, using modern libraries is easy by comparison. From using TypeScript to build scalable backends, to using JavaScript to build pixel-perfect frontends, I've got you covered. I mean, this website is proof, isn't it pretty?!",
+        desc: "After years of using PHP, modern libraries are easy by comparison. From TypeScript on scalable backends, to React front ends animated down to the last spring curve, I've got you covered. I mean, this website is React— proof enough, isn't it pretty?!",
         images: ['/img/skills/ts1.jpg', '/img/skills/ts2.jpg', '/img/skills/ts3.jpg'],
     },
     {
