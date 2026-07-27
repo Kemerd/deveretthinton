@@ -9,10 +9,10 @@
  */
 
 /** The four switchable sections of the site, in display order. */
-export type ViewId = 'skills' | 'passions' | 'vitae' | 'apps';
+export type ViewId = 'skills' | 'passions' | 'vitae' | 'works';
 
 /** Display order for the tab bar and the sliding selection pill. */
-export const VIEW_ORDER: ViewId[] = ['skills', 'passions', 'vitae', 'apps'];
+export const VIEW_ORDER: ViewId[] = ['skills', 'passions', 'vitae', 'works'];
 
 /* ----------------------------------------------------------------------------
  * Experience math — every "N+ years" label on the site is derived at runtime
@@ -39,6 +39,8 @@ export const START_YEAR = {
     gameEngines: 2015,
     cpp: 2013,
     typeScript: 2019,
+    realtimeData: 2017,
+    embedded: 2014,
 } as const;
 
 /** One card in the carousel — title, subtitle line, blurb, and 3 photos. */
@@ -73,7 +75,7 @@ export const QUIPS: Record<ViewId, string> = {
     skills: 'They say a jack of all trades is a master of none... but better than a master of one. Good thing I mastered quite a few!',
     passions: 'People often ask me how I accomplish so much. The answer is, a lot of caffeine and very intense calendering.',
     vitae: 'Just a few highlights from my journey. For the full saga (and my caffeine consumption stats), check my CV or LinkedIn.',
-    apps: 'Side projects that actually shipped. Some making money, others making progress. Built with Flutter and/or React.',
+    works: 'Things I built that actually shipped. Some making money, others making progress. Apps, avionics, and everything in between.',
 };
 
 /* ----------------------------------------------------------------------------
@@ -99,9 +101,9 @@ export const SKILLS: PortfolioItem[] = [
         images: ['/img/skills/unreal1.jpg', '/img/skills/unreal2.jpg', '/img/skills/unreal3.jpg'],
     },
     {
-        title: 'C++ & C#',
+        title: 'C++, C# & CUDA',
         years: yearsLabel(START_YEAR.cpp),
-        desc: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit.. even if it takes 200 extra lines, the performance can be very worth it! C# is easy by comparison!',
+        desc: 'I am one of those weird people who adores C++. Because sometimes you need to make the computer do exactly what you want, down to the last bit— and when one core is not enough, CUDA kernels put a few thousand more to work. C# is easy by comparison!',
         images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
     {
@@ -109,6 +111,18 @@ export const SKILLS: PortfolioItem[] = [
         years: yearsLabel(START_YEAR.typeScript),
         desc: "After years of using PHP, using modern libraries is easy by comparison. From using TypeScript to build scalable backends, to using JavaScript to build pixel-perfect frontends, I've got you covered. I mean, this website is proof, isn't it pretty?!",
         images: ['/img/skills/ts1.jpg', '/img/skills/ts2.jpg', '/img/skills/ts3.jpg'],
+    },
+    {
+        title: 'Realtime Data',
+        years: yearsLabel(START_YEAR.realtimeData),
+        desc: "Virtual production at Netflix, wrangling cutting-edge camera tracking & sensor data on the LED volume. When being off by a single frame means a stage full of cast and crew standing around burning daylight, 'eventually consistent' isn't an answer— it has to land on time, every frame.",
+        images: ['/img/skills/realtime1.jpg', '/img/skills/realtime2.jpg', '/img/skills/realtime3.jpg'],
+    },
+    {
+        title: 'Embedded Systems',
+        years: yearsLabel(START_YEAR.embedded),
+        desc: 'Custom PCB design through ESP32 RISC-V firmware in proper C— or MicroPython when the deadline wins that argument (I scowl the entire time). Board layout, schematic, firmware, enclosure: I ship avionics end to end, from lidar altitude callouts to a software-defined radio decoding air traffic on a $23 chip.',
+        images: ['/img/skills/embedded1.jpg', '/img/skills/embedded2.jpg', '/img/skills/embedded3.jpg'],
     },
     {
         title: 'CI/CD Pipeline',
@@ -239,9 +253,9 @@ export const VITAE: PortfolioItem[] = [
 ];
 
 /* ----------------------------------------------------------------------------
- * Shipped (and shipping) side projects.
+ * Works — shipped (and shipping) products, software and hardware alike.
  * ------------------------------------------------------------------------- */
-export const APPS: PortfolioItem[] = [
+export const WORKS: PortfolioItem[] = [
     {
         title: 'NihonDojo.ai',
         years: 'Language Learning App',
@@ -255,6 +269,27 @@ export const APPS: PortfolioItem[] = [
         link: 'https://mixmate.ai',
         desc: 'AI production assistant for Ableton via MPC Python bridge with AI cloud analysis through TS edge-functions. Cutting edge, custom, high performance on-device C++ libTorch models for audio processing & classification in realtime.',
         images: ['/img/apps/mixmate1.png', '/img/apps/mixmate2.png', '/img/apps/mixmate3.png'],
+    },
+    {
+        title: 'ADSBin',
+        years: 'ADS-B Receiver',
+        link: 'https://novabox.works/product/adsbin-traffic-weather-gps-receiver/',
+        desc: 'Software-defined radio built from scratch on a dual-core RISC-V ESP32-P4. USB High-Speed I/Q ingest at 2.4 Msps, hard-real-time Mode-S demodulation pinned to one core, CPR position solving on the other, then GDL90 traffic & weather straight to ForeFlight. No PC, no cloud, under $100.',
+        images: ['/img/apps/adsbin1.jpg', '/img/apps/adsbin2.jpg', '/img/apps/adsbin3.jpg'],
+    },
+    {
+        title: 'LidarAGL',
+        years: 'Neuroaural Flare Advisor',
+        link: 'https://novabox.works/product/lidaragl-neuroaural-flare-advisor/',
+        desc: 'ESP32-S3 advisory AGL box for experimental aircraft: a belly-mounted lidar drives spoken height callouts and an ascending flare tone. Perceptual audio down to the ISO 226 equal-loudness curve, voice panned to the speech-dominant ear, and in-flight reboot recovery. Advisory only, engineered like it isn\'t.',
+        images: ['/img/apps/lidaragl1.jpg', '/img/apps/lidaragl2.jpg', '/img/apps/lidaragl3.jpg'],
+    },
+    {
+        title: 'ergoMAXX',
+        years: 'Flight Stick Grip',
+        link: 'https://novabox.works/ergomaxx/',
+        desc: 'Open-source flight stick grip sculpted around the resting human hand, printed in carbon-fiber nylon. Trim buttons wire straight to the trim motors— no mixer, no controller, no middleman. Four-figure grip ergonomics without the four figures, and the STLs are free.',
+        images: ['/img/apps/ergomaxx1.jpg', '/img/apps/ergomaxx2.jpg', '/img/apps/ergomaxx3.jpg'],
     },
     {
         title: 'UFly',
@@ -277,8 +312,8 @@ export const getItems = (view: ViewId): PortfolioItem[] => {
             return PASSIONS;
         case 'vitae':
             return VITAE;
-        case 'apps':
-            return APPS;
+        case 'works':
+            return WORKS;
         default:
             return SKILLS;
     }

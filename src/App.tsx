@@ -7,7 +7,7 @@ import { ViewTabs } from './components/ViewTabs/ViewTabs';
 import { Carousel } from './components/Carousel/Carousel';
 import { Lightbox } from './components/Lightbox/Lightbox';
 import { riseIn, EASE_OUT, SCRAMBLE_CHARSET } from './styles/animations';
-import { ViewId, QUIPS, getItems, SKILLS, PASSIONS, VITAE, APPS } from './data/portfolio';
+import { ViewId, QUIPS, getItems, SKILLS, PASSIONS, VITAE, WORKS } from './data/portfolio';
 
 /**
  * ============================================================================
@@ -40,6 +40,10 @@ const DECODE_ANIM = true;
    these, and reproduces the design exactly at full width */
 const CARD_W = 302;
 const TAB_W = 150;
+
+/* Longest section drives the photo-cycle counter array, so adding cards to
+   any view needs no other change here */
+const MAX_ITEMS = Math.max(SKILLS.length, PASSIONS.length, VITAE.length, WORKS.length);
 
 /* Root surface: dark canvas, no horizontal scroll, SF Pro body text */
 const Page = styled.div`
@@ -118,7 +122,10 @@ class App extends React.Component<{}, AppState> {
     state: AppState = {
         view: 'skills',
         hovered: null,
-        imgIdx: [0, 0, 0, 0, 0, 0, 0, 0],
+        /* One photo-cycle counter per card, sized to the largest view so
+           every card in every section has a slot (a short array would leave
+           trailing cards with an undefined index and hide their photos) */
+        imgIdx: new Array(MAX_ITEMS).fill(0),
         cycle: 0,
         offset: 0,
         paused: false,
@@ -172,7 +179,7 @@ class App extends React.Component<{}, AppState> {
            the site so tab switches and photo cycles never pop in blank */
         this.preloadT = window.setTimeout(() => {
             const all = Array.from(
-                new Set([...SKILLS, ...PASSIONS, ...VITAE, ...APPS].flatMap((it) => it.images))
+                new Set([...SKILLS, ...PASSIONS, ...VITAE, ...WORKS].flatMap((it) => it.images))
             );
             all.forEach((url, i) => {
                 window.setTimeout(() => {
