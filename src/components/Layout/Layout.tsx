@@ -436,7 +436,7 @@ const AnimatedName: React.FC = () => {
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleDownload = () => {
         // Update the path to the new resume file
-        window.open('/doc/D Everett Hinton - Principal Engineer, Pilot - 11-11-25.pdf', '_blank');
+        window.open('/doc/D Everett Hinton - S Engineer, Pilot - 8-27-26.pdf', '_blank');
     };
 
     // Setup smooth fade-in animations for background and profile

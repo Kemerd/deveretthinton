@@ -65,7 +65,7 @@ export const HERO_BIO =
 
 /** Resume download target — hosted alongside the site under /doc. */
 export const RESUME_URL =
-    'https://deveretthinton.net/doc/D%20Everett%20Hinton%20-%20Principal%20Engineer,%20Pilot%20-%2011-11-25.pdf';
+    'https://deveretthinton.net/doc/D%20Everett%20Hinton%20-%20S%20Engineer,%20Pilot%20-%208-27-26.pdf';
 
 /* ----------------------------------------------------------------------------
  * Section quips — the italic one-liner under the tab bar. The active quip
