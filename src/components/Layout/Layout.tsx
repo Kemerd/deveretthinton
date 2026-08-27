@@ -494,7 +494,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                         film & VFX, & games— I excel at turning cross-disciplinary, ambitious
                                         ideas into reality and ensuring projects cross the finish line and actually launch. Once
                                         described as 'a one man wrecking crew', when I'm not shipping, I’m in the
-                                        hangar building planes or in the cockpit flying. Let’s talk how I can 
+                                        hangar working on planes or in the cockpit flying. Let’s talk how I can 
                                        make your goals a reality as soon as (but no earlier than) tomorrow!
                                     </Bio>
                                 </HeaderText>
