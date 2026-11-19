@@ -159,7 +159,7 @@ export const SKILLS: PortfolioItem[] = [
         title: 'CI/CD Pipeline',
         years: 'DevOps Evangelist',
         desc: 'I build end-to-end multi-platform deployment pipelines that would make a DevOps engineer shed tears of joy. Because the best deployments are the ones that happen smoothly, predictably, and without surprises or headaches.',
-        images: ['/img/skills/cicd_actions.jpg', '/img/skills/cicd1.jpg', '/img/skills/cicd2.jpg'],
+        images: ['/img/skills/cicd_actions.jpg', '/img/skills/cicd_nihondojo.jpg', '/img/skills/cicd1.jpg'],
     },
     {
         title: 'XR/VR Development',
