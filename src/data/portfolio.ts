@@ -35,7 +35,7 @@ export const START_YEAR = {
     /** Overall professional software career — drives the hero bio number. */
     career: 2013,
     fullStack: 2015,
-    machineLearning: 2018,
+    machineLearning: 2016,
     gameEngines: 2015,
     cpp: 2013,
     typeScript: 2019,
@@ -61,11 +61,11 @@ export interface PortfolioItem {
 export const HERO_NAME = 'D Everett Hinton';
 export const HERO_TAGLINE = 'Engineer & Pilot';
 export const HERO_BIO =
-    `I'm Everett, a results-driven professional and a software expert. With over ${yearsSince(START_YEAR.career)}+ years of experience across full-stack development, enterprise, film & VFX, & games— I excel at turning cross-disciplinary, ambitious ideas into reality and ensuring projects cross the finish line and actually launch. Once described as 'a one man wrecking crew', when I'm not shipping, I'm in the hangar working on planes or in the cockpit flying. Let's talk how I can make your goals a reality as soon as (but no earlier than) tomorrow!`;
+    `I'm Everett, a results-driven engineer with a passion for life, liberty, and solving impossible problems. With ${yearsSince(START_YEAR.machineLearning)}+ years in machine learning & neural networks, and ${yearsSince(START_YEAR.career)}+ years across full-stack software, embedded systems, entertainment, and VFX— I excel at not only connecting the dots between vastly different disciplines, but turning these ideas into reality through sheer force of will. When I am not engineering in the land of C++ and other lesser languages, I am in the hangar working on airplanes, or in the cockpit flying. If you have a tough problem, let's talk!`;
 
 /** Resume download target — hosted alongside the site under /doc. */
 export const RESUME_URL =
-    'https://deveretthinton.net/doc/D%20Everett%20Hinton%20-%20S%20Engineer,%20Pilot%20-%208-27-26.pdf';
+    'https://deveretthinton.net/doc/D%20Everett%20Hinton%20-%20Multidisciplinary%20Engineer,%20Pilot%20-%2011-18-26.pdf';
 
 /* ----------------------------------------------------------------------------
  * Section quips — the italic one-liner under the tab bar. The active quip
@@ -256,6 +256,20 @@ export const VITAE: PortfolioItem[] = [
  * Works — shipped (and shipping) products, software and hardware alike.
  * ------------------------------------------------------------------------- */
 export const WORKS: PortfolioItem[] = [
+    {
+        title: 'Nihil',
+        years: 'Hardware-in-the-Loop IDE',
+        link: 'https://nihil.sh',
+        desc: 'Agentic hardware-in-the-loop IDE. Your AI agent designs the PCB and the CAD, then your real firmware runs against a from-scratch circuit simulator (no SPICE) and a physics digital twin. Nineteen microcontrollers modelled, four gates per board, and no fab files until every single one passes.',
+        images: ['/img/apps/nihil1.webp', '/img/apps/nihil2.webp', '/img/apps/nihil3.webp'],
+    },
+    {
+        title: 'OpenOSV',
+        years: 'Open-Source 360 Video Plugin',
+        link: 'https://github.com/Kemerd/OpenOSV',
+        desc: "Free, open-source DJI Osmo 360 workflow for Premiere Pro & DaVinci Resolve. Drop an .OSV on the timeline and it's stitched, graded to HDR, and ready to reframe— CUDA renders each view in a quarter of a millisecond. C++20, parallax-aware seams, and a stitcher built to beat the stock one.",
+        images: ['/img/apps/openosv1.png', '/img/apps/openosv2.png', '/img/apps/openosv3.jpg'],
+    },
     {
         title: 'NihonDojo.ai',
         years: 'Language Learning App',
