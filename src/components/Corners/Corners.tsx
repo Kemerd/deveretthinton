@@ -35,6 +35,8 @@ const Overlay = styled.span<{ $opacity: number }>`
     inset: 0;
     pointer-events: none;
     opacity: ${({ $opacity }) => $opacity};
+    /* Lets a parent fade its marks in and out by changing the opacity prop */
+    transition: opacity 0.3s ease;
 `;
 
 /* A single crosshair mark. Which corner it sits on comes via $corner; $off

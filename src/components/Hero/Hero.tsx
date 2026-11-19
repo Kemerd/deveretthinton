@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { Corners } from '../Corners/Corners';
 import { riseIn, EASE_OUT, EASE_SPRING, SCRAMBLE_CHARSET } from '../../styles/animations';
+import { GRAIN } from '../../styles/textures';
 import { HERO_NAME, HERO_TAGLINE, HERO_BIO, RESUME_URL } from '../../data/portfolio';
 
 /**
@@ -35,6 +36,19 @@ const Panel = styled.section`
     box-shadow: 0 18px 60px rgba(0, 0, 0, 0.4);
     padding: 32px;
     ${rise(0)}
+`;
+
+/* Fine dot grain over the panel's glass. It is its own layer (rather than
+   part of the panel background) so a hole can be clipped out of it behind
+   the resume button — the button stays see-through, with no dots showing
+   through it. Sits at z-index -1 inside the panel's stacking context:
+   above the panel's fill, below every piece of content. */
+const GrainLayer = styled.div`
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: ${GRAIN};
 `;
 
 /* Photo + text sit side by side; stack them on narrow viewports */
@@ -307,6 +321,11 @@ export const Hero: React.FC<HeroProps> = ({ decodeAnim = true }) => {
     // The visible name text — starts empty and scrambles toward HERO_NAME
     const [decoded, setDecoded] = useState(decodeAnim ? '' : HERO_NAME);
 
+    // Panel + resume button, measured to cut the grain away behind the button
+    const panelRef = useRef<HTMLElement>(null);
+    const resumeRef = useRef<HTMLAnchorElement>(null);
+    const [grainClip, setGrainClip] = useState('none');
+
     /* Character-decode reveal: each 38ms frame reveals a little more of the
        real name while unrevealed slots churn through random glyphs. */
     useEffect(() => {
@@ -331,8 +350,54 @@ export const Hero: React.FC<HeroProps> = ({ decodeAnim = true }) => {
         return () => clearInterval(timer);
     }, [decodeAnim]);
 
+    /* Measure where the resume button sits inside the panel and clip a
+       matching hole out of the grain. offsetLeft/offsetTop are layout
+       positions, so the entrance animations' transforms don't skew them.
+       Re-measured whenever the panel resizes (viewport, fonts, bio wrap). */
+    useEffect(() => {
+        const panel = panelRef.current;
+        const button = resumeRef.current;
+        if (!panel || !button) return;
+
+        const measure = () => {
+            // Walk up to the panel, summing each positioned ancestor's offset
+            let x = 0;
+            let y = 0;
+            let node: HTMLElement | null = button;
+            while (node && node !== panel) {
+                x += node.offsetLeft;
+                y += node.offsetTop;
+                node = node.offsetParent as HTMLElement | null;
+            }
+            // Bail out (keep the grain whole) if the chain never reached the panel
+            if (node !== panel) {
+                setGrainClip('none');
+                return;
+            }
+            const r = x + button.offsetWidth;
+            const b = y + button.offsetHeight;
+            // Outer rectangle, then the button's rectangle; even-odd subtracts it
+            setGrainClip(
+                'polygon(evenodd, 0px 0px, 100% 0px, 100% 100%, 0px 100%, 0px 0px, ' +
+                    `${x}px ${y}px, ${r}px ${y}px, ${r}px ${b}px, ${x}px ${b}px, ${x}px ${y}px)`
+            );
+        };
+
+        measure();
+
+        // ResizeObserver is missing on very old browsers — fall back to resize
+        if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', measure);
+            return () => window.removeEventListener('resize', measure);
+        }
+        const observer = new ResizeObserver(measure);
+        observer.observe(panel);
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <Panel data-screen-label="Hero">
+        <Panel data-screen-label="Hero" ref={panelRef}>
+            <GrainLayer style={{ clipPath: grainClip }} />
             <Corners />
 
             <Row>
@@ -366,7 +431,7 @@ export const Hero: React.FC<HeroProps> = ({ decodeAnim = true }) => {
 
             <Rail>
                 <div>
-                    <ResumeButton href={RESUME_URL} target="_blank" rel="noopener noreferrer">
+                    <ResumeButton ref={resumeRef} href={RESUME_URL} target="_blank" rel="noopener noreferrer">
                         <i className="fas fa-download" />
                         <span>Download Resume</span>
                         <Corners size={9} color="#D3DFE9" />

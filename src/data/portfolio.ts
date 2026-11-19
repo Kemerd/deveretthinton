@@ -14,6 +14,15 @@ export type ViewId = 'skills' | 'passions' | 'vitae' | 'works';
 /** Display order for the tab bar and the sliding selection pill. */
 export const VIEW_ORDER: ViewId[] = ['skills', 'passions', 'vitae', 'works'];
 
+/**
+ * The Works section is shown one half at a time: things made of code, and
+ * things you can hold. The Works tab splits into these two once it is active.
+ */
+export type WorksKind = 'software' | 'hardware';
+
+/** Left-to-right order of the two halves inside the split Works tab. */
+export const WORKS_KINDS: WorksKind[] = ['software', 'hardware'];
+
 /* ----------------------------------------------------------------------------
  * Experience math — every "N+ years" label on the site is derived at runtime
  * from the year the work actually started, so the numbers age themselves and
@@ -49,8 +58,14 @@ export interface PortfolioItem {
     years: string;
     desc: string;
     images: string[];
+    /** Optional, parallel to `images`: where to anchor a photo when it is
+        cropped to fit (a CSS object-position such as 'left center'). Leave an
+        entry undefined for the default centre crop. */
+    imageFocus?: (string | undefined)[];
     /** Optional external link, rendered as "Visit Site ↗" in the detail panel. */
     link?: string;
+    /** Works only: which half of the split Works tab this card belongs to. */
+    kind?: WorksKind;
 }
 
 /* ----------------------------------------------------------------------------
@@ -59,9 +74,9 @@ export interface PortfolioItem {
  * to be available as a plain string for the animation target.
  * ------------------------------------------------------------------------- */
 export const HERO_NAME = 'D Everett Hinton';
-export const HERO_TAGLINE = 'Engineer & Pilot';
+export const HERO_TAGLINE = 'Multidisciplinary Engineer & Pilot';
 export const HERO_BIO =
-    `I'm Everett, a results-driven engineer with a passion for life, liberty, and solving impossible problems. With ${yearsSince(START_YEAR.machineLearning)}+ years in machine learning & neural networks, and ${yearsSince(START_YEAR.career)}+ years across full-stack software, embedded systems, entertainment, and VFX— I excel at not only connecting the dots between vastly different disciplines, but turning these ideas into reality through sheer force of will. When I am not engineering in the land of C++ and other lesser languages, I am in the hangar working on airplanes, or in the cockpit flying. If you have a tough problem, let's talk!`;
+    `I'm Everett, a results-driven engineer with a passion for life, liberty, and solving impossible problems. With ${yearsSince(START_YEAR.machineLearning)}+ years in machine learning & neural networks, and ${yearsSince(START_YEAR.career)}+ years across full-stack software, embedded systems, entertainment, and VFX— I excel at not only connecting the dots between vastly different disciplines, but turning these ideas into reality through sheer force of will. When I'm not engineering in the land of C++ and other lesser languages, I'm in the hangar working on airplanes, or in the cockpit flying. Have a tough problem? Let's talk!`;
 
 /** Resume download target — hosted alongside the site under /doc. */
 export const RESUME_URL =
@@ -78,6 +93,12 @@ export const QUIPS: Record<ViewId, string> = {
     works: 'Things I built that actually shipped. Some making money, others making progress. Apps, avionics, and everything in between.',
 };
 
+/** Works is split in two on the page, and each half gets its own line. */
+export const WORKS_QUIPS: Record<WorksKind, string> = {
+    software: 'Software I built that actually shipped. Some making money, others making progress. Agentic IDEs, GPU video engines, and the apps in between.',
+    hardware: 'Hardware I built that actually works. Schematic to solder to cockpit— avionics, sensors, and one very opinionated flight stick.',
+};
+
 /* ----------------------------------------------------------------------------
  * Professional skills — the default view.
  * ------------------------------------------------------------------------- */
@@ -86,13 +107,19 @@ export const SKILLS: PortfolioItem[] = [
         title: 'Full-Stack Development',
         years: yearsLabel(START_YEAR.fullStack),
         desc: "From pixel-perfect, beautifully animated frontends— to scalable backends, I've built everything from mobile applications, to web panels, to AWS Lambda functions. Because sometimes you need to be a jack of all trades and a master of... well, most of them.",
-        images: ['/img/skills/fullstack1.jpg', '/img/skills/fullstack2.jpg', '/img/skills/fullstack3.jpg'],
+        images: ['/img/skills/fullstack3.jpg', '/img/skills/fullstack1.jpg', '/img/skills/fullstack2.jpg'],
+    },
+    {
+        title: 'Agentic Workflows',
+        years: 'Swarm Wrangler',
+        desc: "I don't just prompt agents— I build the harnesses that keep them honest. Nihil puts them to work designing real PCBs, CAD and firmware behind hard gates: no fab files until ERC and DRC read zero. premiere-agent edits hours of footage by conversation, 100% locally, and hands the cut straight to Premiere. The trick isn't a smarter model. It's a pipeline that refuses to lie.",
+        images: ['/img/skills/agentic1.jpg', '/img/skills/agentic2.jpg', '/img/skills/agentic3.jpg'],
     },
     {
         title: 'Machine Learning & Python',
         years: yearsLabel(START_YEAR.machineLearning),
         desc: "Turning caffeine into weights & biases since before it was cool. I've used linear algebra + statistics to train models since 2016— when it was just a niche class in college, we didn't have PyTorch or TensorFlow!",
-        images: ['/img/skills/ml1.jpg', '/img/skills/ml2.jpg', '/img/skills/ml3.jpg'],
+        images: ['/img/skills/ml1.jpg', '/img/skills/ml_drumalong.jpg', '/img/skills/ml3.jpg'],
     },
     {
         title: 'Unreal & Unity',
@@ -107,9 +134,9 @@ export const SKILLS: PortfolioItem[] = [
         images: ['/img/skills/cpp1.jpg', '/img/skills/cpp2.jpg', '/img/skills/cpp3.jpg'],
     },
     {
-        title: 'TypeScript, JS & React',
+        title: 'Electron & React',
         years: yearsLabel(START_YEAR.typeScript),
-        desc: "After years of using PHP, modern libraries are easy by comparison. From TypeScript on scalable backends, to React front ends animated down to the last spring curve, I've got you covered. I mean, this website is React— proof enough, isn't it pretty?!",
+        desc: "After years of using PHP, modern libraries are easy by comparison. TypeScript and JavaScript are a given— from Node.js on scalable backends, to Electron desktop apps with native C++ modules, to React front ends animated down to the last spring curve. I mean, this website is React— proof enough, isn't it pretty?!",
         images: ['/img/skills/ts1.jpg', '/img/skills/ts2.jpg', '/img/skills/ts3.jpg'],
     },
     {
@@ -117,18 +144,22 @@ export const SKILLS: PortfolioItem[] = [
         years: yearsLabel(START_YEAR.realtimeData),
         desc: "Virtual production at Netflix, wrangling cutting-edge camera tracking & sensor data on the LED volume. When being off by a single frame means a stage full of cast and crew standing around burning daylight, 'eventually consistent' isn't an answer— it has to land on time, every frame.",
         images: ['/img/skills/realtime1.jpg', '/img/skills/realtime2.jpg', '/img/skills/realtime3.jpg'],
+        // The scope capture keeps its traces on the left — anchor the crop there
+        imageFocus: [undefined, undefined, 'left center'],
     },
     {
         title: 'Embedded Systems',
         years: yearsLabel(START_YEAR.embedded),
-        desc: 'Custom PCB design through ESP32 RISC-V firmware in proper C— or MicroPython when the deadline wins that argument (I scowl the entire time). Board layout, schematic, firmware, enclosure: I ship avionics end to end, from lidar altitude callouts to a software-defined radio decoding air traffic on a $23 chip.',
+        desc: 'From custom PCB design to ESP32 RISC-V firmware in proper C— or MicroPython when the deadline wins that argument. Schematic, board layout, firmware, enclosure: I ship avionics end to end, from lidar altitude callouts to a software-defined radio decoding air traffic on a $23 chip.',
         images: ['/img/skills/embedded1.jpg', '/img/skills/embedded2.jpg', '/img/skills/embedded3.jpg'],
+        // The robotics club throwback is labelled at its far left edge — crop from there
+        imageFocus: [undefined, undefined, 'left center'],
     },
     {
         title: 'CI/CD Pipeline',
         years: 'DevOps Evangelist',
         desc: 'I build end-to-end multi-platform deployment pipelines that would make a DevOps engineer shed tears of joy. Because the best deployments are the ones that happen smoothly, predictably, and without surprises or headaches.',
-        images: ['/img/skills/cicd1.jpg', '/img/skills/cicd2.jpg', '/img/skills/cicd3.jpg'],
+        images: ['/img/skills/cicd_actions.jpg', '/img/skills/cicd1.jpg', '/img/skills/cicd2.jpg'],
     },
     {
         title: 'XR/VR Development',
@@ -140,7 +171,9 @@ export const SKILLS: PortfolioItem[] = [
         title: 'Design & UI',
         years: 'UI Architect',
         desc: "My goal is to create interfaces that ensure Steve Jobs doesn't turn over in his grave. Because good UI is like a joke - if you have to explain it, it's probably not that good. I've been designing & implementing interfaces since 2009, and still learning!",
-        images: ['/img/skills/ui1.jpg', '/img/skills/ui2.jpg', '/img/skills/ui3.jpg'],
+        images: ['/img/skills/ui_nihilmap.jpg', '/img/skills/ui_ergomaxx.jpg', '/img/skills/ui_nihondojo_app.jpg'],
+        // The configurator is a wide page — keep its title and the grip render in the card
+        imageFocus: [undefined, 'left center', undefined],
     },
 ];
 
@@ -157,7 +190,7 @@ export const PASSIONS: PortfolioItem[] = [
     {
         title: 'Building Planes',
         years: 'Glasair III',
-        desc: "Currently constructing a Glasair III. Because buying a plane is too easy, and who doesn't enjoy spending weekends covered in epoxy and aluminum shavings?",
+        desc: "Finished a Glasair III, and now I fly it— on my own engine and my own avionics. Because buying a plane is too easy, and who doesn't enjoy spending weekends covered in epoxy and aluminum shavings?",
         images: ['/img/personal/glasair1.jpg', '/img/personal/glasair2.jpg', '/img/personal/glasair3.jpg'],
     },
     {
@@ -177,6 +210,8 @@ export const PASSIONS: PortfolioItem[] = [
         years: '3D Design',
         desc: 'Creating precision designs and technical drawings with the accuracy of a surgeon and the patience of a saint. I even build my own Fusion 360 plugins to bend the software to my will. Because sometimes, the 47th revision is the charm.',
         images: ['/img/personal/cad1.jpg', '/img/personal/cad2.jpg', '/img/personal/cad3.jpg'],
+        // The finished panel is a very wide photo — centre the crop on the radio tray
+        imageFocus: [undefined, undefined, '62% center'],
     },
     {
         title: 'Mixed Martial Arts',
@@ -247,7 +282,7 @@ export const VITAE: PortfolioItem[] = [
     {
         title: 'Armstrong State University',
         years: 'Mathematics Researcher',
-        desc: 'With the power of "elliptical curves over finite fields," we created cutting-edge primality-test algorithms using Python and SAGE.',
+        desc: 'With the power of "elliptical curves over finite fields," we created cutting-edge primality-test algorithms using Python and SAGE. It is also where I took a graduate course in neural networks— built from scratch with linear algebra and statistics, before PyTorch.',
         images: ['/img/work/armstrong1.jpg', '/img/work/armstrong2.jpg', '/img/work/armstrong3.jpg'],
     },
 ];
@@ -258,6 +293,7 @@ export const VITAE: PortfolioItem[] = [
 export const WORKS: PortfolioItem[] = [
     {
         title: 'Nihil',
+        kind: 'software',
         years: 'Hardware-in-the-Loop IDE',
         link: 'https://nihil.sh',
         desc: 'Agentic hardware-in-the-loop IDE. Your AI agent designs the PCB and the CAD, then your real firmware runs against a from-scratch circuit simulator (no SPICE) and a physics digital twin. Nineteen microcontrollers modelled, four gates per board, and no fab files until every single one passes.',
@@ -265,13 +301,15 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'OpenOSV',
-        years: 'Open-Source 360 Video Plugin',
+        kind: 'software',
+        years: 'GPU 360 Stitching Engine',
         link: 'https://github.com/Kemerd/OpenOSV',
-        desc: "Free, open-source DJI Osmo 360 workflow for Premiere Pro & DaVinci Resolve. Drop an .OSV on the timeline and it's stitched, graded to HDR, and ready to reframe— CUDA renders each view in a quarter of a millisecond. C++20, parallax-aware seams, and a stitcher built to beat the stock one.",
+        desc: "A from-scratch 360 stitching engine in C++20, built to beat DJI's own. It decodes the raw dual-fisheye .OSV, measures each clip's lens alignment, carves a parallax-aware seam with optical flow, removes sky banding and sun ghosts, and grades D-Log M to HDR— on CUDA, OpenCL or Metal, with CUDA rendering each view in a quarter of a millisecond. Native in Premiere Pro & DaVinci Resolve. Free and open source.",
         images: ['/img/apps/openosv1.png', '/img/apps/openosv2.png', '/img/apps/openosv3.jpg'],
     },
     {
         title: 'NihonDojo.ai',
+        kind: 'software',
         years: 'Language Learning App',
         link: 'https://nihondojo.ai',
         desc: 'Mobile app built with Flutter and Supabase. Typescript edge-function based AI integrations for sentence generation. Bleeding edge on-device Japanese TTS with Kokro and ONNX, plus custom FSRS algorithms.',
@@ -279,6 +317,7 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'MixMate.ai',
+        kind: 'software',
         years: 'Music Production Tool',
         link: 'https://mixmate.ai',
         desc: 'AI production assistant for Ableton via MPC Python bridge with AI cloud analysis through TS edge-functions. Cutting edge, custom, high performance on-device C++ libTorch models for audio processing & classification in realtime.',
@@ -286,6 +325,7 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'ADSBin',
+        kind: 'hardware',
         years: 'ADS-B Receiver',
         link: 'https://novabox.works/product/adsbin-traffic-weather-gps-receiver/',
         desc: 'Software-defined radio built from scratch on a dual-core RISC-V ESP32-P4. USB High-Speed I/Q ingest at 2.4 Msps, hard-real-time Mode-S demodulation pinned to one core, CPR position solving on the other, then GDL90 traffic & weather straight to ForeFlight. No PC, no cloud, under $100.',
@@ -293,6 +333,7 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'LidarAGL',
+        kind: 'hardware',
         years: 'Neuroaural Flare Advisor',
         link: 'https://novabox.works/product/lidaragl-neuroaural-flare-advisor/',
         desc: 'ESP32-S3 advisory AGL box for experimental aircraft: a belly-mounted lidar drives spoken height callouts and an ascending flare tone. Perceptual audio down to the ISO 226 equal-loudness curve, voice panned to the speech-dominant ear, and in-flight reboot recovery. Advisory only, engineered like it isn\'t.',
@@ -300,6 +341,7 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'ergoMAXX',
+        kind: 'hardware',
         years: 'Flight Stick Grip',
         link: 'https://novabox.works/ergomaxx/',
         desc: 'Open-source flight stick grip sculpted around the resting human hand, printed in carbon-fiber nylon. Trim buttons wire straight to the trim motors— no mixer, no controller, no middleman. Four-figure grip ergonomics without the four figures, and the STLs are free.',
@@ -307,27 +349,39 @@ export const WORKS: PortfolioItem[] = [
     },
     {
         title: 'UFly',
+        kind: 'software',
         years: 'Aviation Management (WIP)',
         desc: 'Comprehensive flight school management platform. Handle aircraft scheduling, student management, and flight sales all in one place. Built for aviation professionals.',
         images: ['/img/apps/ufly1.png', '/img/apps/ufly2.png', '/img/apps/ufly3.png'],
     },
     {
         title: 'BreathRep',
+        kind: 'software',
         years: 'Fitness Tracking (WIP)',
         desc: 'AI-powered fitness app that counts reps by analyzing your breathing patterns. Hands-free tracking with real-time audio processing and voice feedback through earphones. Uses a completely custom model with my own dataset to classify breathing.',
         images: ['/img/apps/breathrep1.png', '/img/apps/breathrep2.png', '/img/apps/breathrep3.png'],
     },
 ];
 
-/** Resolve the item list for a given view — skills is the default/fallback. */
-export const getItems = (view: ViewId): PortfolioItem[] => {
+/* The two halves of Works, filtered once at load rather than on every render.
+   A card with no kind is treated as software so it can never vanish. */
+const WORKS_BY_KIND: Record<WorksKind, PortfolioItem[]> = {
+    software: WORKS.filter((it) => it.kind !== 'hardware'),
+    hardware: WORKS.filter((it) => it.kind === 'hardware'),
+};
+
+/**
+ * Resolve the item list for a given view — skills is the default/fallback.
+ * Works returns only the requested half (software unless told otherwise).
+ */
+export const getItems = (view: ViewId, worksKind: WorksKind = 'software'): PortfolioItem[] => {
     switch (view) {
         case 'passions':
             return PASSIONS;
         case 'vitae':
             return VITAE;
         case 'works':
-            return WORKS;
+            return WORKS_BY_KIND[worksKind] || WORKS_BY_KIND.software;
         default:
             return SKILLS;
     }

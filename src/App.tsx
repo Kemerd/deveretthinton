@@ -5,9 +5,9 @@ import { Background } from './components/Background/Background';
 import { Hero } from './components/Hero/Hero';
 import { ViewTabs } from './components/ViewTabs/ViewTabs';
 import { Carousel } from './components/Carousel/Carousel';
-import { Lightbox } from './components/Lightbox/Lightbox';
+import { Lightbox, LightboxSource } from './components/Lightbox/Lightbox';
 import { riseIn, EASE_OUT, SCRAMBLE_CHARSET } from './styles/animations';
-import { ViewId, QUIPS, getItems, SKILLS, PASSIONS, VITAE, WORKS } from './data/portfolio';
+import { ViewId, WorksKind, QUIPS, WORKS_QUIPS, getItems, SKILLS, PASSIONS, VITAE, WORKS } from './data/portfolio';
 
 /**
  * ============================================================================
@@ -18,9 +18,9 @@ import { ViewId, QUIPS, getItems, SKILLS, PASSIONS, VITAE, WORKS } from './data/
  * panel), the lightbox, and the scrambling quip text. Timers:
  *
  *   cycleTimer  (1100ms) — advances one card's photo at a time, round-robin
- *   carTimer    (1700ms) — auto-advances the carousel unless paused/hovered
+ *   carTimer    (2600ms) — auto-advances the carousel unless paused/hovered
  *   quipTimer   (30ms)   — runs the quip scramble morph during tab switches
- *   fadeT1/T2            — choreograph the 230ms out / 70ms in view fade
+ *   fadeT1               — holds the content swap until the cards have left
  *
  * A class component keeps this a straight port of the design's logic —
  * interval callbacks read fresh state via setState updaters, no stale
@@ -40,6 +40,11 @@ const DECODE_ANIM = true;
    these, and reproduces the design exactly at full width */
 const CARD_W = 302;
 const TAB_W = 150;
+
+/* How long the outgoing cards get to leave before the content is swapped:
+   the carousel's exit animation (300ms) plus its longest stagger. Keep in
+   step with SWAP_OUT_MS / SWAP_OUT_STAGGER_MS in Carousel.tsx. */
+const SWAP_OUT_TOTAL_MS = 380;
 
 /* Longest section drives the photo-cycle counter array, so adding cards to
    any view needs no other change here */
@@ -85,10 +90,14 @@ interface LayoutMetrics {
     visible: number;
     cardWidth: number;
     tabWidth: number;
+    /** Window width — the carousel fills it edge to edge with side cards. */
+    viewportWidth: number;
 }
 
 interface AppState extends LayoutMetrics {
     view: ViewId;
+    /** Which half of Works is showing; remembered while other tabs are open. */
+    worksKind: WorksKind;
     /** Hovered card index — non-null means the detail panel is open. */
     hovered: number | null;
     /** Per-card-slot photo indices; slots cycle one at a time. */
@@ -104,7 +113,7 @@ interface AppState extends LayoutMetrics {
     /** Current (possibly mid-scramble) quip text. */
     qText: string;
     /** Lightbox contents, or null when closed. */
-    lightbox: { imgs: string[]; idx: number } | null;
+    lightbox: { imgs: string[]; idx: number; source: LightboxSource } | null;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -113,7 +122,6 @@ class App extends React.Component<{}, AppState> {
     private carTimer = 0;
     private quipTimer = 0;
     private fadeT1 = 0;
-    private fadeT2 = 0;
     private preloadT = 0;
 
     /* Timestamp of the last tab switch — auto-advance holds off briefly */
@@ -121,6 +129,7 @@ class App extends React.Component<{}, AppState> {
 
     state: AppState = {
         view: 'skills',
+        worksKind: 'software',
         hovered: null,
         /* One photo-cycle counter per card, sized to the largest view so
            every card in every section has a slot (a short array would leave
@@ -144,10 +153,10 @@ class App extends React.Component<{}, AppState> {
         const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
         const tabWidth = Math.min(TAB_W, Math.floor((vw - 40) / 4));
         // 1296px row + 54px arrows each side + margin — needs ~1408px
-        if (vw >= 1408) return { visible: 4, cardWidth: CARD_W, tabWidth };
-        if (vw >= 1080) return { visible: 3, cardWidth: CARD_W, tabWidth };
-        if (vw >= 760) return { visible: 2, cardWidth: CARD_W, tabWidth };
-        return { visible: 1, cardWidth: Math.min(CARD_W, vw - 72), tabWidth };
+        if (vw >= 1408) return { visible: 4, cardWidth: CARD_W, tabWidth, viewportWidth: vw };
+        if (vw >= 1080) return { visible: 3, cardWidth: CARD_W, tabWidth, viewportWidth: vw };
+        if (vw >= 760) return { visible: 2, cardWidth: CARD_W, tabWidth, viewportWidth: vw };
+        return { visible: 1, cardWidth: Math.min(CARD_W, vw - 72), tabWidth, viewportWidth: vw };
     }
 
     componentDidMount() {
@@ -155,7 +164,9 @@ class App extends React.Component<{}, AppState> {
            across the view's cards — paused while hovering or fading */
         this.cycleTimer = window.setInterval(() => {
             if (this.state.hovered !== null || this.state.fading) return;
-            const len = getItems(this.state.view).length;
+            const len = getItems(this.state.view, this.state.worksKind).length;
+            // Nothing to cycle (and no modulo by zero) on an empty list
+            if (len <= 0) return;
             this.setState((s) => {
                 const imgIdx = s.imgIdx.slice();
                 imgIdx[s.cycle % len] = (imgIdx[s.cycle % len] + 1) % 3;
@@ -163,15 +174,15 @@ class App extends React.Component<{}, AppState> {
             });
         }, 1100);
 
-        /* Carousel auto-advance: every 1.7s scroll one card, wrapping.
+        /* Carousel auto-advance: every 2.6s drift one card along. The row
+           loops, so the offset just keeps counting — there is no rewind.
            Holds off while paused, hovered, fading, or right after a switch */
         this.carTimer = window.setInterval(() => {
             if (this.state.paused || this.state.hovered !== null || this.state.fading) return;
             if (this.lastSwitch && Date.now() - this.lastSwitch < 1400) return;
-            const maxOff = this.maxOffset();
-            if (maxOff === 0) return;
-            this.setState((s) => ({ offset: (s.offset + 1) % (maxOff + 1) }));
-        }, 1700);
+            if (!this.canScroll()) return;
+            this.setState((s) => ({ offset: s.offset + 1 }));
+        }, 2600);
 
         window.addEventListener('resize', this.handleResize);
 
@@ -201,22 +212,18 @@ class App extends React.Component<{}, AppState> {
         window.clearInterval(this.carTimer);
         window.clearInterval(this.quipTimer);
         window.clearTimeout(this.fadeT1);
-        window.clearTimeout(this.fadeT2);
         window.clearTimeout(this.preloadT);
     }
 
-    /* Longest allowed scroll offset for the current view + viewport */
-    private maxOffset(): number {
-        return Math.max(0, getItems(this.state.view).length - this.state.visible);
+    /* The row only moves when there are more cards than fit in focus */
+    private canScroll(): boolean {
+        return getItems(this.state.view, this.state.worksKind).length > this.state.visible;
     }
 
-    /* Re-derive geometry on resize, clamping the offset into range */
+    /* Re-derive geometry on resize. The offset needs no clamping — the row
+       loops, and a list that fits ignores the offset altogether. */
     private handleResize = () => {
-        const layout = App.computeLayout();
-        this.setState((s) => ({
-            ...layout,
-            offset: Math.min(s.offset, Math.max(0, getItems(s.view).length - layout.visible)),
-        }));
+        this.setState(App.computeLayout());
     };
 
     /* ----------------------------------------------------------------------
@@ -250,14 +257,40 @@ class App extends React.Component<{}, AppState> {
 
     /* ----------------------------------------------------------------------
      * Tab switch choreography: morph the quip, pre-warm the incoming view's
-     * images, fade the row out (230ms), swap content, fade back in (70ms).
+     * images, then hand over to the card swap. Works has a quip per half
+     * (software / hardware), so it picks the one for the half on show.
      * -------------------------------------------------------------------- */
     private switchView = (id: ViewId) => {
         if (id === this.state.view) return;
-        this.morphQuip(QUIPS[id]);
+        this.morphQuip(App.quipFor(id, this.state.worksKind));
+        this.swapCards(id, this.state.worksKind);
+    };
 
-        // Preload the incoming view's images so cards never pop in blank
-        getItems(id).forEach((it) =>
+    /* ----------------------------------------------------------------------
+     * Software / hardware toggle inside the split Works tab. Same swap as a
+     * tab switch, and the quip morphs to the one written for that half.
+     * -------------------------------------------------------------------- */
+    private switchWorksKind = (kind: WorksKind) => {
+        if (this.state.view !== 'works' || kind === this.state.worksKind) return;
+        this.morphQuip(App.quipFor('works', kind));
+        this.swapCards('works', kind);
+    };
+
+    /* The line shown under the tabs for a view. Falls back to the section's
+       general quip if a half has none written. */
+    private static quipFor(view: ViewId, worksKind: WorksKind): string {
+        if (view === 'works') return WORKS_QUIPS[worksKind] || QUIPS.works;
+        return QUIPS[view] || '';
+    }
+
+    /* ----------------------------------------------------------------------
+     * Shared card swap: pre-warm the incoming list's images, let the cards
+     * play their exit, then swap the content the instant they are gone —
+     * which is also what starts the new set's entrance.
+     * -------------------------------------------------------------------- */
+    private swapCards(view: ViewId, worksKind: WorksKind) {
+        // Preload the incoming list's images so cards never pop in blank
+        getItems(view, worksKind).forEach((it) =>
             it.images.forEach((src) => {
                 const im = new Image();
                 im.src = src;
@@ -266,43 +299,68 @@ class App extends React.Component<{}, AppState> {
 
         this.lastSwitch = Date.now();
         window.clearTimeout(this.fadeT1);
-        window.clearTimeout(this.fadeT2);
         this.setState({ fading: true });
+        // New content and the end of the exit land in ONE update: the carousel
+        // starts the incoming cards' entrance on that very render, so a card
+        // that mounts fresh never gets a frame of the outgoing animation.
         this.fadeT1 = window.setTimeout(() => {
-            this.setState({ view: id, hovered: null, offset: 0, cycle: 0 });
-            this.fadeT2 = window.setTimeout(() => this.setState({ fading: false }), 70);
-        }, 230);
+            this.setState({ view, worksKind, hovered: null, offset: 0, cycle: 0, fading: false });
+        }, SWAP_OUT_TOTAL_MS);
+    }
+
+    /* Move the row by a signed number of cards and dismiss any open detail
+       panel. Used by the arrows (±1) and by clicking a soft-focus side card
+       (however far it is from the in-focus group). */
+    private shiftCards = (delta: number) => {
+        if (!Number.isFinite(delta) || delta === 0 || !this.canScroll()) return;
+        // Reset the auto-advance hold-off so it doesn't fire right on top of a manual move
+        this.lastSwitch = Date.now();
+        this.setState((s) => ({ offset: s.offset + Math.round(delta), hovered: null }));
     };
 
-    /* Manual arrows — wrap around and dismiss any open detail panel */
-    private prevCard = () => {
-        const maxOff = this.maxOffset();
-        this.setState((s) => ({ offset: (s.offset + maxOff) % (maxOff + 1), hovered: null }));
-    };
+    private prevCard = () => this.shiftCards(-1);
 
-    private nextCard = () => {
-        const maxOff = this.maxOffset();
-        this.setState((s) => ({ offset: (s.offset + 1) % (maxOff + 1), hovered: null }));
-    };
+    private nextCard = () => this.shiftCards(1);
 
-    /* Lightbox plumbing — open at a photo, step with wrapping, close */
-    private openLightbox = (imgs: string[], idx: number) => {
-        this.setState({ lightbox: { imgs, idx } });
+    /* Lightbox plumbing — open at a photo, step with wrapping, close.
+       `source` carries the caption and a way to find the clicked thumbnail
+       on screen, which is what lets the photo fly out of it and back. */
+    private openLightbox = (imgs: string[], idx: number, source?: LightboxSource) => {
+        if (!Array.isArray(imgs) || imgs.length === 0) return;
+        const safeIdx = Number.isInteger(idx) ? Math.max(0, Math.min(imgs.length - 1, idx)) : 0;
+        this.setState({ lightbox: { imgs, idx: safeIdx, source: source || {} } });
     };
 
     private stepLightbox = (dir: number) => {
         this.setState((s) => {
-            if (!s.lightbox) return null;
+            if (!s.lightbox || !Number.isFinite(dir)) return null;
             const len = s.lightbox.imgs.length;
-            return { lightbox: { imgs: s.lightbox.imgs, idx: (s.lightbox.idx + dir + len) % len } };
+            if (len <= 0) return null;
+            // Double modulo so any signed step (not just ±1) wraps cleanly
+            const next = (((s.lightbox.idx + Math.round(dir)) % len) + len) % len;
+            return { lightbox: { ...s.lightbox, idx: next } };
         });
     };
 
     private closeLightbox = () => this.setState({ lightbox: null });
 
     render() {
-        const { view, hovered, imgIdx, offset, paused, fading, qText, lightbox, visible, cardWidth, tabWidth } = this.state;
-        const items = getItems(view);
+        const {
+            view,
+            worksKind,
+            hovered,
+            imgIdx,
+            offset,
+            paused,
+            fading,
+            qText,
+            lightbox,
+            visible,
+            cardWidth,
+            tabWidth,
+            viewportWidth,
+        } = this.state;
+        const items = getItems(view, worksKind);
 
         return (
             <>
@@ -316,7 +374,13 @@ class App extends React.Component<{}, AppState> {
                     <Content>
                         <Hero decodeAnim={DECODE_ANIM} />
 
-                        <ViewTabs view={view} onSelect={this.switchView} tabWidth={tabWidth} />
+                        <ViewTabs
+                            view={view}
+                            onSelect={this.switchView}
+                            worksKind={worksKind}
+                            onSelectWorksKind={this.switchWorksKind}
+                            tabWidth={tabWidth}
+                        />
 
                         <Quip>{qText}</Quip>
 
@@ -327,16 +391,19 @@ class App extends React.Component<{}, AppState> {
                             offset={offset}
                             visible={visible}
                             cardWidth={cardWidth}
+                            viewportWidth={viewportWidth}
                             fading={fading}
                             onCardEnter={(i) => this.setState({ hovered: i })}
                             onPanelLeave={() => this.setState({ hovered: null })}
                             onPrev={this.prevCard}
                             onNext={this.nextCard}
+                            onShift={this.shiftCards}
                             onPauseChange={(p) => {
                                 // Avoid redundant renders from repeated enter/leave
                                 if (p !== paused) this.setState({ paused: p });
                             }}
                             onZoom={this.openLightbox}
+                            zoomOpen={lightbox !== null}
                         />
                     </Content>
                 </Page>
@@ -345,6 +412,8 @@ class App extends React.Component<{}, AppState> {
                     <Lightbox
                         images={lightbox.imgs}
                         index={lightbox.idx}
+                        title={lightbox.source.title}
+                        rectOf={lightbox.source.rectOf}
                         onClose={this.closeLightbox}
                         onStep={this.stepLightbox}
                     />
